@@ -20,6 +20,7 @@ import DashboardOverview from './pages/dashboard/DashboardOverview'
 import EventsManagement from './pages/dashboard/EventsManagement'
 import CreateEvent from './pages/dashboard/CreateEvent'
 import Analytics from './pages/dashboard/Analytics'
+import AutomationPage from './pages/dashboard/AutomationPage'
 
 function App() {
   return (
@@ -85,6 +86,7 @@ function App() {
               <Route index element={<DashboardOverview />} />
               <Route path="events" element={<EventsManagement />} />
               <Route path="events/create" element={<CreateEvent />} />
+              <Route path="automation" element={<AutomationPage />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="attendees" element={<Analytics />} />
               <Route path="bookings" element={<Analytics />} />

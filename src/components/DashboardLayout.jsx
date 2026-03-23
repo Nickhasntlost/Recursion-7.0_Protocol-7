@@ -1,10 +1,11 @@
 import { Link, useLocation, Outlet } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const sidebarItems = [
   { icon: 'dashboard', label: 'Overview', path: '/dashboard', exact: true },
   { icon: 'event', label: 'Events', path: '/dashboard/events' },
+  { icon: 'automation', label: 'Automation', path: '/dashboard/automation' },
   { icon: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
   { icon: 'people', label: 'Attendees', path: '/dashboard/attendees' },
   { icon: 'receipt_long', label: 'Bookings', path: '/dashboard/bookings' },
@@ -39,6 +40,15 @@ export default function DashboardLayout() {
     }
     return location.pathname.startsWith(path)
   }
+
+  // Auto-collapse sidebar when on automation page, expand when leaving
+  useEffect(() => {
+    if (location.pathname === '/dashboard/automation') {
+      setSidebarCollapsed(true)
+    } else {
+      setSidebarCollapsed(false)
+    }
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen bg-surface flex">
