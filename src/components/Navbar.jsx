@@ -16,6 +16,7 @@ const heroEventTabs = [
 export default function Navbar() {
   const location = useLocation()
   const isHome = location.pathname === '/'
+  const isCategory = location.pathname.startsWith('/category/')
   const [showHeroTabs, setShowHeroTabs] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const [user, setUser] = useState(null)
@@ -27,8 +28,13 @@ export default function Navbar() {
   }, [location])
 
   useEffect(() => {
-    if (!isHome) {
+    if (!isHome && !isCategory) {
       setShowHeroTabs(false)
+      return
+    }
+
+    if (isCategory) {
+      setShowHeroTabs(true)
       return
     }
 
@@ -40,7 +46,7 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('hero-subnav-toggle', handleHeroNavToggle)
     }
-  }, [isHome])
+  }, [isHome, isCategory])
 
   return (
     <motion.nav
@@ -70,7 +76,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {isHome && showHeroTabs && (
+          {(isHome || isCategory) && showHeroTabs && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -94,12 +100,14 @@ export default function Navbar() {
             </motion.div>
           )}
 
-          {(!isHome || !showHeroTabs) && (
+          {!(isHome && showHeroTabs) && (
             <div className="flex items-center gap-6 ml-auto">
               <div className="hidden lg:flex items-center gap-6 font-[family-name:var(--font-family-headline)] font-bold tracking-tight text-sm">
-                <Link to="/" className={`₹{isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
-                  Home
-                </Link>
+                {!isCategory && (
+                  <Link to="/" className={`${isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
+                    Home
+                  </Link>
+                )}
                 {user && (
                   <Link to="/my-bookings" className="text-zinc-500 hover:text-black transition-colors">
                     My Bookings

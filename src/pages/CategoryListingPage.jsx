@@ -434,25 +434,6 @@ export default function CategoryListingPage() {
           transition={{ duration: 0.4 }}
           className="flex-1 min-w-0"
         >
-          <nav className="mb-10 sticky top-16 z-20">
-            <div className="no-scrollbar overflow-x-auto rounded-full bg-surface-container-low/80 backdrop-blur px-2 py-2 border border-outline-variant/20">
-              <div className="flex items-center gap-2 min-w-max">
-                {categoryNavItems.map((item) => {
-                  const isActive = item.slug === activeSlug
-                  return (
-                    <Link
-                      key={item.slug}
-                      to={`/category/${item.slug}`}
-                      className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wide transition-colors ${isActive ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'}`}
-                    >
-                      {item.label}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          </nav>
-
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
             <div className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-fixed rounded-full text-xs font-bold tracking-widest uppercase mb-4">{config.label}</div>
             <h1 className="text-6xl md:text-8xl font-headline font-black tracking-tighter mb-6">{config.title}</h1>
