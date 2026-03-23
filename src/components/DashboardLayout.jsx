@@ -1,6 +1,6 @@
 import { Link, useLocation, Outlet } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const sidebarItems = [
   { icon: 'dashboard', label: 'Overview', path: '/dashboard', exact: true },
@@ -15,6 +15,23 @@ const sidebarItems = [
 export default function DashboardLayout() {
   const location = useLocation()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'light'
+    const stored = window.localStorage.getItem('eventra-theme')
+    if (stored === 'light' || stored === 'dark') return stored
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.remove('theme-light', 'theme-dark')
+    root.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light')
+    window.localStorage.setItem('eventra-theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'))
+  }
 
   const isActive = (path, exact = false) => {
     if (exact) {
@@ -115,6 +132,18 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      <button
+        type="button"
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-pressed={theme === 'dark'}
+        onClick={toggleTheme}
+        className="fixed right-4 md:right-6 bottom-4 md:bottom-6 z-90 h-12 w-12 md:h-14 md:w-14 border border-outline-variant/20 bg-surface-container-lowest text-on-surface rounded-full flex items-center justify-center shadow-[0_18px_40px_rgba(26,28,28,0.10)] transition-all duration-200 ease-out hover:scale-[1.03] hover:shadow-[0_24px_48px_rgba(26,28,28,0.14)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-container focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+      >
+        <span className="material-symbols-outlined text-[26px] md:text-[30px]">
+          {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+        </span>
+      </button>
     </div>
   )
 }

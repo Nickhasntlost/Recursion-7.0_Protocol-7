@@ -28,20 +28,37 @@ const venueConfigs = {
       { title: 'VIP Boxes', rowPrefix: 'V', seatCounts: [8, 8], aisleAfter: [4] },
     ],
   },
-  concertHall: {
-    name: 'Concert Hall',
-    icon: 'piano',
-    stageLabel: 'Main Stage',
-    sectionLabel: 'Orchestra',
-    seatPrice: 330,
-    serviceFeePerSeat: 24,
-    occupancy: { booked: 0.2, held: 0.1 },
+  openMic: {
+    name: 'Open Mic Auditorium',
+    icon: 'mic_external_on',
+    stageLabel: 'Auditorium Stage',
+    sectionLabel: 'Front Orchestra',
+    seatPrice: 250,
+    serviceFeePerSeat: 18,
+    occupancy: { booked: 0.18, held: 0.08 },
     type: 'rows',
     sections: [
+      { title: 'Front Orchestra', rowPrefix: 'F', seatCounts: [14, 16, 18, 20], aisleAfter: [6, 12] },
+      { title: 'Mid Orchestra', rowPrefix: 'M', seatCounts: [14, 16, 18, 20], aisleAfter: [6, 12] },
       { title: 'Left Wing', rowPrefix: 'L', seatCounts: [8, 10, 12], aisleAfter: [4] },
-      { title: 'Orchestra', rowPrefix: 'O', seatCounts: [14, 16, 18, 20], aisleAfter: [6, 12] },
       { title: 'Right Wing', rowPrefix: 'R', seatCounts: [8, 10, 12], aisleAfter: [4] },
       { title: 'Balcony', rowPrefix: 'B', seatCounts: [12, 14, 16], aisleAfter: [5, 10] },
+    ],
+  },
+  concertHall: {
+    name: 'Concert Arena',
+    icon: 'music_note',
+    stageLabel: 'Arena Stage',
+    sectionLabel: 'Center Pit',
+    seatPrice: 360,
+    serviceFeePerSeat: 26,
+    occupancy: { booked: 0.22, held: 0.1 },
+    type: 'rows',
+    sections: [
+      { title: 'Center Pit', rowPrefix: 'P', seatCounts: [16, 18, 20, 22], aisleAfter: [7, 14] },
+      { title: 'Left Floor', rowPrefix: 'L', seatCounts: [10, 12, 14], aisleAfter: [5] },
+      { title: 'Right Floor', rowPrefix: 'R', seatCounts: [10, 12, 14], aisleAfter: [5] },
+      { title: 'Rear Deck', rowPrefix: 'D', seatCounts: [14, 16, 18], aisleAfter: [6, 12] },
     ],
   },
   restaurant: {
@@ -98,10 +115,11 @@ const venueConfigs = {
 
 const venueOptions = [
   { key: 'stadium', label: 'Sports' },
-  { key: 'concertHall', label: 'Open Mic / Concerts' },
+  { key: 'openMic', label: 'Open Mic' },
+  { key: 'concertHall', label: 'Concerts' },
+  { key: 'cinema', label: 'Cinema' },
   { key: 'restaurant', label: 'Dining' },
   { key: 'hackLab', label: 'Hackathons' },
-  { key: 'cinema', label: 'Cinema / Comedy' },
 ]
 
 function seededRatio(seedText) {
@@ -120,11 +138,12 @@ function detectVenueFromEvent(eventId, providedVenue) {
 
   const id = String(eventId || '').toLowerCase()
   if (id.includes('sport') || id.includes('match') || id.includes('league') || id.includes('cup')) return 'stadium'
-  if (id.includes('open-mic') || id.includes('concert') || id.includes('music') || id.includes('sunburn')) return 'concertHall'
+  if (id.includes('open-mic') || id.includes('openmic') || id.includes('spoken') || id.includes('poetry')) return 'openMic'
+  if (id.includes('concert') || id.includes('music') || id.includes('sunburn') || id.includes('gig')) return 'concertHall'
   if (id.includes('dining') || id.includes('food') || id.includes('zomaland') || id.includes('chef')) return 'restaurant'
   if (id.includes('hack') || id.includes('code') || id.includes('competition') || id.includes('comic-con')) return 'hackLab'
-  if (id.includes('cinema') || id.includes('movie') || id.includes('comedy')) return 'cinema'
-  return 'concertHall'
+  if (id.includes('cinema') || id.includes('movie') || id.includes('film')) return 'cinema'
+  return 'openMic'
 }
 
 function buildRowsLayout(config) {
@@ -190,6 +209,29 @@ function seatStats(seatsById) {
     available: availableSeats,
     occupied: allSeats.length - availableSeats,
   }
+}
+
+function getDiningSeatOffset(tableSeats, seatIdx) {
+  if (tableSeats <= 4) {
+    const offsets = [
+      { x: 0, y: -46 },
+      { x: 46, y: 0 },
+      { x: 0, y: 46 },
+      { x: -46, y: 0 },
+    ]
+    return offsets[seatIdx] || offsets[0]
+  }
+
+  const sixSeatOffsets = [
+    { x: -26, y: -46 },
+    { x: 26, y: -46 },
+    { x: 46, y: 0 },
+    { x: 26, y: 46 },
+    { x: -26, y: 46 },
+    { x: -46, y: 0 },
+  ]
+
+  return sixSeatOffsets[seatIdx] || sixSeatOffsets[0]
 }
 
 function findSection(layout, title) {
@@ -559,67 +601,546 @@ function Stadium2DMap({
   )
 }
 
-function ConcertHall2DMap({ layout, toggleSeat, seatButtonClass }) {
-  const leftWing = findSection(layout, 'Left Wing')
-  const orchestra = findSection(layout, 'Orchestra')
-  const rightWing = findSection(layout, 'Right Wing')
-  const balcony = findSection(layout, 'Balcony')
+function OpenMic2DMap({ layout, toggleSeat, selectedSeatIds }) {
+  const stageWidth = 980
+  const stageHeight = 620
+
+  const [scale, setScale] = useState(1)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [hoveredSeat, setHoveredSeat] = useState(null)
+
+  const sectionGeometry = {
+    'Front Orchestra': { minY: 206, maxY: 324, minX: 286, maxX: 694, arcDepth: 26, inset: 34, label: { x: 416, y: 180 } },
+    'Mid Orchestra': { minY: 332, maxY: 434, minX: 254, maxX: 726, arcDepth: 20, inset: 28, label: { x: 424, y: 306 } },
+    'Left Wing': { minY: 232, maxY: 424, minX: 108, maxX: 250, arcDepth: 14, inset: 18, label: { x: 126, y: 206 } },
+    'Right Wing': { minY: 232, maxY: 424, minX: 730, maxX: 872, arcDepth: 14, inset: 18, label: { x: 748, y: 206 } },
+    Balcony: { minY: 474, maxY: 560, minX: 238, maxX: 742, arcDepth: 10, inset: 22, label: { x: 452, y: 446 } },
+  }
+
+  const seats = useMemo(() => {
+    return layout.sections.flatMap((section) => {
+      const geometry = sectionGeometry[section.title]
+      if (!geometry) return []
+
+      return section.rows.flatMap((row, rowIdx) => {
+        const rowProgress = section.rows.length === 1 ? 0.5 : rowIdx / (section.rows.length - 1)
+        const rowInset = geometry.inset * (1 - rowProgress * 0.85)
+        const rowStart = geometry.minX + rowInset
+        const rowEnd = geometry.maxX - rowInset
+        const baseY = geometry.minY + (geometry.maxY - geometry.minY) * rowProgress
+
+        return row.seats.map((seat, seatIdx) => {
+          const seatProgress = row.seats.length === 1 ? 0.5 : seatIdx / (row.seats.length - 1)
+          const arcFactor = 1 - Math.abs(seatProgress * 2 - 1)
+
+          return {
+            ...seat,
+            section: section.title,
+            x: rowStart + (rowEnd - rowStart) * seatProgress,
+            y: baseY - arcFactor * geometry.arcDepth,
+          }
+        })
+      })
+    })
+  }, [layout])
+
+  const seatFill = (seat) => {
+    if (selectedSeatIds.includes(seat.id)) return '#F59E0B'
+    if (seat.status === 'booked') return '#DC2626'
+    if (seat.status === 'held') return '#2563EB'
+    return '#16A34A'
+  }
+
+  const onWheelZoom = (event) => {
+    event.evt.preventDefault()
+
+    const pointer = event.target.getStage().getPointerPosition()
+    if (!pointer) return
+
+    const oldScale = scale
+    const scaleBy = 1.08
+    const direction = event.evt.deltaY > 0 ? -1 : 1
+    const nextScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy
+    const clampedScale = Math.min(2.4, Math.max(0.65, nextScale))
+
+    const pointTo = {
+      x: (pointer.x - position.x) / oldScale,
+      y: (pointer.y - position.y) / oldScale,
+    }
+
+    const nextPos = {
+      x: pointer.x - pointTo.x * clampedScale,
+      y: pointer.y - pointTo.y * clampedScale,
+    }
+
+    setScale(clampedScale)
+    setPosition(nextPos)
+  }
 
   return (
-    <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-6">
-      <div className="h-16 rounded-b-[4rem] bg-secondary-container/35 border border-secondary-container/50 flex items-center justify-center mb-4">
-        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-on-surface-variant">Main Stage</span>
+    <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-6 shadow-[0_18px_36px_rgba(15,23,42,0.06)]">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">2D Auditorium Blueprint</p>
+        <p className="text-[10px] text-on-surface-variant">Open Mic Stage • Pan & Zoom Enabled</p>
       </div>
-      <div className="grid grid-cols-12 gap-3">
-        <div className="col-span-3 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Left Wing</div>
-          <SectionRows section={leftWing} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} dense />
-        </div>
-        <div className="col-span-6 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Orchestra</div>
-          <SectionRows section={orchestra} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} />
-        </div>
-        <div className="col-span-3 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Right Wing</div>
-          <SectionRows section={rightWing} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} dense />
-        </div>
-        <div className="col-span-12 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Balcony</div>
-          <SectionRows section={balcony} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} dense />
-        </div>
+
+      <div className="mb-3 flex items-center justify-between rounded-lg border border-outline-variant/20 bg-surface px-3 py-2 text-xs text-on-surface-variant">
+        <span>Auditorium layout: Front/Mid Orchestra, Wings and Balcony</span>
+        <button
+          onClick={() => {
+            setScale(1)
+            setPosition({ x: 0, y: 0 })
+          }}
+          className="rounded-md border border-outline-variant/30 px-2 py-1 text-[10px] font-semibold hover:bg-surface-container-low"
+        >
+          Reset View
+        </button>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border border-outline-variant/20 bg-linear-to-b from-slate-50 to-slate-100">
+        <Stage
+          width={stageWidth}
+          height={stageHeight}
+          draggable
+          x={position.x}
+          y={position.y}
+          scaleX={scale}
+          scaleY={scale}
+          onWheel={onWheelZoom}
+          onDragEnd={(event) => {
+            setPosition({ x: event.target.x(), y: event.target.y() })
+          }}
+        >
+          <Layer>
+            <Rect x={0} y={0} width={stageWidth} height={stageHeight} fill="#F8FAFC" />
+
+            <Ellipse x={stageWidth / 2} y={132} radiusX={302} radiusY={112} fill="#F5E9D5" stroke="#D6BA91" strokeWidth={2} />
+            <Rect x={stageWidth / 2 - 190} y={72} width={380} height={86} cornerRadius={42} fill="#E9D4AF" stroke="#C8A46C" strokeWidth={2} />
+            <Rect x={stageWidth / 2 - 150} y={86} width={300} height={10} cornerRadius={5} fill="#F8EFE2" opacity={0.9} />
+            <Text x={stageWidth / 2 - 68} y={108} text="OPEN MIC STAGE" fontSize={14} fontStyle="bold" fill="#8B5E34" />
+
+            <Line points={[274, 198, 274, 432]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+            <Line points={[706, 198, 706, 432]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+            <Line points={[98, 454, 882, 454]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+
+            <Rect x={260} y={466} width={460} height={102} cornerRadius={16} fill="#EEF2FF" stroke="#C7D2FE" strokeWidth={1.5} opacity={0.7} />
+
+            {Object.entries(sectionGeometry).map(([name, geometry]) => (
+              <Text
+                key={name}
+                x={geometry.label.x}
+                y={geometry.label.y}
+                text={name.toUpperCase()}
+                fontSize={11}
+                fontStyle="bold"
+                fill="#64748B"
+              />
+            ))}
+
+            {seats.map((seat) => {
+              const isSelected = selectedSeatIds.includes(seat.id)
+              return (
+                <Circle
+                  key={seat.id}
+                  x={seat.x}
+                  y={seat.y}
+                  radius={5.1}
+                  fill={seatFill(seat)}
+                  opacity={seat.status === 'avail' || isSelected ? 1 : 0.88}
+                  stroke={isSelected ? '#EAB308' : '#0F172A'}
+                  strokeWidth={isSelected ? 2 : 1}
+                  shadowColor="#334155"
+                  shadowBlur={isSelected ? 7 : 2.5}
+                  shadowOpacity={0.2}
+                  onClick={() => toggleSeat(seat)}
+                  onMouseEnter={(event) => {
+                    if (seat.status === 'avail') {
+                      document.body.style.cursor = 'pointer'
+                    }
+                    event.target.to({ scaleX: 1.14, scaleY: 1.14, duration: 0.08 })
+                    setHoveredSeat(seat)
+                  }}
+                  onMouseLeave={(event) => {
+                    document.body.style.cursor = 'default'
+                    event.target.to({ scaleX: 1, scaleY: 1, duration: 0.08 })
+                    setHoveredSeat(null)
+                  }}
+                />
+              )
+            })}
+
+            {hoveredSeat && (
+              <Group x={hoveredSeat.x + 10} y={hoveredSeat.y - 42}>
+                <Rect width={158} height={38} cornerRadius={8} fill="#0F172A" opacity={0.94} />
+                <Text x={8} y={6} text={`${hoveredSeat.section}`} fontSize={10} fill="#E2E8F0" />
+                <Text x={8} y={20} text={`${hoveredSeat.label} • ${hoveredSeat.status}`} fontSize={10} fill="#F8FAFC" />
+              </Group>
+            )}
+          </Layer>
+        </Stage>
       </div>
     </div>
   )
 }
 
-function Cinema2DMap({ layout, toggleSeat, seatButtonClass }) {
-  const lowerLeft = findSection(layout, 'Lower Left')
-  const lowerCenter = findSection(layout, 'Lower Center')
-  const lowerRight = findSection(layout, 'Lower Right')
-  const upperDeck = findSection(layout, 'Upper Deck')
+function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
+  const stageWidth = 980
+  const stageHeight = 620
+
+  const [scale, setScale] = useState(1)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [hoveredSeat, setHoveredSeat] = useState(null)
+
+  const sectionGeometry = {
+    'Center Pit': { centerX: 490, minY: 216, maxY: 390, minWidth: 306, maxWidth: 446, arcDepth: 22, label: { x: 444, y: 190 } },
+    'Left Floor': { centerX: 236, minY: 238, maxY: 392, minWidth: 146, maxWidth: 196, arcDepth: 14, label: { x: 170, y: 212 } },
+    'Right Floor': { centerX: 744, minY: 238, maxY: 392, minWidth: 146, maxWidth: 196, arcDepth: 14, label: { x: 674, y: 212 } },
+    'Rear Deck': { centerX: 490, minY: 454, maxY: 560, minWidth: 324, maxWidth: 494, arcDepth: 10, label: { x: 448, y: 428 } },
+  }
+
+  const seats = useMemo(() => {
+    return layout.sections.flatMap((section) => {
+      const geometry = sectionGeometry[section.title]
+      if (!geometry) return []
+
+      return section.rows.flatMap((row, rowIdx) => {
+        const rowProgress = section.rows.length === 1 ? 0.5 : rowIdx / (section.rows.length - 1)
+        const rowWidth = geometry.minWidth + (geometry.maxWidth - geometry.minWidth) * rowProgress
+        const rowStart = geometry.centerX - rowWidth / 2
+        const rowEnd = geometry.centerX + rowWidth / 2
+        const baseY = geometry.minY + (geometry.maxY - geometry.minY) * rowProgress
+
+        return row.seats.map((seat, seatIdx) => {
+          const seatProgress = row.seats.length === 1 ? 0.5 : seatIdx / (row.seats.length - 1)
+          const archFactor = 1 - Math.abs(seatProgress * 2 - 1)
+
+          return {
+            ...seat,
+            section: section.title,
+            x: rowStart + (rowEnd - rowStart) * seatProgress,
+            y: baseY - archFactor * geometry.arcDepth,
+          }
+        })
+      })
+    })
+  }, [layout])
+
+  const seatFill = (seat) => {
+    if (selectedSeatIds.includes(seat.id)) return '#F59E0B'
+    if (seat.status === 'booked') return '#DC2626'
+    if (seat.status === 'held') return '#2563EB'
+    return '#16A34A'
+  }
+
+  const onWheelZoom = (event) => {
+    event.evt.preventDefault()
+
+    const pointer = event.target.getStage().getPointerPosition()
+    if (!pointer) return
+
+    const oldScale = scale
+    const scaleBy = 1.08
+    const direction = event.evt.deltaY > 0 ? -1 : 1
+    const nextScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy
+    const clampedScale = Math.min(2.4, Math.max(0.65, nextScale))
+
+    const pointTo = {
+      x: (pointer.x - position.x) / oldScale,
+      y: (pointer.y - position.y) / oldScale,
+    }
+
+    const nextPos = {
+      x: pointer.x - pointTo.x * clampedScale,
+      y: pointer.y - pointTo.y * clampedScale,
+    }
+
+    setScale(clampedScale)
+    setPosition(nextPos)
+  }
 
   return (
-    <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-6">
-      <div className="h-12 rounded-md bg-surface-container-high border border-outline-variant/20 flex items-center justify-center mb-4">
-        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-on-surface-variant">Screen</span>
+    <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-6 shadow-[0_18px_36px_rgba(15,23,42,0.06)]">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">2D Concert Arena Blueprint</p>
+        <p className="text-[10px] text-on-surface-variant">Arena Stage • Pan & Zoom Enabled</p>
       </div>
-      <div className="grid grid-cols-12 gap-3">
-        <div className="col-span-3 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Lower Left</div>
-          <SectionRows section={lowerLeft} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} dense />
-        </div>
-        <div className="col-span-6 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Lower Center</div>
-          <SectionRows section={lowerCenter} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} />
-        </div>
-        <div className="col-span-3 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Lower Right</div>
-          <SectionRows section={lowerRight} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} dense />
-        </div>
-        <div className="col-span-12 rounded-xl border border-outline-variant/20 bg-surface p-3">
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-on-surface-variant mb-2">Upper Deck</div>
-          <SectionRows section={upperDeck} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} dense />
-        </div>
+
+      <div className="mb-3 flex items-center justify-between rounded-lg border border-outline-variant/20 bg-surface px-3 py-2 text-xs text-on-surface-variant">
+        <span>Arena layout: Center Pit, Floors and Rear Deck</span>
+        <button
+          onClick={() => {
+            setScale(1)
+            setPosition({ x: 0, y: 0 })
+          }}
+          className="rounded-md border border-outline-variant/30 px-2 py-1 text-[10px] font-semibold hover:bg-surface-container-low"
+        >
+          Reset View
+        </button>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border border-outline-variant/20 bg-linear-to-b from-slate-50 to-slate-100">
+        <Stage
+          width={stageWidth}
+          height={stageHeight}
+          draggable
+          x={position.x}
+          y={position.y}
+          scaleX={scale}
+          scaleY={scale}
+          onWheel={onWheelZoom}
+          onDragEnd={(event) => {
+            setPosition({ x: event.target.x(), y: event.target.y() })
+          }}
+        >
+          <Layer>
+            <Rect x={0} y={0} width={stageWidth} height={stageHeight} fill="#F8FAFC" />
+
+            <Rect x={292} y={68} width={396} height={78} cornerRadius={14} fill="#E5E7EB" stroke="#9CA3AF" strokeWidth={2} />
+            <Rect x={430} y={144} width={120} height={128} cornerRadius={10} fill="#D1D5DB" stroke="#9CA3AF" strokeWidth={1.5} opacity={0.9} />
+            <Text x={460} y={98} text="STAGE" fontSize={15} fontStyle="bold" fill="#374151" />
+            <Text x={450} y={190} text="CATWALK" fontSize={10} fontStyle="bold" fill="#4B5563" />
+
+            <Line points={[336, 214, 336, 404]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+            <Line points={[644, 214, 644, 404]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+            <Line points={[140, 430, 840, 430]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+
+            <Rect x={198} y={444} width={584} height={128} cornerRadius={18} fill="#EEF2FF" stroke="#C7D2FE" strokeWidth={1.5} opacity={0.72} />
+
+            {Object.entries(sectionGeometry).map(([name, geometry]) => (
+              <Text
+                key={name}
+                x={geometry.label.x}
+                y={geometry.label.y}
+                text={name.toUpperCase()}
+                fontSize={11}
+                fontStyle="bold"
+                fill="#64748B"
+              />
+            ))}
+
+            {seats.map((seat) => {
+              const isSelected = selectedSeatIds.includes(seat.id)
+              return (
+                <Circle
+                  key={seat.id}
+                  x={seat.x}
+                  y={seat.y}
+                  radius={5.1}
+                  fill={seatFill(seat)}
+                  opacity={seat.status === 'avail' || isSelected ? 1 : 0.88}
+                  stroke={isSelected ? '#EAB308' : '#0F172A'}
+                  strokeWidth={isSelected ? 2 : 1}
+                  shadowColor="#334155"
+                  shadowBlur={isSelected ? 7 : 2.5}
+                  shadowOpacity={0.2}
+                  onClick={() => toggleSeat(seat)}
+                  onMouseEnter={(event) => {
+                    if (seat.status === 'avail') {
+                      document.body.style.cursor = 'pointer'
+                    }
+                    event.target.to({ scaleX: 1.14, scaleY: 1.14, duration: 0.08 })
+                    setHoveredSeat(seat)
+                  }}
+                  onMouseLeave={(event) => {
+                    document.body.style.cursor = 'default'
+                    event.target.to({ scaleX: 1, scaleY: 1, duration: 0.08 })
+                    setHoveredSeat(null)
+                  }}
+                />
+              )
+            })}
+
+            {hoveredSeat && (
+              <Group x={hoveredSeat.x + 10} y={hoveredSeat.y - 42}>
+                <Rect width={158} height={38} cornerRadius={8} fill="#0F172A" opacity={0.94} />
+                <Text x={8} y={6} text={`${hoveredSeat.section}`} fontSize={10} fill="#E2E8F0" />
+                <Text x={8} y={20} text={`${hoveredSeat.label} • ${hoveredSeat.status}`} fontSize={10} fill="#F8FAFC" />
+              </Group>
+            )}
+          </Layer>
+        </Stage>
+      </div>
+    </div>
+  )
+}
+
+function Cinema2DMap({ layout, toggleSeat, selectedSeatIds }) {
+  const stageWidth = 980
+  const stageHeight = 620
+
+  const [scale, setScale] = useState(1)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [hoveredSeat, setHoveredSeat] = useState(null)
+
+  const sectionGeometry = {
+    'Lower Left': { centerX: 226, minY: 244, maxY: 402, minWidth: 132, maxWidth: 182, arcDepth: 12, label: { x: 154, y: 216 } },
+    'Lower Center': { centerX: 490, minY: 226, maxY: 412, minWidth: 294, maxWidth: 432, arcDepth: 19, label: { x: 428, y: 198 } },
+    'Lower Right': { centerX: 754, minY: 244, maxY: 402, minWidth: 132, maxWidth: 182, arcDepth: 12, label: { x: 684, y: 216 } },
+    'Upper Deck': { centerX: 490, minY: 474, maxY: 566, minWidth: 308, maxWidth: 458, arcDepth: 10, label: { x: 436, y: 446 } },
+  }
+
+  const seats = useMemo(() => {
+    return layout.sections.flatMap((section) => {
+      const geometry = sectionGeometry[section.title]
+      if (!geometry) return []
+
+      return section.rows.flatMap((row, rowIdx) => {
+        const rowProgress = section.rows.length === 1 ? 0.5 : rowIdx / (section.rows.length - 1)
+        const rowWidth = geometry.minWidth + (geometry.maxWidth - geometry.minWidth) * rowProgress
+        const rowStart = geometry.centerX - rowWidth / 2
+        const rowEnd = geometry.centerX + rowWidth / 2
+        const baseY = geometry.minY + (geometry.maxY - geometry.minY) * rowProgress
+
+        return row.seats.map((seat, seatIdx) => {
+          const seatProgress = row.seats.length === 1 ? 0.5 : seatIdx / (row.seats.length - 1)
+          const archFactor = 1 - Math.abs(seatProgress * 2 - 1)
+
+          return {
+            ...seat,
+            section: section.title,
+            x: rowStart + (rowEnd - rowStart) * seatProgress,
+            y: baseY - archFactor * geometry.arcDepth,
+          }
+        })
+      })
+    })
+  }, [layout])
+
+  const seatFill = (seat) => {
+    if (selectedSeatIds.includes(seat.id)) return '#F59E0B'
+    if (seat.status === 'booked') return '#DC2626'
+    if (seat.status === 'held') return '#2563EB'
+    return '#16A34A'
+  }
+
+  const onWheelZoom = (event) => {
+    event.evt.preventDefault()
+
+    const pointer = event.target.getStage().getPointerPosition()
+    if (!pointer) return
+
+    const oldScale = scale
+    const scaleBy = 1.08
+    const direction = event.evt.deltaY > 0 ? -1 : 1
+    const nextScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy
+    const clampedScale = Math.min(2.4, Math.max(0.65, nextScale))
+
+    const pointTo = {
+      x: (pointer.x - position.x) / oldScale,
+      y: (pointer.y - position.y) / oldScale,
+    }
+
+    const nextPos = {
+      x: pointer.x - pointTo.x * clampedScale,
+      y: pointer.y - pointTo.y * clampedScale,
+    }
+
+    setScale(clampedScale)
+    setPosition(nextPos)
+  }
+
+  return (
+    <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-6 shadow-[0_18px_36px_rgba(15,23,42,0.06)]">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">2D Theatre Blueprint</p>
+        <p className="text-[10px] text-on-surface-variant">Screen View • Pan & Zoom Enabled</p>
+      </div>
+
+      <div className="mb-3 flex items-center justify-between rounded-lg border border-outline-variant/20 bg-surface px-3 py-2 text-xs text-on-surface-variant">
+        <span>Theatre layout: Lower Stalls and Upper Deck</span>
+        <button
+          onClick={() => {
+            setScale(1)
+            setPosition({ x: 0, y: 0 })
+          }}
+          className="rounded-md border border-outline-variant/30 px-2 py-1 text-[10px] font-semibold hover:bg-surface-container-low"
+        >
+          Reset View
+        </button>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border border-outline-variant/20 bg-linear-to-b from-slate-50 to-slate-100">
+        <Stage
+          width={stageWidth}
+          height={stageHeight}
+          draggable
+          x={position.x}
+          y={position.y}
+          scaleX={scale}
+          scaleY={scale}
+          onWheel={onWheelZoom}
+          onDragEnd={(event) => {
+            setPosition({ x: event.target.x(), y: event.target.y() })
+          }}
+        >
+          <Layer>
+            <Rect x={0} y={0} width={stageWidth} height={stageHeight} fill="#F8FAFC" />
+
+            <Rect x={156} y={52} width={668} height={74} cornerRadius={12} fill="#DCEAFE" stroke="#93C5FD" strokeWidth={2} />
+            <Rect x={192} y={68} width={596} height={10} cornerRadius={5} fill="#FFFFFF" opacity={0.82} />
+            <Line points={[156, 126, 824, 126, 784, 170, 196, 170]} closed fill="#E0F2FE" opacity={0.46} />
+            <Text x={458} y={92} text="SCREEN" fontSize={14} fontStyle="bold" fill="#1E40AF" />
+
+            <Line points={[332, 222, 332, 414]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+            <Line points={[648, 222, 648, 414]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+            <Line points={[138, 440, 842, 440]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
+
+            <Rect x={176} y={456} width={628} height={126} cornerRadius={18} fill="#EEF2FF" stroke="#C7D2FE" strokeWidth={1.5} opacity={0.75} />
+            <Text x={458} y={470} text="UPPER DECK" fontSize={10} fontStyle="bold" fill="#6366F1" opacity={0.8} />
+
+            {Object.entries(sectionGeometry).map(([name, geometry]) => (
+              <Text
+                key={name}
+                x={geometry.label.x}
+                y={geometry.label.y}
+                text={name.toUpperCase()}
+                fontSize={11}
+                fontStyle="bold"
+                fill="#64748B"
+              />
+            ))}
+
+            {seats.map((seat) => {
+              const isSelected = selectedSeatIds.includes(seat.id)
+              return (
+                <Circle
+                  key={seat.id}
+                  x={seat.x}
+                  y={seat.y}
+                  radius={5.1}
+                  fill={seatFill(seat)}
+                  opacity={seat.status === 'avail' || isSelected ? 1 : 0.88}
+                  stroke={isSelected ? '#EAB308' : '#0F172A'}
+                  strokeWidth={isSelected ? 2 : 1}
+                  shadowColor="#334155"
+                  shadowBlur={isSelected ? 7 : 2.5}
+                  shadowOpacity={0.2}
+                  onClick={() => toggleSeat(seat)}
+                  onMouseEnter={(event) => {
+                    if (seat.status === 'avail') {
+                      document.body.style.cursor = 'pointer'
+                    }
+                    event.target.to({ scaleX: 1.14, scaleY: 1.14, duration: 0.08 })
+                    setHoveredSeat(seat)
+                  }}
+                  onMouseLeave={(event) => {
+                    document.body.style.cursor = 'default'
+                    event.target.to({ scaleX: 1, scaleY: 1, duration: 0.08 })
+                    setHoveredSeat(null)
+                  }}
+                />
+              )
+            })}
+
+            {hoveredSeat && (
+              <Group x={hoveredSeat.x + 10} y={hoveredSeat.y - 42}>
+                <Rect width={162} height={38} cornerRadius={8} fill="#0F172A" opacity={0.94} />
+                <Text x={8} y={6} text={`${hoveredSeat.section}`} fontSize={10} fill="#E2E8F0" />
+                <Text x={8} y={20} text={`${hoveredSeat.label} • ${hoveredSeat.status}`} fontSize={10} fill="#F8FAFC" />
+              </Group>
+            )}
+          </Layer>
+        </Stage>
       </div>
     </div>
   )
@@ -736,7 +1257,7 @@ export default function SelectionPage() {
     }, {})
   }, [activeVenue, layout])
 
-  const legendItems = activeVenue === 'stadium'
+  const legendItems = ['stadium', 'openMic', 'concertHall', 'cinema'].includes(activeVenue)
     ? [
       { color: 'bg-green-500', label: 'Available' },
       { color: 'bg-yellow-400', label: 'Selected' },
@@ -836,11 +1357,14 @@ export default function SelectionPage() {
                     compartmentStats={compartmentStats}
                   />
                 )}
+                {activeVenue === 'openMic' && (
+                  <OpenMic2DMap layout={layout} toggleSeat={toggleSeat} selectedSeatIds={selectedSeatIds} />
+                )}
                 {activeVenue === 'concertHall' && (
-                  <ConcertHall2DMap layout={layout} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} />
+                  <ConcertHall2DMap layout={layout} toggleSeat={toggleSeat} selectedSeatIds={selectedSeatIds} />
                 )}
                 {activeVenue === 'cinema' && (
-                  <Cinema2DMap layout={layout} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} />
+                  <Cinema2DMap layout={layout} toggleSeat={toggleSeat} selectedSeatIds={selectedSeatIds} />
                 )}
                 {activeVenue === 'hackLab' && (
                   <HackLab2DMap layout={layout} toggleSeat={toggleSeat} seatButtonClass={seatButtonClass} />
@@ -856,28 +1380,26 @@ export default function SelectionPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {layout.tables.map((table) => (
-                  <div key={table.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-5">
+                  <div key={table.id} className="bg-linear-to-br from-surface-container-lowest to-surface rounded-2xl border border-outline-variant/15 p-5 shadow-[0_14px_28px_rgba(15,23,42,0.06)]">
                     <div className="text-xs font-black uppercase tracking-[0.15em] text-on-surface-variant mb-4">Table {table.id.replace('T', '')}</div>
-                    <div className="relative h-36">
-                      <div className="absolute inset-0 m-auto w-20 h-20 rounded-full border-2 border-outline-variant/30 bg-surface-container-low flex items-center justify-center text-xs font-bold text-on-surface-variant">
+                    <div className="relative h-44 rounded-xl bg-surface-container-low/45 border border-outline-variant/10">
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-xl border-2 border-outline-variant/30 bg-surface-container-low flex items-center justify-center text-xs font-bold text-on-surface-variant shadow-inner">
                         {table.id}
                       </div>
 
                       {table.seats.map((seat, seatIdx) => {
-                        const offsets = [
-                          'left-1/2 top-0 -translate-x-1/2',
-                          'right-0 top-1/2 -translate-y-1/2',
-                          'left-1/2 bottom-0 -translate-x-1/2',
-                          'left-0 top-1/2 -translate-y-1/2',
-                          'left-1/4 top-1 -translate-x-1/2',
-                          'right-1 top-1/4 -translate-y-1/2',
-                        ]
+                        const offset = getDiningSeatOffset(table.seats, seatIdx)
 
                         return (
                           <button
                             key={seat.id}
                             onClick={() => toggleSeat(seat)}
-                            className={`absolute w-8 h-8 rounded-full transition-colors ${offsets[seatIdx]} ${seatButtonClass(seat)}`}
+                            style={{
+                              left: `calc(50% + ${offset.x}px)`,
+                              top: `calc(50% + ${offset.y}px)`,
+                              transform: 'translate(-50%, -50%)',
+                            }}
+                            className={`absolute w-8 h-8 rounded-md border border-outline-variant/20 shadow-sm transition-all hover:scale-105 ${seatButtonClass(seat)}`}
                             title={seat.label}
                           />
                         )
