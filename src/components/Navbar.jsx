@@ -87,7 +87,7 @@ export default function Navbar() {
           {(!isHome || !showHeroTabs) && (
             <div className="flex items-center gap-6 ml-auto">
               <div className="hidden lg:flex items-center gap-6 font-[family-name:var(--font-family-headline)] font-bold tracking-tight text-sm">
-                <Link to="/" className={`${isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
+                <Link to="/" className={`₹{isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
                   Home
                 </Link>
                 <Link to="/my-bookings" className="text-zinc-500 hover:text-black transition-colors">

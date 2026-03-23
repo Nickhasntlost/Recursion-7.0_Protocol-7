@@ -114,7 +114,7 @@ export default function EventDetailPage() {
           <motion.div className="bg-surface-container-lowest p-8 rounded-lg flex flex-col border border-transparent hover:border-outline-variant transition-all group" whileHover={{ y: -5 }}>
             <div className="flex justify-between items-start mb-8">
               <div><h3 className="text-2xl font-black mb-1">Standard</h3><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Available</span></div></div>
-              <p className="text-3xl font-black">$85</p>
+              <p className="text-3xl font-black">₹85</p>
             </div>
             <ul className="space-y-4 mb-12 flex-grow">
               {['General Admission', 'Digital Resource Pack', 'Networking Lounge'].map(f => (
@@ -132,7 +132,7 @@ export default function EventDetailPage() {
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-container text-on-secondary-fixed px-4 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">Most Popular</div>
             <div className="flex justify-between items-start mb-8">
               <div><h3 className="text-2xl font-black mb-1">Professional</h3><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-secondary-container" /><span className="text-xs font-bold uppercase tracking-wider opacity-70">Limited Space</span></div></div>
-              <p className="text-3xl font-black">$145</p>
+              <p className="text-3xl font-black">₹145</p>
             </div>
             <ul className="space-y-4 mb-12 flex-grow">
               {['Priority Front Seating', 'Workshop Access', 'Hardcover Event Guide', 'Evening Cocktail Mix'].map(f => (
@@ -149,7 +149,7 @@ export default function EventDetailPage() {
           <motion.div className="bg-surface-container-lowest p-8 rounded-lg flex flex-col border border-transparent hover:border-outline-variant transition-all" whileHover={{ y: -5 }}>
             <div className="flex justify-between items-start mb-8">
               <div><h3 className="text-2xl font-black mb-1">Executive</h3><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-error" /><span className="text-xs font-bold uppercase tracking-wider text-error">Only 4 Left</span></div></div>
-              <p className="text-3xl font-black">$295</p>
+              <p className="text-3xl font-black">₹295</p>
             </div>
             <ul className="space-y-4 mb-12 flex-grow">
               {['Private VIP Lounge', 'Speaker Meet & Greet', 'All-Day Concierge'].map(f => (
@@ -190,7 +190,7 @@ export default function EventDetailPage() {
         <div className="max-w-4xl mx-auto glass rounded-full px-10 py-5 shadow-[0_32px_64px_rgba(26,28,28,0.08)] flex justify-between items-center">
           <div className="flex flex-col">
             <p className="text-[10px] font-black tracking-widest text-on-surface-variant uppercase">Starting From</p>
-            <p className="text-2xl font-black">$85.00</p>
+            <p className="text-2xl font-black">₹85.00</p>
           </div>
           <div className="hidden sm:flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full">
             <span className="material-symbols-outlined text-on-surface-variant">person</span>

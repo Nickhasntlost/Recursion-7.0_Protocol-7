@@ -67,7 +67,7 @@ export default function WaitlistPage() {
           </div>
           {Array.from({ length: 3 }).map((_, i) => (
             <motion.div
-              key={`f-${i}`}
+              key={`f-₹{i}`}
               className="w-3 h-3 md:w-4 md:h-4 border-2 border-outline-variant rounded-full"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -127,7 +127,7 @@ export default function WaitlistPage() {
           ].map(n => (
             <button
               key={n.label}
-              className={`flex-1 min-w-[100px] flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ${
+              className={`flex-1 min-w-[100px] flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold transition-all ₹{
                 n.active
                   ? 'bg-primary text-on-primary'
                   : 'bg-surface-container-lowest text-on-surface border border-outline-variant/30 hover:bg-surface-bright'

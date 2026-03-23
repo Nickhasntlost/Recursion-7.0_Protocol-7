@@ -1,6 +1,33 @@
 import { Link } from 'react-router-dom'
-import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
-import { useEffect, useRef } from 'react'
+import { motion, useMotionValueEvent, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+
+const heroEvents = [
+  {
+    tag: 'Featured Event',
+    title: 'Sunburn Festival 2026',
+    description: "Experience Asia's biggest electronic music festival. Discover and book tickets for the most anticipated performances happening in Goa.",
+    date: 'Dec 28-30',
+    location: 'Vagator, Goa',
+    link: '/event/sunburn-goa',
+  },
+  {
+    tag: 'Pop Culture',
+    title: 'Comic Con India',
+    description: "Experience the ultimate pop culture celebration. Cosplay, gaming tournaments, and massive fan meetups.",
+    date: 'Dec 11-13',
+    location: 'NSIC Grounds, Delhi',
+    link: '/event/comic-con',
+  },
+  {
+    tag: 'Culinary Carnival',
+    title: 'Zomaland India',
+    description: "India's greatest food and music carnival. A grand weekend of exquisite culinary delights and top-tier entertainment.",
+    date: 'Nov 20-22',
+    location: 'Jio World Garden, Mumbai',
+    link: '/event/zomaland',
+  }
+]
 
 const floatingElements = [
   { icon: 'restaurant', label: 'Dining', link: '/category/dining', position: 'left-[3%] top-[18%]', rotate: '-12deg', delay: 0, bg: 'bg-white' },
@@ -22,44 +49,44 @@ const categories = [
 
 const trendingCards = [
   {
-    location: 'Soho • Nov 14',
-    title: 'Obsidian Jazz Lounge',
-    status: 'In Progress',
+    location: 'Bandra, Mumbai • Nov 14',
+    title: 'The Piano Man Jazz Club',
+    status: 'Selling Fast',
     statusColor: 'bg-secondary-container/20 text-secondary',
     dotColor: 'bg-secondary',
     checklist: [
-      { label: 'Soundcheck completed', done: true },
-      { label: 'Opening set arrival', done: false },
+      { label: 'VIP Seating Available', done: true },
+      { label: 'Includes welcome drink', done: true },
     ],
-    price: '£45',
-    btnLabel: 'Book Now',
+    price: '₹2500',
+    btnLabel: 'Book Tickets',
     btnStyle: 'bg-primary text-white',
   },
   {
-    location: 'Printworks • Nov 16',
-    title: 'Synthetica: Vol 4',
-    status: 'Not Started',
+    location: 'NESCO Center • Nov 16',
+    title: 'Sunburn Arena ft. Garrix',
+    status: 'On Sale',
     statusColor: 'bg-surface-container-high text-on-surface-variant',
     dotColor: 'bg-outline',
     checklist: [
-      { label: 'Laser Rigging', done: false },
-      { label: 'Pre-sale closure', done: false },
+      { label: 'Early Bird Pricing', done: true },
+      { label: 'Backstage Pass Add-on', done: false },
     ],
-    price: '£62',
-    btnLabel: 'View Info',
+    price: '₹4500',
+    btnLabel: 'View Event',
     btnStyle: 'border border-primary text-primary hover:bg-primary hover:text-white',
   },
   {
-    location: 'Tate Modern • Nov 18',
-    title: 'Monochrome Echoes',
+    location: 'NMACC Mumbai • Nov 18',
+    title: 'Art Mumbai 2026',
     status: 'Sold Out',
     statusColor: 'bg-error-container text-on-error-container',
     dotColor: 'bg-error',
     checklist: [
-      { label: 'Curation Finalized', done: true },
-      { label: 'Private View Invite', done: true },
+      { label: 'Exclusive Art Tour', done: true },
+      { label: 'Artist Meet & Greet', done: true },
     ],
-    price: '£25',
+    price: '₹1500',
     btnLabel: 'Join Waitlist',
     btnStyle: 'bg-surface-container-high text-on-surface-variant cursor-not-allowed',
   },
@@ -86,6 +113,36 @@ const cardHover = {
 }
 
 export default function HomePage() {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [displayedText, setDisplayedText] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    const currentTitle = heroEvents[currentSlide].title
+    let timeout
+
+    if (!isDeleting && displayedText === currentTitle) {
+      timeout = setTimeout(() => setIsDeleting(true), 2500)
+    } else if (isDeleting && displayedText === '') {
+      setIsDeleting(false)
+      setCurrentSlide((prev) => (prev + 1) % heroEvents.length)
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayedText(
+          currentTitle.slice(0, displayedText.length + (isDeleting ? -1 : 1))
+        )
+      }, isDeleting ? 30 : 60)
+    }
+
+    return () => clearTimeout(timeout)
+  }, [displayedText, isDeleting, currentSlide])
+
+  const handleIndicatorClick = (idx) => {
+    setCurrentSlide(idx)
+    setDisplayedText('')
+    setIsDeleting(false)
+  }
+
   const heroRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -143,48 +200,52 @@ export default function HomePage() {
           ))}
 
           {/* Central Content */}
-          <motion.div
-            className="relative z-10 max-w-4xl px-8 flex flex-col items-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold tracking-widest uppercase mb-8">
-              Few Spots Left
-            </span>
-            <h1 className="text-6xl md:text-[7.5rem] font-black tracking-tighter text-black leading-[0.9] mb-8 font-[family-name:var(--font-family-headline)]">
-              The Great Revival
-            </h1>
-            <p className="text-xl md:text-2xl text-on-surface-variant font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
-              A transcendent evening of orchestral innovation and visual storytelling. Experience the revival of sound at the iconic Royal Albert Hall.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8 mb-12">
-              <div className="flex items-center gap-2 text-black">
-                <span className="material-symbols-outlined text-primary">calendar_month</span>
-                <span className="font-bold text-lg">Nov 12</span>
+          <div className="relative z-10 max-w-4xl px-8 flex flex-col items-center min-h-[420px] justify-center overflow-hidden">
+            <div className="flex flex-col items-center transition-opacity duration-300">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold tracking-widest uppercase mb-8">
+                {heroEvents[currentSlide].tag}
+              </span>
+              <h1 className="text-6xl md:text-[7.5rem] font-black tracking-tighter text-black leading-[0.9] mb-8 font-[family-name:var(--font-family-headline)] min-h-[1.2em] flex items-center justify-center">
+                {displayedText}
+                <span className="inline-block w-2 md:w-[6px] h-[0.8em] bg-primary ml-2 animate-pulse align-middle" />
+              </h1>
+              <p className="text-xl md:text-2xl text-on-surface-variant font-medium max-w-2xl mx-auto mb-10 leading-relaxed text-center min-h-[60px]">
+                {heroEvents[currentSlide].description}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-8 mb-12">
+                <div className="flex items-center gap-2 text-black">
+                  <span className="material-symbols-outlined text-primary">calendar_month</span>
+                  <span className="font-bold text-lg min-w-[120px]">{heroEvents[currentSlide].date}</span>
+                </div>
+                <div className="flex items-center gap-2 text-black">
+                  <span className="material-symbols-outlined text-primary">location_on</span>
+                  <span className="font-bold text-lg min-w-[200px] text-center">{heroEvents[currentSlide].location}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-black">
-                <span className="material-symbols-outlined text-primary">location_on</span>
-                <span className="font-bold text-lg">Royal Albert Hall</span>
-              </div>
+              <Link to={heroEvents[currentSlide].link}>
+                <motion.button
+                  className="group flex items-center gap-3 px-12 py-6 bg-primary text-white rounded-full font-bold text-xl shadow-xl shadow-primary/20"
+                  whileHover={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Book Tickets
+                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </motion.button>
+              </Link>
             </div>
-            <Link to="/event/great-revival">
-              <motion.button
-                className="group flex items-center gap-3 px-12 py-6 bg-primary text-white rounded-full font-bold text-xl shadow-xl shadow-primary/20"
-                whileHover={{ scale: 0.97 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Book Experience
-                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </motion.button>
-            </Link>
-          </motion.div>
+          </div>
 
           {/* Carousel Indicators */}
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4">
-            <div className="w-16 h-1.5 bg-primary rounded-full" />
-            <div className="w-16 h-1.5 bg-outline-variant rounded-full opacity-30 hover:opacity-50 transition-opacity cursor-pointer" />
-            <div className="w-16 h-1.5 bg-outline-variant rounded-full opacity-30 hover:opacity-50 transition-opacity cursor-pointer" />
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+            {heroEvents.map((_, idx) => (
+              <div
+                key={idx}
+                onClick={() => handleIndicatorClick(idx)}
+                className={`w-16 h-1.5 rounded-full cursor-pointer transition-all ${
+                  currentSlide === idx ? 'bg-primary' : 'bg-outline-variant opacity-30 hover:opacity-50'
+                }`}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -232,7 +293,7 @@ export default function HomePage() {
         viewport={{ once: true, margin: '-100px' }}
       >
         <div className="flex justify-between items-end mb-10">
-          <h2 className="text-sm font-black tracking-widest uppercase text-on-surface-variant">Experience Timeline</h2>
+          <h2 className="text-sm font-black tracking-widest uppercase text-on-surface-variant">Your Event Schedule</h2>
           <div className="flex gap-2">
             <button className="p-2 border border-outline-variant rounded-full hover:bg-surface-container-low transition-all">
               <span className="material-symbols-outlined">chevron_left</span>
@@ -251,14 +312,14 @@ export default function HomePage() {
               <div className="w-3 h-3 rounded-full bg-[#27C93F]"></div>
             </div>
             <div className="bg-surface-container-low px-4 py-1.5 rounded-lg text-xs font-bold text-on-surface-variant/60 max-w-[240px] w-full">
-              app.Utsova.tv
+              booking.Utsova.tv
             </div>
           </div>
           {/* Timeline Header */}
           <div className="timeline-grid border-b border-outline-variant bg-surface-container-low/30">
             <div className="p-6 border-r border-outline-variant flex items-center gap-3">
               <span className="material-symbols-outlined text-primary">dashboard</span>
-              <span className="font-bold text-sm uppercase tracking-wider">Experiences</span>
+              <span className="font-bold text-sm uppercase tracking-wider">My Events</span>
             </div>
             {['M 12','T 13','W 14','T 15','F 16','S 17','S 18','M 19','T 20','W 21','T 22','F 23','S 24','S 25'].map((d, i) => (
               <div key={d} className={`flex flex-col items-center justify-center p-3 border-r border-outline-variant/50 ${i === 7 ? 'bg-primary/5' : ''}`}>
@@ -280,16 +341,16 @@ export default function HomePage() {
             <div className="timeline-grid border-b border-outline-variant/30">
               <div className="p-8 border-r border-outline-variant bg-surface-container-lowest relative z-10">
                 <p className="font-black text-sm mb-1">Concerts</p>
-                <p className="text-[10px] text-on-surface-variant tracking-widest uppercase">8 Experiences</p>
+                <p className="text-[10px] text-on-surface-variant tracking-widest uppercase">8 Events Scheduled</p>
               </div>
               <div className="col-span-14 relative p-4 h-24">
-                <Link to="/event/great-revival" className="absolute left-[7%] right-[45%] top-1/2 -translate-y-1/2 bg-white border border-outline-variant rounded-full p-2 pr-6 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <Link to="/event/sunburn-goa" className="absolute left-[7%] right-[45%] top-1/2 -translate-y-1/2 bg-white border border-outline-variant rounded-full p-2 pr-6 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                   <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
                     <span className="material-symbols-outlined text-sm">theater_comedy</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black truncate">The Great Revival</p>
-                    <p className="text-[9px] text-on-surface-variant truncate">Royal Albert Hall • 19:00</p>
+                    <p className="text-xs font-black truncate">Sunburn Festival 2026</p>
+                    <p className="text-[9px] text-on-surface-variant truncate">Vagator • 19:00</p>
                   </div>
                   <div className="flex -space-x-2">
                     <div className="w-6 h-6 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img alt="u1" src={avatarUrls[0]} className="w-full h-full object-cover" /></div>
@@ -303,7 +364,7 @@ export default function HomePage() {
             <div className="timeline-grid border-b border-outline-variant/30">
               <div className="p-8 border-r border-outline-variant bg-surface-container-lowest relative z-10">
                 <p className="font-black text-sm mb-1">Dining</p>
-                <p className="text-[10px] text-on-surface-variant tracking-widest uppercase">12 Experiences</p>
+                <p className="text-[10px] text-on-surface-variant tracking-widest uppercase">12 Events Scheduled</p>
               </div>
               <div className="col-span-14 relative p-4 h-24">
                 <div className="absolute left-[35%] right-[20%] top-1/2 -translate-y-1/2 bg-surface-container-low border border-outline-variant rounded-full p-2 pr-6 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
@@ -311,8 +372,8 @@ export default function HomePage() {
                     <span className="material-symbols-outlined text-sm">restaurant</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black truncate">The Curator's Table</p>
-                    <p className="text-[9px] text-on-surface-variant truncate">Mayfair • 20:30</p>
+                    <p className="text-xs font-black truncate">Chef's Tasting Menu</p>
+                    <p className="text-[9px] text-on-surface-variant truncate">BKC, Mumbai • 20:30</p>
                   </div>
                   <span className="material-symbols-outlined text-sm text-on-surface-variant">schedule</span>
                 </div>
@@ -323,7 +384,7 @@ export default function HomePage() {
             <div className="timeline-grid">
               <div className="p-8 border-r border-outline-variant bg-surface-container-lowest relative z-10">
                 <p className="font-black text-sm mb-1">Open Mic</p>
-                <p className="text-[10px] text-on-surface-variant tracking-widest uppercase">4 Experiences</p>
+                <p className="text-[10px] text-on-surface-variant tracking-widest uppercase">4 Events Scheduled</p>
               </div>
               <div className="col-span-14 relative p-4 h-24">
                 <div className="absolute left-[58%] right-[5%] top-1/2 -translate-y-1/2 border-2 border-dashed border-outline-variant rounded-full p-2 pr-6 flex items-center gap-3 hover:bg-surface-container-low transition-colors cursor-pointer group">
@@ -331,7 +392,7 @@ export default function HomePage() {
                     <span className="material-symbols-outlined text-sm text-on-surface-variant group-hover:text-primary">mic</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black truncate text-on-surface-variant group-hover:text-primary">Voice of Soho</p>
+                    <p className="text-xs font-black truncate text-on-surface-variant group-hover:text-primary">Open Mic at Hauz Khas</p>
                     <p className="text-[9px] text-on-surface-variant truncate">Pending RSVP</p>
                   </div>
                 </div>
@@ -350,9 +411,9 @@ export default function HomePage() {
         viewport={{ once: true, margin: '-100px' }}
       >
         <div className="flex justify-between items-end mb-10">
-          <h2 className="text-4xl font-black tracking-tight">Trending Near You</h2>
+          <h2 className="text-4xl font-black tracking-tight">Trending Events</h2>
           <Link to="/category/dining" className="text-sm font-bold underline decoration-2 underline-offset-8 decoration-secondary-container hover:text-secondary-container transition-colors">
-            See All Experiences
+            See All Events
           </Link>
         </div>
         <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
@@ -381,7 +442,7 @@ export default function HomePage() {
               </div>
               <div className="space-y-3 pt-4 border-t border-outline-variant/30">
                 <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">
-                  {i === 0 ? 'Checklist' : i === 1 ? 'Phases' : 'Gallery Tour'}
+                  {i === 0 ? 'Event Perks' : i === 1 ? 'Highlights' : 'Event Extras'}
                 </p>
                 {card.checklist.map(item => (
                   <div key={item.label} className="flex items-center gap-3">
@@ -394,7 +455,7 @@ export default function HomePage() {
               </div>
               <div className="mt-auto pt-6 flex justify-between items-center">
                 <span className="text-lg font-black">{card.price}</span>
-                <Link to={card.btnLabel === 'Join Waitlist' ? '/waitlist' : '/event/great-revival'}>
+                <Link to={card.btnLabel === 'Join Waitlist' ? '/waitlist' : '/event/sunburn-goa'}>
                   <button className={`px-6 py-2 text-xs font-black rounded-full transition-all ${card.btnStyle}`}>
                     {card.btnLabel}
                   </button>
@@ -415,7 +476,7 @@ export default function HomePage() {
       >
         <div className="max-w-[1440px] mx-auto">
           <div className="mb-16">
-            <span className="text-primary font-black tracking-widest uppercase text-xs mb-4 block">Curated Movement</span>
+            <span className="text-primary font-black tracking-widest uppercase text-xs mb-4 block">Featured Global Events</span>
             <h2 className="text-5xl font-black tracking-tighter">Upcoming Global Events</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -430,27 +491,27 @@ export default function HomePage() {
               </div>
               <div className="w-full md:w-1/2 flex flex-col">
                 <div className="flex justify-between items-center mb-6">
-                  <span className="px-4 py-1.5 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">Dec 04-06</span>
+                  <span className="px-4 py-1.5 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">Dec 27-29</span>
                   <div className="flex -space-x-3">
                     <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
                     <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>
                   </div>
                 </div>
-                <h4 className="text-3xl font-black mb-2">Neural Link 2024</h4>
-                <p className="text-on-surface-variant text-sm mb-8">A multi-city hackathon pushing the boundaries of spatial computing and neural interfaces.</p>
+                <h4 className="text-3xl font-black mb-2">Techfest IIT Bombay</h4>
+                <p className="text-on-surface-variant text-sm mb-8">Asia's largest science and technology festival. Experience cutting-edge exhibitions, robotics, and EDM nights.</p>
                 <div className="space-y-4 mb-10">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary">terminal</span>
-                    <span className="text-sm font-bold">API Access Provisioned</span>
+                    <span className="material-symbols-outlined text-primary">confirmation_number</span>
+                    <span className="text-sm font-bold">VIP Passes Available</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-outline-variant">blur_on</span>
-                    <span className="text-sm font-medium text-on-surface-variant">Venue Logistics Pending</span>
+                    <span className="material-symbols-outlined text-outline-variant">restaurant</span>
+                    <span className="text-sm font-medium text-on-surface-variant">Catering included with ticket</span>
                   </div>
                 </div>
-                <Link to="/event/neural-link">
+                <Link to="/event/techfest-iitb">
                   <button className="mt-auto w-full py-4 bg-primary text-white font-black rounded-full hover:scale-95 transition-all">
-                    Apply to Participate
+                    Book Tickets Now
                   </button>
                 </Link>
               </div>
@@ -470,21 +531,21 @@ export default function HomePage() {
                   <span className="px-4 py-1.5 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">Dec 12-14</span>
                   <span className="material-symbols-outlined">auto_awesome</span>
                 </div>
-                <h4 className="text-3xl font-black mb-2 text-white">Spatial Compute</h4>
-                <p className="text-zinc-400 text-sm mb-8">Immersive workshops in the heart of Shoreditch, exploring the next era of digital existence.</p>
+                <h4 className="text-3xl font-black mb-2 text-white">Echoes of Earth</h4>
+                <p className="text-zinc-400 text-sm mb-8">India's greenest music festival set in the lush outskirts of Bengaluru. Book your spot to secure entry before tickets sell out.</p>
                 <div className="space-y-4 mb-10">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary-container">check_circle</span>
-                    <span className="text-sm font-bold">Keynote Confirmed</span>
+                    <span className="material-symbols-outlined text-secondary-container">star</span>
+                    <span className="text-sm font-bold">Featured Artist Access</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-zinc-600">radio_button_unchecked</span>
-                    <span className="text-sm font-medium text-zinc-500">Workshop Materials Delivery</span>
+                    <span className="material-symbols-outlined text-zinc-600">group</span>
+                    <span className="text-sm font-medium text-zinc-500">Group Booking Discounts</span>
                   </div>
                 </div>
-                <Link to="/event/spatial-compute">
+                <Link to="/event/echoes-of-earth">
                   <button className="mt-auto w-full py-4 bg-white text-black font-black rounded-full hover:scale-95 transition-all">
-                    Reserve Slot
+                    Buy Tickets
                   </button>
                 </Link>
               </div>

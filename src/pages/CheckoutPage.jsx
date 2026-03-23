@@ -66,7 +66,7 @@ export default function CheckoutPage() {
               ].map(m => (
                 <motion.button
                   key={m.label}
-                  className={`flex flex-col items-center justify-center p-6 rounded-lg transition-all ${m.active ? 'bg-surface-container-lowest ring-2 ring-primary' : 'bg-surface-container-low hover:bg-surface-container-highest'}`}
+                  className={`flex flex-col items-center justify-center p-6 rounded-lg transition-all ₹{m.active ? 'bg-surface-container-lowest ring-2 ring-primary' : 'bg-surface-container-low hover:bg-surface-container-highest'}`}
                   whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -135,18 +135,18 @@ export default function CheckoutPage() {
                       <p className="text-xs text-on-surface-variant">Row F, Seat 12 &amp; 13</p>
                     </div>
                   </div>
-                  <span className="font-bold">$240.00</span>
+                  <span className="font-bold">₹240.00</span>
                 </div>
                 <div className="space-y-3 pt-4 border-t border-surface-container-high text-sm">
-                  <div className="flex justify-between text-on-surface-variant"><span>Subtotal</span><span>$240.00</span></div>
-                  <div className="flex justify-between text-on-surface-variant"><span>Service Charge</span><span>$12.50</span></div>
-                  <div className="flex justify-between text-secondary font-semibold"><span>Promo (CURATOR15)</span><span>-$36.00</span></div>
+                  <div className="flex justify-between text-on-surface-variant"><span>Subtotal</span><span>₹240.00</span></div>
+                  <div className="flex justify-between text-on-surface-variant"><span>Service Charge</span><span>₹12.50</span></div>
+                  <div className="flex justify-between text-secondary font-semibold"><span>Promo (CURATOR15)</span><span>-₹36.00</span></div>
                 </div>
               </div>
               <div className="pt-6 border-t-2 border-primary border-dashed flex justify-between items-end">
                 <div>
                   <p className="text-xs uppercase tracking-widest font-black text-on-surface-variant mb-1">Total Payable</p>
-                  <p className="text-4xl font-black font-[family-name:var(--font-family-headline)] tracking-tighter">$216.50</p>
+                  <p className="text-4xl font-black font-[family-name:var(--font-family-headline)] tracking-tighter">₹216.50</p>
                 </div>
                 <div className="text-[10px] text-on-surface-variant text-right max-w-[120px]">
                   Incl. all digital curatorial taxes.

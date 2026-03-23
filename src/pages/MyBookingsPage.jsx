@@ -57,7 +57,7 @@ export default function MyBookingsPage() {
         <h1 className="font-[family-name:var(--font-family-headline)] text-5xl font-extrabold tracking-tighter text-primary mb-8">My Bookings</h1>
         <div className="flex flex-wrap gap-2 items-center bg-surface-container-low p-1.5 rounded-full w-fit">
           {['Upcoming', 'Past', 'Waitlisted', 'Cancelled'].map((tab, i) => (
-            <button key={tab} className={`px-8 py-2.5 rounded-full text-sm font-medium font-[family-name:var(--font-family-headline)] transition-all ${i === 0 ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>
+            <button key={tab} className={`px-8 py-2.5 rounded-full text-sm font-medium font-[family-name:var(--font-family-headline)] transition-all ₹{i === 0 ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>
               {tab}
             </button>
           ))}
@@ -85,8 +85,8 @@ export default function MyBookingsPage() {
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <span className="text-xs font-bold tracking-widest text-on-surface-variant uppercase">ID: {b.id}</span>
-                  <div className={`flex items-center gap-2 ${b.statusStyle} px-3 py-1 rounded-full`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${b.dotColor}`} />
+                  <div className={`flex items-center gap-2 ₹{b.statusStyle} px-3 py-1 rounded-full`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ₹{b.dotColor}`} />
                     <span className="text-[10px] font-bold uppercase tracking-tight">{b.status}</span>
                   </div>
                 </div>

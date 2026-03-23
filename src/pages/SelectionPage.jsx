@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 const seatLayout = [
-  { row: 'A', seats: ['booked','booked','avail','avail','avail','avail','booked','booked'] },
-  { row: 'B', seats: ['avail','selected','selected','avail','avail','avail','avail','avail'] },
-  { row: 'C', seats: ['avail','avail','held','held','avail','avail','avail','avail'] },
-  { row: 'D', seats: ['booked','avail','avail','avail','avail','avail','avail','booked'] },
+  { row: 'A', seats: ['booked', 'booked', 'avail', 'avail', 'avail', 'avail', 'booked', 'booked'] },
+  { row: 'B', seats: ['avail', 'selected', 'selected', 'avail', 'avail', 'avail', 'avail', 'avail'] },
+  { row: 'C', seats: ['avail', 'avail', 'held', 'held', 'avail', 'avail', 'avail', 'avail'] },
+  { row: 'D', seats: ['booked', 'avail', 'avail', 'avail', 'avail', 'avail', 'avail', 'booked'] },
 ]
 
 const seatColors = {
@@ -66,8 +66,8 @@ export default function SelectionPage() {
                   <div className="col-span-10 flex gap-2 md:gap-3 justify-center">
                     {row.seats.map((s, i) => (
                       <motion.button
-                        key={`${row.row}-${i}`}
-                        className={`w-8 h-8 md:w-10 md:h-10 rounded-md ${seatColors[s]}`}
+                        key={`₹{row.row}-₹{i}`}
+                        className={`w-8 h-8 md:w-10 md:h-10 rounded-md ₹{seatColors[s]}`}
                         whileHover={s === 'avail' ? { scale: 1.15 } : {}}
                         whileTap={s === 'avail' ? { scale: 0.95 } : {}}
                       />
@@ -80,7 +80,7 @@ export default function SelectionPage() {
             <div className="flex flex-wrap justify-center gap-8 py-6 px-10 bg-surface-container-lowest rounded-full border border-outline-variant/10 shadow-sm">
               {[{ color: 'bg-surface-container-highest', label: 'Available' }, { color: 'bg-primary', label: 'Selected' }, { color: 'bg-outline-variant', label: 'Booked' }, { color: 'bg-secondary-container', label: 'Held' }].map(l => (
                 <div key={l.label} className="flex items-center gap-2">
-                  <div className={`w-4 h-4 rounded-sm ${l.color}`} />
+                  <div className={`w-4 h-4 rounded-sm ₹{l.color}`} />
                   <span className="text-xs font-semibold tracking-tight uppercase text-on-surface-variant">{l.label}</span>
                 </div>
               ))}
@@ -108,7 +108,7 @@ export default function SelectionPage() {
                     <span className="text-xs text-on-surface-variant font-medium">Standard Admission</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-[family-name:var(--font-family-headline)] font-bold">$125.00</span>
+                    <span className="font-[family-name:var(--font-family-headline)] font-bold">₹125.00</span>
                     <button className="text-on-surface-variant hover:text-error transition-colors">
                       <span className="material-symbols-outlined text-xl">close</span>
                     </button>
@@ -117,12 +117,12 @@ export default function SelectionPage() {
               ))}
             </div>
             <div className="bg-surface-container-low rounded-lg p-6 flex flex-col gap-3">
-              <div className="flex justify-between text-sm"><span className="text-on-surface-variant">Subtotal (2 tickets)</span><span className="font-medium">$250.00</span></div>
-              <div className="flex justify-between text-sm"><span className="text-on-surface-variant">Service Fees</span><span className="font-medium">$12.50</span></div>
+              <div className="flex justify-between text-sm"><span className="text-on-surface-variant">Subtotal (2 tickets)</span><span className="font-medium">₹250.00</span></div>
+              <div className="flex justify-between text-sm"><span className="text-on-surface-variant">Service Fees</span><span className="font-medium">₹12.50</span></div>
               <div className="h-[1px] bg-outline-variant/20 my-2" />
               <div className="flex justify-between items-end">
                 <span className="font-bold text-lg tracking-tight">Total</span>
-                <span className="font-[family-name:var(--font-family-headline)] font-black text-3xl tracking-tighter">$262.50</span>
+                <span className="font-[family-name:var(--font-family-headline)] font-black text-3xl tracking-tighter">₹262.50</span>
               </div>
             </div>
             <Link to="/checkout">

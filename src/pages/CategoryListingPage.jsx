@@ -1,27 +1,65 @@
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-// Category configs with all data
+const cardHover = {
+  rest: { y: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' },
+  hover: { y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.08)', transition: { duration: 0.3, ease: 'easeOut' } }
+}
+
+const avatarUrls = [
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuBui7wRyNhmPpprBqnjS4uY1YxLKZaLISSPzDl-QR8s2j5AJjSCat7wumW3vH9dFA42SuqgPUhVXJLvfCGSiU8hJ4Jhy0exv_anFmPRNUc4Zx5PLKPMIzfKWMkHH9sZlJZ1rAtW0A03Fa1K34a-NeGa7EnuY9GPQHugXh0NFNAuxoLvG0DQL9Q2guA4ib-J7zfEMHLEe4XqaiXx7ZNw8cvmtrzKVoTSeB3_MXP3YN9AzKSktYnBmVYO2bnsk5VA5_lWkTDlgey5-i4',
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuCW7RpMtxO7Adqrpc-7JgEckpTQoX3U99DkdZxWcs0mzOC3w8mXnir-wpUjWadr9PfRuDWXwP5eip9VUgt5gaY0wMcvlWy_cj4jzoAByDc1koTmW24OjGE7bTEjdmtLX1YjW1VMxntFeEiMU6G7P2n6T73KtE9OEyNswjimnV78kLywHmRgX8mND10dk5CuAKtwe7mGfmjzG1H1Pg96Y7u7bQdhBKydUfvc0e3ne8OfH3sBYiQ0ckXRuJnDgo4egj6XsFpQ0kgtG1I',
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuAoSXqwLej5Kg-0b4_eWwJKnKRxjfb4RSYLvrkJHzAQKPaf05JriIZQMB3WslSTNPeRuWjuSqyP0lKd3gy3HD3zf3uG0vrruiA--TBFz6XI_VUF2tA7bzpKi8OYquqAZuUlBXkJIOva8y68GS_3hfOOq0dj5--231CrpyLog4yKjN5vPvkeRDV2M2qSbwn8kbppZV9APYJBygL-2rjs0Q1HL1IJgpfhEkKCPR_u_l_w1xSpL4SbyUOvG7s8FKxRKSJNCox6Z6r4q0E',
+]
+
+// Category configs with all combined data
 const categoryConfigs = {
   dining: {
     title: 'Dining',
     description: "An editorial selection of the city's most elusive culinary experiences, from private chef tables to ephemeral pop-ups.",
     label: 'Michelin Star',
     theme: 'light',
-    layout: 'editorial-grid',
+    layout: 'editorial-detailed-grid',
     cards: [
       {
         id: 1,
         title: "A Priori: The Chef's Secret Table Experience",
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCbsgXJpGr4J7S63iihaZv189-eLSpkElIRfTGYqjUxH3oPVpf-9GwTDFtGLICqKt_AF3tpr-g2_9UBfZbsQ5UZ3PVTagSOjgkwa00d6Uoqav6-LajVbR_4ZLK6cw5IkfIF9K4lO8eASkEZm_7vTSC5m25SuH8LProkJY8HuLAnEvO8de0Pr8bNT3eWebLHopj0ZX48L13dSOkKhIE4fb69mLcKAQMH7ht5HqMpprr_GjVLXXlfzwfqTgx-pqA5MDyga_vIzrEYS-w',
-        tag: 'Michelin Star',
-        location: 'Lower East Side',
+        location: 'Upper West Side, Manhattan',
         date: 'Sat, Nov 24',
-        price: 'From $245',
-        featured: true,
+        time: '19:30 — 22:00',
+        price: '₹245',
+        people: 12,
+        bookable: true,
+        badge: 'Michelin Star',
+        available: true,
+        availableLabel: 'Available',
       },
-      { id: 2, title: 'Midnight in Kyoto: Omakase & Jazz', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZNqSnRVPCGms0k-x9sRftoIGoa_G6M2q619wDJYeIgXxafsKL5H4LHrFsJaQjpyG1ycUVCUtF1PrxbyFwv8CnQEbHfML94dR__00roJ5IdebLG2U4wM1xLyldEK-gC3kQy6imi-3wW8JpG2NEuRmV4KprHFH4dRrz0i2xUcJxZLGRpn2wK1p3rxMdBv2VJIQk2264tWmYYQX63QERdd_fs9VX1hUu15szD-2QIAoHLt2ih4XIvVHMA7Q6GP2Z2xDF_AS3Zv3vXcc', tag: 'Pop-Up Series', location: 'Brooklyn Heights', date: 'Nov 25', price: '$180' },
-      { id: 3, title: 'The Winter Harvest Banquet at Solaris', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA2UKjkZAwlAeA27HUaUGkisFJ0qcGip0xXcSwaE4xdpVBdvuGyw0nOPL7QbSGu5xeLtK0P8yddezT4D9bXr52tsMZVau4TVgl-uOuQ0EAqvBuBHkYRNGdwrRD0RRBqBwggzzCzC_Biq7Z2bTCTISmY8oYattWIgVXWMSrXTFcf_XvD_TanIKdm61h9W68VivFVa59wTbqw1HTbVzEAkojsVbaEbA7lJpmeqQ1NfNYseEp6gdJOC2w_YoOA2a_J4RCJtCVpKlCmVJ0', tag: 'Seasonal Gala', location: 'Tribeca Rooftop', date: 'Nov 29', price: 'From $310' },
+      {
+        id: 2,
+        title: 'Midnight in Kyoto: Omakase & Jazz',
+        location: 'Brooklyn Heights',
+        date: 'Sun, Nov 25',
+        time: '21:00 — 00:00',
+        price: '₹180',
+        people: 4,
+        bookable: false,
+        badge: 'Pop-Up Series',
+        available: false,
+        availableLabel: 'Waitlist Only',
+      },
+      {
+        id: 3,
+        title: 'The Winter Harvest Banquet at Solaris',
+        location: 'Tribeca Rooftop',
+        date: 'Thu, Nov 29',
+        time: '18:00 — 22:30',
+        price: '₹310',
+        people: 42,
+        bookable: true,
+        badge: 'Seasonal Gala',
+        available: true,
+        availableLabel: 'Limited',
+      },
     ]
   },
   cinema: {
@@ -93,31 +131,60 @@ const categoryConfigs = {
 }
 
 // Layout Components
-const DiningLayout = ({ config }) => (
+
+const DetailedGridComponent = ({ config }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-      {config.cards.map((card, idx) => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {config.cards.map((card, i) => (
         <motion.article
-          key={card.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.1 }}
-          className={`group relative overflow-hidden rounded-2xl cursor-pointer ${card.featured ? 'md:col-span-2 h-[700px]' : 'h-[600px]'}`}
+          key={card.title}
+          className="bg-white rounded-xl p-8 shadow-sm transition-all duration-500 border border-transparent hover:border-surface-container-highest group flex flex-col h-full"
+          variants={cardHover}
+          initial="rest"
+          whileHover="hover"
         >
-          <img src={card.image} alt={card.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-12 text-white">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="px-4 py-1.5 bg-secondary-container text-black text-[10px] font-black uppercase tracking-widest rounded-full">{card.tag}</span>
-              <span className="text-xs font-bold tracking-widest opacity-80 uppercase">{card.location}</span>
+          <div className="flex justify-between items-start mb-6">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">{card.badge}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  <img className="w-8 h-8 rounded-full border-2 border-white object-cover" src={avatarUrls[0]} alt="" />
+                  <img className="w-8 h-8 rounded-full border-2 border-white object-cover" src={avatarUrls[(i + 1) % 3]} alt="" />
+                  <div className="w-8 h-8 rounded-full border-2 border-white bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-black">+{card.people}</div>
+                </div>
+              </div>
             </div>
-            <h3 className={`${card.featured ? 'text-5xl md:text-7xl' : 'text-4xl'} font-headline font-black tracking-tighter mb-6 leading-tight max-w-2xl`}>{card.title}</h3>
-            <div className={`flex ${card.featured ? 'gap-8' : 'gap-4'} text-sm font-bold opacity-90 uppercase tracking-widest mb-10`}>
-              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-lg">calendar_today</span> {card.date}</div>
-              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-lg">payments</span> {card.price}</div>
+            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 ${card.available ? 'bg-secondary-container text-on-secondary-fixed' : 'bg-surface-container-high text-on-surface-variant'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${card.available ? 'bg-on-secondary-fixed animate-pulse' : 'bg-on-surface-variant/30'}`} />
+              {card.availableLabel}
             </div>
-            <button className="w-fit bg-secondary-container text-black px-10 py-4 rounded-full font-black text-xs uppercase tracking-widest hover:opacity-90 transition-all flex items-center gap-2">
-              Book Experience <span className="material-symbols-outlined">arrow_forward</span>
-            </button>
+          </div>
+          <h3 className="text-2xl font-black leading-tight mb-6 flex-grow text-black">{card.title}</h3>
+          <div className="space-y-3 mb-8">
+            <div className="flex items-center gap-3 text-on-surface-variant">
+              <span className="material-symbols-outlined text-lg">location_on</span>
+              <span className="text-sm font-medium">{card.location}</span>
+            </div>
+            <div className="flex items-center gap-3 text-on-surface-variant">
+              <span className="material-symbols-outlined text-lg">calendar_today</span>
+              <span className="text-sm font-medium">{card.date}</span>
+            </div>
+            <div className="flex items-center gap-3 text-on-surface-variant">
+              <span className="material-symbols-outlined text-lg">schedule</span>
+              <span className="text-sm font-medium">{card.time}</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-auto pt-6 border-t border-surface-container text-black">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 block">{card.bookable ? 'From' : 'Price'}</span>
+              <span className="text-xl font-black">{card.price}</span>
+            </div>
+            <Link to={card.bookable ? '/event/great-revival' : '/waitlist'}>
+              <button className={`px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 active:scale-95 transition-transform ${card.bookable ? 'bg-black text-white' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}>
+                {card.bookable ? 'Book Now' : 'Join Waitlist'}
+                {card.bookable && <span className="material-symbols-outlined text-sm">arrow_forward</span>}
+              </button>
+            </Link>
           </div>
         </motion.article>
       ))}
@@ -158,7 +225,7 @@ const ComedyLayout = ({ config }) => (
     {config.cards.map((card, idx) => (
       <motion.div key={card.id} initial={{ opacity: 0, x: idx % 2 ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.15 }}>
         {card.featured ? (
-          <div className="bg-surface-container-lowest rounded-xl overflow-hidden relative group">
+          <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden relative group">
             <div className="h-[400px] w-full bg-surface-container-high overflow-hidden">
               <img alt={card.title} src={card.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
@@ -175,7 +242,7 @@ const ComedyLayout = ({ config }) => (
             </div>
           </div>
         ) : (
-          <div className="bg-secondary-container p-8 rounded-xl">
+          <div className="bg-secondary-container p-8 rounded-xl text-black">
             <h3 className="font-headline text-5xl font-black tracking-tighter leading-none mb-8">{card.title}</h3>
             <p className="font-bold text-on-secondary-fixed">{card.artist || 'Featured Artist'}</p>
             <p className="text-on-secondary-fixed-variant text-sm">{card.note}</p>
@@ -195,7 +262,7 @@ const HackathonsLayout = ({ config }) => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: idx * 0.15 }}
-          className="bg-surface-container-lowest border-2 border-black flex flex-col hover:translate-x-1 hover:-translate-y-1 transition-transform bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+          className="bg-surface-container-lowest text-black border-2 border-black flex flex-col hover:translate-x-1 hover:-translate-y-1 transition-transform bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
         >
           <div className="h-48 bg-surface-container-low relative overflow-hidden">
             <img src={card.image} alt={card.title} className="w-full h-full object-cover grayscale contrast-125" />
@@ -232,7 +299,7 @@ const OpenMicLayout = ({ config }) => (
           transition={{ delay: idx * 0.1 }}
           className="flex flex-col gap-6"
         >
-          <div className="bg-surface-container-lowest p-4 pb-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:rotate-0 transition-transform" style={{ transform: `rotate(${idx % 2 ? 3 : -2}deg)` }}>
+          <div className="bg-surface-container-lowest text-black p-4 pb-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:rotate-0 transition-transform" style={{ transform: `rotate(${idx % 2 ? 3 : -2}deg)` }}>
             <div className="aspect-square bg-surface-container overflow-hidden mb-6">
               <img alt={card.title} src={card.image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
             </div>
@@ -288,7 +355,7 @@ const SportsLayout = ({ config }) => (
 
 const ConcertsLayout = ({ config }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="space-y-12">
-    <div className="bg-surface-container-lowest rounded-xl overflow-hidden">
+    <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden">
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-2/5 aspect-square overflow-hidden">
           <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsQ66GPsa7v1hyGeWL1dxIfO4ZHTwgBCbSSGIvrVb9TMCuMsd5Tl1-EMPQCKYb_JqZwvMa4YzWuuWnsfH8pNyZthhLtT2yOdSBG7zEvPzePR2QHdOhfHHWVCugbRQrVe00UcVRY6RmV27GyBqmKQ9lMdNjkcUYmTnC6keSGs5_RztKPbKMXCIoRYtCHStvvdWR7kjM1IQlHPb5zWpmlgAmUza1fS3xSWv0e25ietMRWEYKuCkOYN0RS4Em0oZxYesvFh9cut-V2Rs" alt="Concert" className="w-full h-full object-cover" />
@@ -310,8 +377,8 @@ export default function CategoryListingPage() {
 
   const renderLayout = () => {
     switch (config.layout) {
-      case 'editorial-grid':
-        return <DiningLayout config={config} />
+      case 'editorial-detailed-grid':
+        return <DetailedGridComponent config={config} />
       case 'film-grid':
         return <CinemaLayout config={config} />
       case 'masonry':
@@ -325,30 +392,71 @@ export default function CategoryListingPage() {
       case 'editorial-journal':
         return <ConcertsLayout config={config} />
       default:
-        return <DiningLayout config={config} />
+        return <DetailedGridComponent config={config} />
     }
   }
 
   return (
-    <motion.main
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className={`min-h-screen ${config.theme === 'dark' ? 'bg-black' : 'bg-surface'} pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto`}
-    >
-      <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
-        <div className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-fixed rounded-full text-xs font-bold tracking-widest uppercase mb-4">{config.label}</div>
-        <h1 className={`text-6xl md:text-8xl font-headline font-black tracking-tighter mb-6 ${config.theme === 'dark' ? 'text-white' : 'text-primary'}`}>{config.title}</h1>
-        <p className={`text-xl md:text-2xl max-w-2xl font-light ${config.theme === 'dark' ? 'text-zinc-400' : 'text-on-surface-variant'}`}>{config.description}</p>
-      </motion.section>
+    <div className={`min-h-screen ${config.theme === 'dark' ? 'bg-black text-white' : 'bg-surface text-black'}`}>
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-32 pb-24 flex gap-12">
+        {/* Left Sidebar Layout extracted from Stash */}
+        <aside className="hidden lg:block w-[240px] flex-shrink-0 sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+          <div className="space-y-10">
+            <section>
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-on-surface-variant">Filter</h3>
+              <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-neutral-400">near_me</span>
+                <select className={`w-full pl-12 pr-4 py-3 border-none rounded-full text-sm font-bold appearance-none focus:ring-2 focus:ring-secondary-container transition-all cursor-pointer ${config.theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-surface-container-low text-black'}`}>
+                  <option>New York, NY</option>
+                  <option>London, UK</option>
+                  <option>Paris, FR</option>
+                  <option>Mumbai, IN</option>
+                  <option>Goa, IN</option>
+                </select>
+              </div>
+            </section>
+          </div>
+        </aside>
 
-      {renderLayout()}
+        {/* Dynamic Category Main Layout */}
+        <motion.main
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex-1 min-w-0"
+        >
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
+            <div className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-fixed rounded-full text-xs font-bold tracking-widest uppercase mb-4">{config.label}</div>
+            <h1 className={`text-6xl md:text-8xl font-headline font-black tracking-tighter mb-6`}>{config.title}</h1>
+            <p className={`text-xl md:text-2xl max-w-2xl font-light ${config.theme === 'dark' ? 'text-zinc-400' : 'text-on-surface-variant'}`}>{config.description}</p>
+          </motion.section>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
-        <Link to="/" className="inline-block px-8 py-4 bg-primary text-white rounded-full font-bold hover:opacity-90 transition-opacity">
-          ← Back to Home
-        </Link>
-      </motion.div>
-    </motion.main>
+          {renderLayout()}
+
+          {/* Pagination Component Extracted from Stash */}
+          <div className="mt-20 flex items-center justify-center gap-4">
+            <button className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${config.theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white' : 'border-surface-container-high hover:bg-white text-neutral-400 hover:text-black hover:shadow-md'}`}>
+               <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div className="flex items-center gap-2">
+               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm ${config.theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>1</button>
+               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors ${config.theme === 'dark' ? 'hover:bg-zinc-900' : 'hover:bg-surface-container-low'}`}>2</button>
+               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors ${config.theme === 'dark' ? 'hover:bg-zinc-900' : 'hover:bg-surface-container-low'}`}>3</button>
+               <span className="px-2 opacity-30 tracking-widest font-black">...</span>
+               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors ${config.theme === 'dark' ? 'hover:bg-zinc-900' : 'hover:bg-surface-container-low'}`}>12</button>
+            </div>
+            <button className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${config.theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white' : 'border-surface-container-high hover:bg-white text-neutral-400 hover:text-black hover:shadow-md'}`}>
+               <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
+            <Link to="/" className="inline-block px-8 py-4 bg-primary text-white rounded-full font-bold hover:opacity-90 transition-opacity">
+              &larr; Back to Home
+            </Link>
+          </motion.div>
+        </motion.main>
+      </div>
+    </div>
   )
 }
