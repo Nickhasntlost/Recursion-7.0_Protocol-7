@@ -234,6 +234,17 @@ export default function HomePage() {
           </div>
         </div>
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
+          {/* Browser Header Mock */}
+          <div className="flex items-center gap-4 px-4 py-3 border-b border-outline-variant/50 bg-white">
+            <div className="flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+            </div>
+            <div className="bg-surface-container-low px-4 py-1.5 rounded-lg text-xs font-bold text-on-surface-variant/60 max-w-[240px] w-full">
+              app.assemble.tv
+            </div>
+          </div>
           {/* Timeline Header */}
           <div className="timeline-grid border-b border-outline-variant bg-surface-container-low/30">
             <div className="p-6 border-r border-outline-variant flex items-center gap-3">
