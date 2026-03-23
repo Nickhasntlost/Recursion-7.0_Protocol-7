@@ -8,6 +8,7 @@ const sidebarItems = [
   { icon: 'automation', label: 'Automation', path: '/dashboard/automation' },
   { icon: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
   { icon: 'people', label: 'Attendees', path: '/dashboard/attendees' },
+  { icon: 'volunteer_activism', label: 'Volunteers', path: '/dashboard/volunteers' },
   { icon: 'receipt_long', label: 'Bookings', path: '/dashboard/bookings' },
   { icon: 'campaign', label: 'Marketing', path: '/dashboard/marketing' },
   { icon: 'settings', label: 'Settings', path: '/dashboard/settings' },

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './components/DashboardLayout'
@@ -9,6 +11,7 @@ import CategoryListingPage from './pages/CategoryListingPage'
 import EventDetailPage from './pages/EventDetailPage'
 import SelectionPage from './pages/SelectionPage'
 import CheckoutPage from './pages/CheckoutPage'
+import PaymentPage from './pages/PaymentPage'
 import ConfirmationPage from './pages/ConfirmationPage'
 import MyBookingsPage from './pages/MyBookingsPage'
 import WaitlistPage from './pages/WaitlistPage'
@@ -21,10 +24,12 @@ import EventsManagement from './pages/dashboard/EventsManagement'
 import CreateEvent from './pages/dashboard/CreateEvent'
 import Analytics from './pages/dashboard/Analytics'
 import AutomationPage from './pages/dashboard/AutomationPage'
+import VolunteersManagement from './pages/dashboard/VolunteersManagement'
 
 function App() {
   return (
     <ThemeProvider>
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       <BrowserRouter>
         <AnimatePresence mode="wait">
           <Routes>
@@ -40,6 +45,14 @@ function App() {
               <Route path="/event/:id/select" element={<SelectionPage />} />
 
               {/* Routes that require authentication */}
+              <Route
+                path="/payment/:eventId"
+                element={
+                  <ProtectedRoute>
+                    <PaymentPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/checkout"
                 element={
@@ -89,6 +102,7 @@ function App() {
               <Route path="automation" element={<AutomationPage />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="attendees" element={<Analytics />} />
+              <Route path="volunteers" element={<VolunteersManagement />} />
               <Route path="bookings" element={<Analytics />} />
               <Route path="marketing" element={<Analytics />} />
               <Route path="settings" element={<Analytics />} />

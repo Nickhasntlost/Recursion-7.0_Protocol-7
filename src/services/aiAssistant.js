@@ -23,5 +23,25 @@ export const aiAssistantService = {
     } catch (error) {
       throw error.response?.data?.detail || 'Event creation failed';
     }
+  },
+
+  getConversations: async () => {
+    try {
+      const response = await api.get('/ai-assistant/conversations');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.detail || 'Failed to load conversations';
+    }
+  },
+
+  getConversationHistory: async (conversationId) => {
+    try {
+      const response = await api.get(
+        `/ai-assistant/conversations/${conversationId}/history`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.detail || 'Failed to load conversation history';
+    }
   }
 };

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import AIChatBuilder from './AIChatBuilder'
 import { eventService } from '../../services/event'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 export default function CreateEvent() {
   const [creationMode, setCreationMode] = useState('manual') // 'manual' | 'ai'
@@ -33,11 +34,11 @@ export default function CreateEvent() {
       }
       
       const response = await eventService.createEvent(dataToSubmit);
-      alert('Event created successfully!')
+      toast.success('Event created successfully!')
       navigate('/dashboard/events')
     } catch (error) {
       console.error('Error creating event manually:', error)
-      alert(error.message || 'Failed to create event')
+      toast.error(error.message || 'Failed to create event')
     } finally {
       setIsSubmitting(false)
     }

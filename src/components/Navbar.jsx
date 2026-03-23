@@ -102,16 +102,17 @@ export default function Navbar() {
 
           {!(isHome && showHeroTabs) && (
             <div className="flex items-center gap-6 ml-auto">
-              <div className="hidden lg:flex items-center gap-6 font-family-headline font-bold tracking-tight text-sm">
+              <div className="hidden lg:flex items-center gap-6 font-[family-name:var(--font-family-headline)] font-bold tracking-tight text-sm">
+
                 {!isCategory && (
                   <Link to="/" className={`${isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
                     Home
                   </Link>
                 )}
-
                 {user && user.role === 'organizer' && (
                   <Link to="/dashboard" className="text-zinc-500 hover:text-black transition-colors">
                     Dashboard
+
                   </Link>
                 )}
                 {user && (
