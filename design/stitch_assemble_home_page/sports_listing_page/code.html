@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#e8e8e8",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f9f9f9",
+              "on-primary-container": "#858383",
+              "inverse-primary": "#c8c6c5",
+              "error": "#ba1a1a",
+              "background": "#f9f9f9",
+              "on-secondary-fixed": "#1a1d00",
+              "tertiary-fixed": "#e3e2e2",
+              "surface-container-highest": "#e2e2e2",
+              "on-primary-fixed-variant": "#474646",
+              "primary": "#000000",
+              "surface-container-low": "#f3f3f3",
+              "tertiary-container": "#1b1c1c",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed": "#1b1c1c",
+              "surface-tint": "#5f5e5e",
+              "surface-container": "#eeeeee",
+              "secondary": "#5b6300",
+              "tertiary": "#000000",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#747878",
+              "surface": "#f9f9f9",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "primary-container": "#1c1b1b",
+              "secondary-container": "#dfeb72",
+              "inverse-on-surface": "#f1f1f1",
+              "on-secondary-fixed-variant": "#444b00",
+              "surface-variant": "#e2e2e2",
+              "on-tertiary-fixed-variant": "#464747",
+              "surface-dim": "#dadada",
+              "secondary-fixed-dim": "#c3ce5a",
+              "primary-fixed": "#e5e2e1",
+              "tertiary-fixed-dim": "#c7c6c6",
+              "on-tertiary-container": "#848484",
+              "on-surface": "#1a1c1c",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#444748",
+              "inverse-surface": "#2f3131",
+              "on-secondary-container": "#616a00",
+              "on-background": "#1a1c1c",
+              "primary-fixed-dim": "#c8c6c5",
+              "outline-variant": "#c4c7c7",
+              "secondary-fixed": "#dfeb72",
+              "on-primary-fixed": "#1c1b1b"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-asymmetry {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl flex justify-between items-center px-8 py-6 max-w-full mx-auto">
+<div class="text-2xl font-black text-black uppercase tracking-tighter font-headline">Assemble</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-headline font-bold tracking-tight text-black border-b-2 border-black pb-1 hover:text-black transition-colors" href="#">Events</a>
+<a class="font-headline font-bold tracking-tight text-zinc-500 hover:text-black transition-colors" href="#">Venues</a>
+<a class="font-headline font-bold tracking-tight text-zinc-500 hover:text-black transition-colors" href="#">Editorial</a>
+<a class="font-headline font-bold tracking-tight text-zinc-500 hover:text-black transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center gap-6">
+<div class="hidden lg:block relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container-low rounded-full border-none px-10 py-2 focus:ring-2 focus:ring-secondary-container text-sm w-64" placeholder="Search..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-headline font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-opacity">
+                Sign In <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</header>
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
+<!-- Hero Section -->
+<section class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div>
+<span class="inline-block bg-secondary-container text-on-secondary-fixed px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4">Live Updates</span>
+<h1 class="text-6xl md:text-8xl font-black font-headline tracking-tighter text-primary leading-none">Sports</h1>
+<p class="text-xl md:text-2xl text-on-surface-variant mt-4 font-light max-w-xl">Precision, power, and kinetic excellence.</p>
+</div>
+</div>
+</section>
+<!-- Featured Section: Game of the Week -->
+<section class="mb-12">
+<div class="relative overflow-hidden rounded-xl bg-primary-container min-h-[500px] flex items-end group">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="High speed basketball player in mid-air dunking action" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtYUY3yCv1nCCbGGvNFlH6I5gsH-eae8_YGLt7k1pGu8Qeujbt7UA-9NxeznoY68hxtUCZ-G4rZb-Q1BrVfy5lY_1CUyCZhd_XqhfvHc6AT8TsJgkS_j9ssGide9QhYh_Ts5Ni67iFygBMWPIDOdmtv26R3kmmgxmecGMLDMShwUT8XyHzyO47COgWO3cYUtshjDd3Zxl1XcEg2yWR1GPpRYiOoRKneWflUwVMafip5k38DAJtcL1BO8A8T8ccgRiAvJsNN7EEgnE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+<div class="relative z-10 p-8 md:p-12 w-full">
+<div class="flex items-center gap-4 mb-6">
+<div class="bg-secondary-container text-on-secondary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase">Featured Match</div>
+<div class="flex items-center gap-2 text-white/80 text-sm font-semibold">
+<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                            Live Now • 3rd Quarter
+                        </div>
+</div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+<div class="flex-1">
+<h2 class="text-4xl md:text-6xl font-black font-headline text-white tracking-tighter mb-4">LIONS VS TITANS</h2>
+<div class="flex items-center gap-12">
+<div class="text-center">
+<div class="text-5xl font-black text-secondary-container font-headline">94</div>
+<div class="text-white/60 text-xs uppercase tracking-widest font-bold mt-2">Lions</div>
+</div>
+<div class="text-white/20 text-4xl font-black italic">VS</div>
+<div class="text-center">
+<div class="text-5xl font-black text-white font-headline">88</div>
+<div class="text-white/60 text-xs uppercase tracking-widest font-bold mt-2">Titans</div>
+</div>
+</div>
+</div>
+<div class="glass-card p-6 rounded-lg max-w-sm">
+<div class="flex justify-between items-center mb-4">
+<span class="text-black font-bold text-sm uppercase">Key Stat</span>
+<span class="material-symbols-outlined text-black">analytics</span>
+</div>
+<div class="text-3xl font-black text-black font-headline">68%</div>
+<p class="text-black/70 text-sm leading-relaxed mt-2">Conversion rate in the paint is at an all-time season high for the Lions.</p>
+<button class="mt-6 w-full bg-black text-white py-3 rounded-full font-bold text-xs uppercase tracking-widest hover:opacity-80 transition-opacity">Watch Live Stream</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2-Column Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Technical Sport Card 1 -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden flex flex-col">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional swimmer underwater diving during a race" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6AcD1S7JuZM1s9c7bwjBiCMDyQZ9kY6pGNX8F8WnzzJSdDZpwyFdt9Guuk6p5nQr7N9HZovE5fJovweq-7KCuqxLxQRHCnyMdI-G6wBUVlKSmE_uMcOHEapd4f_Rkms4hbl7npJPHJXQR1711N0P-fuYYI5JIwrksE5ER-N6Gaa1EUqnzOsPBEW8vP1AQxPLj2UX8qyevUlkipbZnlnJnRKgerT9gWcxokgkFOzwgGpRx0dicR31Jkbwq00COP_PFSwoaV-b0kYA"/>
+<div class="absolute top-4 right-4 glass-card px-4 py-2 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-[10px] font-black uppercase tracking-widest text-black">Precision Water</span>
+</div>
+</div>
+<div class="p-8 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="text-3xl font-black font-headline tracking-tight text-primary mb-2">Aquatic Velocity Open</h3>
+<p class="text-on-surface-variant font-medium">Olympic Qualifying Series • Final Rounds</p>
+</div>
+<div class="grid grid-cols-3 gap-4 mt-8">
+<div class="bg-white p-4 rounded-lg">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Time</span>
+<span class="text-xl font-black font-headline text-black">47.2s</span>
+</div>
+<div class="bg-white p-4 rounded-lg">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">BPM</span>
+<span class="text-xl font-black font-headline text-black">172</span>
+</div>
+<div class="bg-secondary-container p-4 rounded-lg">
+<span class="text-[10px] font-bold text-on-secondary-fixed-variant uppercase block mb-1">Rank</span>
+<span class="text-xl font-black font-headline text-on-secondary-fixed">#1</span>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-between border-t border-outline-variant/20 pt-6">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-white flex items-center justify-center font-bold text-xs">UK</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-white flex items-center justify-center font-bold text-xs">US</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-white flex items-center justify-center font-bold text-xs">JP</div>
+</div>
+<a class="text-primary font-black uppercase tracking-widest text-xs hover:underline underline-offset-8 transition-all" href="#">Event Details →</a>
+</div>
+</div>
+</div>
+<!-- Technical Sport Card 2 -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden flex flex-col">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Athletic sprinter in starting position on track" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBivROCYab4q8BhJD6SOwx0NV_bY4qRtbMKvyjO_6uZS6TlGVhayI5xHu7ksGmAXvl3PAlu1MEObJ_eWV1MwawCbEJ45MMEVn9PDdjB57jHs_mWPEB0XZKdU59hZzqa6NuWHSq9Dl_hgttqVhXWes6TKx1DbM_dbdGx9aH12GDg7hfj5NLCN1NLoZBoS2gqpG9gJghl7o4wtjAVk4o6yex3vCHtkczeXb7cB4Ho1fXB56NA-0ogJIQR-o3kYrhrQaAxsXbECY3mlC0"/>
+<div class="absolute top-4 right-4 glass-card px-4 py-2 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-[10px] font-black uppercase tracking-widest text-black">Kinetic Force</span>
+</div>
+</div>
+<div class="p-8 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="text-3xl font-black font-headline tracking-tight text-primary mb-2">Grand Track Masters</h3>
+<p class="text-on-surface-variant font-medium">100m Dash • World Championship Qualifiers</p>
+</div>
+<div class="mt-8 space-y-4">
+<div class="flex items-center justify-between bg-white p-4 rounded-lg">
+<div class="flex items-center gap-4">
+<span class="font-black text-on-surface-variant">01</span>
+<span class="font-bold text-black uppercase tracking-tight">K. Thompson</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold text-on-surface-variant">9.82s</span>
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+</div>
+<div class="flex items-center justify-between bg-white p-4 rounded-lg">
+<div class="flex items-center gap-4">
+<span class="font-black text-on-surface-variant">02</span>
+<span class="font-bold text-black uppercase tracking-tight">M. Rodriguez</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold text-on-surface-variant">9.87s</span>
+<span class="material-symbols-outlined text-secondary-container text-sm" style="font-variation-settings: 'FILL' 1;">trending_flat</span>
+</div>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-between border-t border-outline-variant/20 pt-6">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Next Heat in 12:45</span>
+<button class="bg-black text-white px-6 py-2.5 rounded-full font-headline font-bold text-xs uppercase tracking-widest hover:opacity-90">Set Alert</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / Bento Accent -->
+<section class="mt-24">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="md:col-span-2 bg-secondary-container rounded-xl p-12 flex flex-col justify-center">
+<h2 class="text-4xl font-black font-headline text-on-secondary-fixed tracking-tighter mb-4">Precision Engineering for Every Athlete.</h2>
+<p class="text-on-secondary-fixed-variant max-w-lg mb-8">Subscribe to Assemble Editorial for deep-dives into biomechanics, sport psychology, and elite performance analysis.</p>
+<div class="flex max-w-md gap-4">
+<input class="flex-1 bg-white border-none rounded-full px-6 py-3 focus:ring-2 focus:ring-primary" placeholder="Email Address" type="email"/>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-full font-bold uppercase tracking-widest text-xs">Join</button>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-xl p-8 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-5xl mb-4 text-primary" style="font-variation-settings: 'wght' 200;">rocket_launch</span>
+<h4 class="text-xl font-black font-headline text-primary mb-2">Assemble Pro</h4>
+<p class="text-on-surface-variant text-sm mb-6">Unlock exclusive data visualizations and real-time biometric feeds.</p>
+<button class="w-full py-3 border-2 border-primary rounded-full font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-white transition-colors">Learn More</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#F3F3F3] w-full py-12 px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 w-full max-w-7xl mx-auto">
+<div class="text-lg font-black text-black uppercase tracking-tighter">Assemble</div>
+<div class="flex gap-8">
+<a class="text-zinc-500 hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 font-body text-sm tracking-normal transition-all duration-300" href="#">Privacy</a>
+<a class="text-zinc-500 hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 font-body text-sm tracking-normal transition-all duration-300" href="#">Terms</a>
+<a class="text-zinc-500 hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 font-body text-sm tracking-normal transition-all duration-300" href="#">Press</a>
+<a class="text-zinc-500 hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 font-body text-sm tracking-normal transition-all duration-300" href="#">Contact</a>
+</div>
+<div class="text-zinc-500 font-body text-sm tracking-normal">© 2024 Assemble Editorial. All Rights Reserved.</div>
+</div>
+</footer>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 bg-white/80 backdrop-blur-2xl rounded-t-[3rem] shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+<div class="flex flex-col items-center justify-center bg-[#DFEB72] text-black rounded-full px-6 py-2 scale-95 transition-all">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Explore</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Search</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Bookings</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

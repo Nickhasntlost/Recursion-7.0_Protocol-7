@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cinema | Assemble Editorial</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#e8e8e8",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f9f9f9",
+              "on-primary-container": "#858383",
+              "inverse-primary": "#c8c6c5",
+              "error": "#ba1a1a",
+              "background": "#f9f9f9",
+              "on-secondary-fixed": "#1a1d00",
+              "tertiary-fixed": "#e3e2e2",
+              "surface-container-highest": "#e2e2e2",
+              "on-primary-fixed-variant": "#474646",
+              "primary": "#000000",
+              "surface-container-low": "#f3f3f3",
+              "tertiary-container": "#1b1c1c",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed": "#1b1c1c",
+              "surface-tint": "#5f5e5e",
+              "surface-container": "#eeeeee",
+              "secondary": "#5b6300",
+              "tertiary": "#000000",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#747878",
+              "surface": "#f9f9f9",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "primary-container": "#1c1b1b",
+              "secondary-container": "#dfeb72",
+              "inverse-on-surface": "#f1f1f1",
+              "on-secondary-fixed-variant": "#444b00",
+              "surface-variant": "#e2e2e2",
+              "on-tertiary-fixed-variant": "#464747",
+              "surface-dim": "#dadada",
+              "secondary-fixed-dim": "#c3ce5a",
+              "primary-fixed": "#e5e2e1",
+              "tertiary-fixed-dim": "#c7c6c6",
+              "on-tertiary-container": "#848484",
+              "on-surface": "#1a1c1c",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#444748",
+              "inverse-surface": "#2f3131",
+              "on-secondary-container": "#616a00",
+              "on-background": "#1a1c1c",
+              "primary-fixed-dim": "#c8c6c5",
+              "outline-variant": "#c4c7c7",
+              "secondary-fixed": "#dfeb72",
+              "on-primary-fixed": "#1c1b1b"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .editorial-gradient-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-secondary-container selection:text-on-secondary-fixed">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl flex justify-between items-center px-8 py-6 max-w-full mx-auto">
+<div class="text-2xl font-black text-black dark:text-white uppercase tracking-tighter font-headline">Assemble</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors" href="#">Events</a>
+<a class="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors" href="#">Venues</a>
+<a class="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-black dark:text-white border-b-2 border-black dark:border-white pb-1" href="#">Editorial</a>
+<a class="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors" href="#">About</a>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center bg-surface-container-low dark:bg-zinc-900 rounded-full px-4 py-2">
+<span class="material-symbols-outlined text-zinc-400 text-sm">search</span>
+<span class="ml-2 text-zinc-500 dark:text-zinc-400 text-sm font-medium">Search films...</span>
+</div>
+<button class="px-6 py-2 bg-primary dark:bg-white text-on-primary dark:text-black rounded-full font-bold text-sm hover:opacity-70 transition-opacity">Sign In</button>
+</div>
+</nav>
+<main class="pt-32 pb-40 px-6 md:px-12 max-w-7xl mx-auto">
+<!-- Hero Header Section -->
+<header class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-2xl">
+<span class="inline-block px-4 py-1 bg-secondary-container text-on-secondary-fixed rounded-full text-xs font-bold uppercase tracking-widest mb-6">Featured Collection</span>
+<h1 class="text-6xl md:text-8xl font-headline font-black tracking-tighter text-white mb-6">Cinema</h1>
+<p class="text-xl text-zinc-400 leading-relaxed font-medium">Curated films for the modern observer. A selection of masterpieces spanning independent visions and timeless classics.</p>
+</div>
+<div class="flex items-center gap-4 pb-2">
+<button class="p-4 rounded-full bg-zinc-900 text-white hover:bg-zinc-800 transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+<div class="h-10 w-[1px] bg-zinc-800"></div>
+<p class="text-sm font-bold tracking-widest uppercase text-zinc-500">24 screenings today</p>
+</div>
+</div>
+</header>
+<!-- Filter Bar -->
+<section class="mb-12 flex flex-wrap gap-4 items-center">
+<div class="bg-zinc-900/50 backdrop-blur-md px-6 py-3 rounded-full flex items-center gap-3 border border-white/5">
+<span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Genre</span>
+<select class="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer p-0 pr-6">
+<option>All Genres</option>
+<option>Avant-Garde</option>
+<option>Noir</option>
+<option>Neo-Realism</option>
+<option>Sci-Fi</option>
+</select>
+</div>
+<div class="bg-zinc-900/50 backdrop-blur-md px-6 py-3 rounded-full flex items-center gap-3 border border-white/5">
+<span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Rating</span>
+<select class="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer p-0 pr-6">
+<option>Any Rating</option>
+<option>IMDb 8.0+</option>
+<option>Rotten 90%+</option>
+</select>
+</div>
+<div class="bg-zinc-900/50 backdrop-blur-md px-6 py-3 rounded-full flex items-center gap-3 border border-white/5">
+<span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Location</span>
+<select class="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer p-0 pr-6">
+<option>All Theaters</option>
+<option>The Grand Palais</option>
+<option>Ritz Cinema</option>
+<option>Metro Center</option>
+</select>
+</div>
+<button class="ml-auto text-sm font-bold text-secondary-container hover:underline underline-offset-4 decoration-2">Clear filters</button>
+</section>
+<!-- Film Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+<!-- Film Card 1 -->
+<article class="group relative flex flex-col cursor-pointer">
+<div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A cinematic scene with moody neon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb8Es7x6Y9mahFV8oTneGdy8ze6zpq-8rtCfh8cJWQPOq1opDL8GeHMgDZjm_8tT1KKMhkfu0EIuA9dA-AF8f04lTx04xL4jonI2tK7YmQ658pDgHmrjp4ayH1mBa5e09VI6bJOwbGIK-u22O6UFLe1-P9JD1uLomONGpqKfh3Dx9ywOnHUGgsSv5PbKQnenC9XgXkEyHwQdkBhlVhuoiWCu1x77PlQrNviMy_Vj3zM6SuMcAJ2fe0LXFdZgrgbcigtRDCh7tSuyo"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Drama</span>
+<span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">8.4 IMDb</span>
+</div>
+<h3 class="text-3xl font-headline font-extrabold tracking-tighter mb-1">Neon Echoes</h3>
+<p class="text-sm text-zinc-300 font-medium">Dir. Aris Thorne</p>
+</div>
+</div>
+</article>
+<!-- Film Card 2 -->
+<article class="group relative flex flex-col cursor-pointer mt-0 lg:mt-12">
+<div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Minimalist architectural movie poster aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWghKhr1K_uI6hYmBKEzOQ8Mx337vKbTf0qPCXwSRbOXYTZomi_fPtSq5v1JI8a35xhonTQcB3zXCZxpaqksDpCbWrk_J40aN3zL2Q3xiZI4RX1vW6JG0P7mDSbsWcR0Nfh5BYiptMnnHuXlBm3rnYTEXwvywhKU0_Rlj003CR5viTghz_8nAbJ5hRYV79UaAs36UDZhbNaSOCnjQqQ4_A5bY6yQWYO__vtSBAJiyMjT7ZehjfvgokVHaVgDQqWm-hG0w2gHMxXoE"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Noir</span>
+<span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">9.1 IMDb</span>
+</div>
+<h3 class="text-3xl font-headline font-extrabold tracking-tighter mb-1">Silent Grid</h3>
+<p class="text-sm text-zinc-300 font-medium">Dir. Elena Volkov</p>
+</div>
+</div>
+</article>
+<!-- Film Card 3 -->
+<article class="group relative flex flex-col cursor-pointer">
+<div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Close up of a vintage film projector in use" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB97HT6EJBJgetkvqFS9sgpLC1WbvYo46Rzm-ZDrDv3eDBzKK7isxklwqY0RFSHDemWJ6YcklNJ8ZsHsZiIzE63MWZNu_wABikCFuQ1fbFXhaKOEdr55d1JbGVoqJPQoTZzUgYxTrLzbJA4ezXvh-IRFXHoVgD6bgAPni9OQDdbsK2j3U_FdsYCqXZLKa4a1lZkRkoij-iZu2aByy0WKubnKhJSI1fm9Er5z8_NBHaCA6ppatx2hd8cKOhbhKrvF0datjz3Y5ylfCQ"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Classics</span>
+<span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">R</span>
+</div>
+<h3 class="text-3xl font-headline font-extrabold tracking-tighter mb-1">The Archive</h3>
+<p class="text-sm text-zinc-300 font-medium">Dir. Julian Mare</p>
+</div>
+</div>
+</article>
+<!-- Film Card 4 -->
+<article class="group relative flex flex-col cursor-pointer mt-0 lg:mt-12">
+<div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="People sitting in an old dark cinema theatre" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvF_YoEQeK5ua2N1rvA6dSOwFKV2ppBdjykgLOuPIgYuDjlh_SKg6nxx9fgjWhs-7l47DPn4P72P-2glY18tutNMCSv64R7vRLwjKhPXwhwCaMUwuztLPUzDV8ZSL93tYN3XvtxawHDseSbRE6aGWlGX3bdxqOYB3mkez9gcf6pkVBk7qyu3qsMg2VuVvBjYq4cmRuTIYGatsO4QVp05mpS2BUteNDSn301VFmNEedPA_YSlxYKxqwhFChDz_jsDXxUs9oHK62vAQ"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Documentary</span>
+<span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">94% RT</span>
+</div>
+<h3 class="text-3xl font-headline font-extrabold tracking-tighter mb-1">Visionaries</h3>
+<p class="text-sm text-zinc-300 font-medium">Dir. Sarah Chen</p>
+</div>
+</div>
+</article>
+<!-- Second Row (Bento Style Variation) -->
+<article class="group relative flex flex-col cursor-pointer md:col-span-2">
+<div class="aspect-[16/9] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Atmospheric sunset over a coastal highway scene" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnvtEqrybQvPIBxIMXrsd06f7hrRcRwAxEFI5C2HfVwxZWeznM0j3gVWzQft-BQVisk2g5oJjZtj5OCFMhDWsaj3vi6tyD8Q0PZFXdCQdiVbvsWhAAMkk8ogadcp3Ef_6Iip4YeI2ol7JUXTjpHzDBFodSvu1SGq0B1yN4DXsGS4hu9prRAX8q6cxQLPe4HnAbROH95pPPbr2P-bcVdSpfY0x49kNTNh3VnoZrouewMPj92sVZE43KCBTYgdEbXqA1U1_BPywBJaw"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-12">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Premiere</span>
+</div>
+<h3 class="text-5xl font-headline font-extrabold tracking-tighter mb-2">The Long Horizon</h3>
+<p class="text-lg text-zinc-300 font-medium max-w-md">An experimental journey through the landscapes of the Pacific Northwest.</p>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col cursor-pointer">
+<div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Intense lighting on a single actor's face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBuq99gbP5tMf-tViMrHf1soSg456ZOowtUnhVrkmLUpeKd-d33PaS7Koli6gdnW5WafcZw7IA76eank_qNghPqC6zbzg19BFuLm7S0oW1bNeoSVxdkQHVd0_kZD-a_4cTaGhzosWukSGWoB4meKa8TDOybTAiKHhy1ygMyVedN5MyEU2mQMuEen3ZIVVMSK0B1_FFOCUelDCvxNO8sZkeuILdaYPNDZ_dU38y3XlUtHVWqT4dvxBV4eSyjtpMjf_QwdhN7TDEQz8"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Drama</span>
+</div>
+<h3 class="text-3xl font-headline font-extrabold tracking-tighter mb-1">Broken Frame</h3>
+<p class="text-sm text-zinc-300 font-medium">Dir. Marcus Lee</p>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col cursor-pointer">
+<div class="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Abstract colorful light patterns on film grain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAh3_uNmH8zTJjnkA3iu4LoNvjBziTJyeL59UpMLhJwks64D-NRE5qmttVTkD47fIXomVqS56I6OQnpHQpfaOUdP4CpJ3aYIauOaSr_NgyDnD3Nnhlct3jqPS1wmp31tgdw9GbZMRwv02xHOHLp88sS5-lCRop4If60sgn40vBpMYKnX1ipGjBFGIMg1AdMYLuZK_jMgcEMVkJsfwouv5p-jwuCraopERRrsbZFnRrGQCNqwhrrmY1NGOeIFF-rnUYTf4A4jwEp80"/>
+<div class="absolute inset-0 editorial-gradient-overlay flex flex-col justify-end p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Avant-Garde</span>
+</div>
+<h3 class="text-3xl font-headline font-extrabold tracking-tighter mb-1">Color Theory</h3>
+<p class="text-sm text-zinc-300 font-medium">Dir. David Lo</p>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination / Load More -->
+<div class="mt-24 flex flex-col items-center">
+<button class="px-12 py-5 rounded-full bg-white text-black font-headline font-extrabold uppercase tracking-widest text-sm hover:bg-[#DFEB72] transition-colors group flex items-center gap-4">
+                Load more screenings
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<p class="mt-8 text-zinc-500 font-bold text-xs uppercase tracking-[0.3em]">Showing 24 of 128 masterpieces</p>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#F3F3F3] dark:bg-zinc-900 w-full py-12 px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 w-full max-w-7xl mx-auto">
+<div class="text-lg font-black text-black dark:text-white font-headline">Assemble</div>
+<div class="flex gap-8">
+<a class="text-zinc-500 dark:text-zinc-400 font-['Inter'] text-sm hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 transition-all" href="#">Privacy</a>
+<a class="text-zinc-500 dark:text-zinc-400 font-['Inter'] text-sm hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 transition-all" href="#">Terms</a>
+<a class="text-zinc-500 dark:text-zinc-400 font-['Inter'] text-sm hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 transition-all" href="#">Press</a>
+<a class="text-zinc-500 dark:text-zinc-400 font-['Inter'] text-sm hover:underline decoration-[#DFEB72] decoration-2 underline-offset-4 transition-all" href="#">Contact</a>
+</div>
+<p class="text-zinc-500 dark:text-zinc-400 font-['Inter'] text-sm">© 2024 Assemble Editorial. All Rights Reserved.</p>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 bg-white/80 dark:bg-black/80 backdrop-blur-2xl rounded-t-[3rem] shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+<div class="flex flex-col items-center justify-center bg-[#DFEB72] text-black rounded-full px-6 py-2 scale-95 duration-200">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Explore</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-900">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Search</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-900">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Bookings</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-900">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] text-[10px] font-semibold uppercase tracking-widest mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

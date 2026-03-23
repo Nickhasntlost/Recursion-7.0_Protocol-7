@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Assemble | Dining Editorial</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#ffffff",
+              "on-tertiary-fixed-variant": "#464747",
+              "secondary": "#5b6300",
+              "primary-fixed-dim": "#c8c6c5",
+              "on-error": "#ffffff",
+              "error": "#ba1a1a",
+              "surface-dim": "#f3f4f6",
+              "tertiary": "#000000",
+              "on-secondary": "#1a1d00",
+              "tertiary-fixed": "#e3e2e2",
+              "on-primary-container": "#858383",
+              "on-background": "#1a1c1c",
+              "on-secondary-fixed": "#1a1d00",
+              "primary-fixed": "#e5e2e1",
+              "on-tertiary-container": "#848484",
+              "tertiary-fixed-dim": "#c7c6c6",
+              "surface-container-low": "#fafafa",
+              "on-primary": "#ffffff",
+              "secondary-container": "#E2F16D",
+              "on-error-container": "#93000a",
+              "outline-variant": "#e5e7eb",
+              "surface-container-high": "#f3f4f6",
+              "surface-bright": "#ffffff",
+              "background": "#ffffff",
+              "outline": "#747878",
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#2f3131",
+              "surface-variant": "#f3f4f6",
+              "primary-container": "#1c1b1b",
+              "surface-container-highest": "#e5e7eb",
+              "on-tertiary-fixed": "#1b1c1c",
+              "tertiary-container": "#1b1c1c",
+              "on-secondary-container": "#1a1d00",
+              "secondary-fixed": "#E2F16D",
+              "surface-tint": "#5f5e5e",
+              "on-primary-fixed": "#1c1b1b",
+              "on-secondary-fixed-variant": "#444b00",
+              "on-surface": "#1a1c1c",
+              "inverse-on-surface": "#f1f1f1",
+              "inverse-primary": "#c8c6c5",
+              "surface-container-lowest": "#ffffff",
+              "secondary-fixed-dim": "#c3ce5a",
+              "on-surface-variant": "#4b5563",
+              "on-primary-fixed-variant": "#474646",
+              "error-container": "#ffdad6",
+              "surface-container": "#f9fafb",
+              "primary": "#000000"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
+        h1, h2, h3, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .editorial-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-zinc-100">
+<div class="flex justify-between items-center w-full px-8 py-6 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-black tracking-tighter text-black uppercase font-headline">Assemble</div>
+<div class="hidden md:flex items-center gap-10 font-headline text-xs tracking-[0.15em] uppercase font-bold">
+<a class="text-zinc-400 hover:text-black transition-colors" href="#">Explore</a>
+<a class="text-zinc-400 hover:text-black transition-colors" href="#">Curations</a>
+<a class="text-black border-b-2 border-black pb-1" href="#">Venues</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="hover:opacity-70 transition-opacity duration-300">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="bg-primary text-on-primary px-7 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all active:scale-95">
+                    Sign In
+                </button>
+</div>
+</div>
+</nav>
+<!-- Main Content Container -->
+<main class="pt-32 min-h-screen flex max-w-screen-2xl mx-auto px-8 gap-16">
+<!-- Left Sidebar (FILTER) - Refined and Minimal -->
+<aside class="hidden lg:block w-[240px] flex-shrink-0 pt-4 pb-12 sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+<div class="space-y-12">
+<section>
+<h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-8 text-zinc-400">Navigation</h3>
+<nav class="flex flex-col gap-4 text-sm font-bold">
+<a class="text-black flex items-center gap-2" href="#">Dining <span class="w-1 h-1 bg-black rounded-full"></span></a>
+<a class="text-zinc-400 hover:text-black transition-colors" href="#">After Dark</a>
+<a class="text-zinc-400 hover:text-black transition-colors" href="#">Exhibitions</a>
+<a class="text-zinc-400 hover:text-black transition-colors" href="#">Private Clubs</a>
+</nav>
+</section>
+<section>
+<h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-zinc-400">Location</h3>
+<div class="relative group">
+<select class="w-full pl-0 pr-8 py-2 bg-transparent border-b border-zinc-200 text-sm font-bold appearance-none focus:ring-0 focus:border-black transition-all cursor-pointer">
+<option>New York, NY</option>
+<option>London, UK</option>
+<option>Paris, FR</option>
+</select>
+<span class="absolute right-0 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-400 pointer-events-none text-lg" data-icon="expand_more">expand_more</span>
+</div>
+</section>
+<section>
+<h4 class="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-zinc-400">Timeline</h4>
+<div class="flex flex-col gap-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-4 h-4 border-zinc-300 text-black focus:ring-0 cursor-pointer" name="time" type="radio"/>
+<span class="text-sm font-bold text-black">Tonight</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 border-zinc-300 text-black focus:ring-0 cursor-pointer" name="time" type="radio"/>
+<span class="text-sm font-bold text-zinc-400 group-hover:text-black transition-colors">This Weekend</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 border-zinc-300 text-black focus:ring-0 cursor-pointer" name="time" type="radio"/>
+<span class="text-sm font-bold text-zinc-400 group-hover:text-black transition-colors">Seasonal Curations</span>
+</label>
+</div>
+</section>
+<section>
+<h4 class="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-zinc-400">Price</h4>
+<div class="grid grid-cols-2 gap-2 p-1 bg-zinc-50 rounded-full">
+<button class="py-2 text-[10px] font-black uppercase tracking-widest rounded-full bg-white shadow-sm">All</button>
+<button class="py-2 text-[10px] font-black uppercase tracking-widest rounded-full text-zinc-400 hover:text-black transition-colors">Premium</button>
+</div>
+</section>
+<button class="w-full border-2 border-black text-black py-4 rounded-full font-black text-[10px] tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-all duration-300">
+                    Reset Filter
+                </button>
+</div>
+</aside>
+<!-- Main Listing Area -->
+<div class="flex-1 pb-20">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20">
+<div class="max-w-2xl">
+<nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6">
+<a class="hover:text-black transition-colors" href="#">Home</a>
+<span class="opacity-30">/</span>
+<span class="text-black">Dining</span>
+</nav>
+<h1 class="text-7xl md:text-9xl font-headline font-black tracking-tighter mb-8 leading-[0.85]">Dining</h1>
+<p class="text-xl text-zinc-500 font-medium leading-relaxed max-w-lg">
+                        An editorial selection of the city's most elusive culinary experiences, from private chef tables to ephemeral pop-ups.
+                    </p>
+</div>
+<div class="flex flex-col items-end gap-4">
+<span class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300">Sort Curations</span>
+<button class="flex items-center gap-3 font-headline font-black text-sm group border-b-2 border-zinc-100 pb-2 min-w-[180px] justify-between">
+                        Recommended 
+                        <span class="material-symbols-outlined text-lg group-hover:translate-y-1 transition-transform" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+</div>
+</div>
+<!-- Dynamic Editorial Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<!-- Card 1: Featured / Large -->
+<article class="md:col-span-2 group relative h-[700px] overflow-hidden rounded-2xl cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="High-end dining table setup with candles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbsgXJpGr4J7S63iihaZv189-eLSpkElIRfTGYqjUxH3oPVpf-9GwTDFtGLICqKt_AF3tpr-g2_9UBfZbsQ5UZ3PVTagSOjgkwa00d6Uoqav6-LajVbR_4ZLK6cw5IkfIF9K4lO8eASkEZm_7vTSC5m25SuH8LProkJY8HuLAnEvO8de0Pr8bNT3eWebLHopj0ZX48L13dSOkKhIE4fb69mLcKAQMH7ht5HqMpprr_GjVLXXlfzwfqTgx-pqA5MDyga_vIzrEYS-w"/>
+<div class="absolute inset-0 editorial-overlay flex flex-col justify-end p-12 text-white">
+<div class="flex items-center gap-4 mb-6">
+<span class="px-4 py-1.5 bg-secondary-container text-black text-[10px] font-black uppercase tracking-widest rounded-full">Michelin Star</span>
+<span class="text-xs font-bold tracking-widest opacity-80 uppercase">Lower East Side</span>
+</div>
+<h3 class="text-5xl md:text-7xl font-headline font-black tracking-tighter mb-6 leading-tight max-w-2xl">A Priori: The Chef's Secret Table Experience</h3>
+<div class="flex flex-col md:flex-row md:items-center gap-8 mb-10 text-sm font-bold opacity-90 uppercase tracking-[0.15em]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">calendar_today</span> Sat, Nov 24
+                            </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">payments</span> From $245
+                            </div>
+</div>
+<div class="flex gap-4">
+<button class="bg-secondary-container text-black px-10 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center gap-3 group/btn">
+                                Book Experience
+                                <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="group relative h-[600px] overflow-hidden rounded-2xl cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Jazz club interior" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZNqSnRVPCGms0k-x9sRftoIGoa_G6M2q619wDJYeIgXxafsKL5H4LHrFsJaQjpyG1ycUVCUtF1PrxbyFwv8CnQEbHfML94dR__00roJ5IdebLG2U4wM1xLyldEK-gC3kQy6imi-3wW8JpG2NEuRmV4KprHFH4dRrz0i2xUcJxZLGRpn2wK1p3rxMdBv2VJIQk2264tWmYYQX63QERdd_fs9VX1hUu15szD-2QIAoHLt2ih4XIvVHMA7Q6GP2Z2xDF_AS3Zv3vXcc"/>
+<div class="absolute inset-0 editorial-overlay flex flex-col justify-end p-10 text-white">
+<div class="flex items-center gap-4 mb-4">
+<span class="px-4 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full border border-white/20">Pop-Up Series</span>
+</div>
+<h3 class="text-4xl font-headline font-black tracking-tighter mb-4 leading-tight">Midnight in Kyoto: Omakase &amp; Jazz</h3>
+<div class="space-y-2 mb-8 text-[10px] font-black uppercase tracking-widest opacity-70">
+<div>Brooklyn Heights • Nov 25</div>
+<div>Price: $180</div>
+</div>
+<button class="w-fit bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all">
+                            Join Waitlist
+                        </button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="group relative h-[600px] overflow-hidden rounded-2xl cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Rooftop dining with city view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2UKjkZAwlAeA27HUaUGkisFJ0qcGip0xXcSwaE4xdpVBdvuGyw0nOPL7QbSGu5xeLtK0P8yddezT4D9bXr52tsMZVau4TVgl-uOuQ0EAqvBuBHkYRNGdwrRD0RRBqBwggzzCzC_Biq7Z2bTCTISmY8oYattWIgVXWMSrXTFcf_XvD_TanIKdm61h9W68VivFVa59wTbqw1HTbVzEAkojsVbaEbA7lJpmeqQ1NfNYseEp6gdJOC2w_YoOA2a_J4RCJtCVpKlCmVJ0"/>
+<div class="absolute inset-0 editorial-overlay flex flex-col justify-end p-10 text-white">
+<div class="flex items-center gap-4 mb-4">
+<span class="px-4 py-1 bg-secondary-container text-black text-[10px] font-black uppercase tracking-widest rounded-full">Seasonal Gala</span>
+</div>
+<h3 class="text-4xl font-headline font-black tracking-tighter mb-4 leading-tight">The Winter Harvest Banquet at Solaris</h3>
+<div class="space-y-2 mb-8 text-[10px] font-black uppercase tracking-widest opacity-70">
+<div>Tribeca Rooftop • Nov 29</div>
+<div>From $310</div>
+</div>
+<button class="w-fit bg-secondary-container text-black px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center gap-3 group/btn">
+                            Book Now
+                            <span class="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+</div>
+</article>
+<!-- Card 4: Long Vertical Style -->
+<article class="md:col-span-2 group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Dark cocktail bar atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvq4dCc1vBiQ-bELXBW3HoNk8AlgMzsxBfOeuOg-6OJ4bwnEp-849akReElBtHdZgE5oZ1Q4nijgaFgpJBIIDtzAUaW-Cn0Dkde6sDejhP3ADWHB0bGuEZcMXcst60oRODVvrmi29ntONnDeG4-xYrEpsQWuE4WHWksKYliPd5iy7NnJ66cq6MFiySHodwCwKd2D6wxgy5vjvAWXAcTU_3Pz7DaS1gN2jNJJqqH5qbI807dV1AidBMYEle3HJHoI9R0d1GmlKVpWU"/>
+<div class="absolute inset-0 editorial-overlay flex flex-col justify-end p-12 text-white">
+<div class="max-w-xl">
+<span class="text-[10px] font-black uppercase tracking-[0.4em] mb-4 block text-secondary-container">Private Collection</span>
+<h3 class="text-5xl font-headline font-black tracking-tighter mb-6">The Nocturnal Salon: Mixology Masterclass</h3>
+<p class="text-zinc-300 text-sm font-medium mb-8 leading-relaxed">Join world-renowned mixologists for an intimate evening of spirit architecture and sensory exploration.</p>
+<button class="bg-white text-black px-10 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-secondary-container transition-all">
+                                Request Invite
+                            </button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination -->
+<div class="mt-32 flex flex-col items-center gap-10">
+<div class="flex items-center gap-10">
+<button class="p-4 rounded-full border border-zinc-200 text-zinc-300 hover:text-black hover:border-black transition-all">
+<span class="material-symbols-outlined" data-icon="west">west</span>
+</button>
+<div class="flex items-center gap-8 font-headline text-sm font-black">
+<button class="text-black border-b-2 border-black pb-1">01</button>
+<button class="text-zinc-300 hover:text-black transition-colors">02</button>
+<button class="text-zinc-300 hover:text-black transition-colors">03</button>
+<span class="text-zinc-200">...</span>
+<button class="text-zinc-300 hover:text-black transition-colors">12</button>
+</div>
+<button class="p-4 rounded-full border border-zinc-200 text-zinc-300 hover:text-black hover:border-black transition-all">
+<span class="material-symbols-outlined" data-icon="east">east</span>
+</button>
+</div>
+<p class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Viewing 04 of 48 Curations</p>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-40 border-t border-zinc-100 bg-white">
+<div class="max-w-screen-2xl mx-auto px-12 py-24">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
+<div class="col-span-1 md:col-span-2 space-y-8">
+<div class="text-3xl font-black tracking-tighter text-black uppercase font-headline">Assemble</div>
+<p class="text-zinc-400 text-sm font-medium max-w-sm leading-relaxed">
+                        The definitive guide to the city's most exclusive happenings. Curated by experts, experienced by the discerning.
+                    </p>
+</div>
+<div class="space-y-6">
+<h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-black">Company</h5>
+<nav class="flex flex-col gap-4 text-sm font-bold text-zinc-400">
+<a class="hover:text-black transition-colors" href="#">Journal</a>
+<a class="hover:text-black transition-colors" href="#">About Us</a>
+<a class="hover:text-black transition-colors" href="#">Careers</a>
+<a class="hover:text-black transition-colors" href="#">Contact</a>
+</nav>
+</div>
+<div class="space-y-6">
+<h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-black">Follow</h5>
+<nav class="flex flex-col gap-4 text-sm font-bold text-zinc-400">
+<a class="hover:text-black transition-colors" href="#">Instagram</a>
+<a class="hover:text-black transition-colors" href="#">Twitter</a>
+<a class="hover:text-black transition-colors" href="#">Newsletter</a>
+</nav>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-zinc-100 gap-8">
+<p class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300">© 2024 Assemble Editorial. All rights reserved.</p>
+<div class="flex gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300">
+<a class="hover:text-black transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-black transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
