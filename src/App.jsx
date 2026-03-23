@@ -22,6 +22,9 @@ import SignupPage from './pages/SignupPage'
 import DashboardOverview from './pages/dashboard/DashboardOverview'
 import EventsManagement from './pages/dashboard/EventsManagement'
 import CreateEvent from './pages/dashboard/CreateEvent'
+import EditEvent from './pages/dashboard/EditEvent'
+import StatsEvent from './pages/dashboard/StatsEvent'
+import LiveFeed from './pages/dashboard/LiveFeed'
 import Analytics from './pages/dashboard/Analytics'
 import AutomationPage from './pages/dashboard/AutomationPage'
 import VolunteersManagement from './pages/dashboard/VolunteersManagement'
@@ -99,6 +102,9 @@ function App() {
               <Route index element={<DashboardOverview />} />
               <Route path="events" element={<EventsManagement />} />
               <Route path="events/create" element={<CreateEvent />} />
+              <Route path="events/:eventId/edit" element={<EditEvent />} />
+              <Route path="events/:eventId/stats" element={<StatsEvent />} />
+              <Route path="events/:eventId/live-feed" element={<LiveFeed />} />
               <Route path="automation" element={<AutomationPage />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="attendees" element={<Analytics />} />

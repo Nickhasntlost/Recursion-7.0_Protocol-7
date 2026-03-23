@@ -5,6 +5,30 @@ import { eventService } from '../../services/event'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
+// Category-specific fields configuration
+const categoryFields = {
+  concert: {
+    label: 'Concert',
+    fields: ['artist_name', 'genre', 'venue_name', 'seating_type', 'sound_quality']
+  },
+  workshop: {
+    label: 'Workshop',
+    fields: ['instructor_name', 'skill_level', 'max_participants', 'course_duration', 'materials_provided']
+  },
+  conference: {
+    label: 'Conference',
+    fields: ['venue_name', 'number_of_tracks', 'registration_fee', 'lunch_provided', 'certificate_provided']
+  },
+  festival: {
+    label: 'Festival',
+    fields: ['venue_name', 'number_of_stages', 'parking_available', 'camping_available', 'food_vendors']
+  },
+  exhibition: {
+    label: 'Exhibition',
+    fields: ['venue_name', 'number_of_booths', 'wheelchair_accessible', 'multimedia_displays', 'entry_fee']
+  }
+}
+
 export default function CreateEvent() {
   const [creationMode, setCreationMode] = useState('manual') // 'manual' | 'ai'
   const [step, setStep] = useState(1)
@@ -12,36 +36,477 @@ export default function CreateEvent() {
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
+    // Basic Info
     title: '',
     category: '',
     start_datetime: '',
     end_datetime: '',
-    description: ''
+    description: '',
+    
+    // Category-specific details
+    artist_name: '',
+    genre: '',
+    instructor_name: '',
+    skill_level: '',
+    venue_name: '',
+    seating_type: '',
+    sound_quality: '',
+    max_participants: '',
+    course_duration: '',
+    materials_provided: false,
+    number_of_tracks: '',
+    registration_fee: '',
+    lunch_provided: false,
+    certificate_provided: false,
+    number_of_stages: '',
+    parking_available: false,
+    camping_available: false,
+    food_vendors: false,
+    number_of_booths: '',
+    wheelchair_accessible: false,
+    multimedia_displays: false,
+    entry_fee: '',
+    
+    // Ticket Info
+    tickets: [
+      { type: 'Regular', price: '', quantity: '' }
+    ]
   })
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value, type, checked } = e.target
+    setFormData({ 
+      ...formData, 
+      [name]: type === 'checkbox' ? checked : value 
+    })
+  }
+
+  const handleTicketChange = (index, field, value) => {
+    const newTickets = [...formData.tickets]
+    newTickets[index][field] = value
+    setFormData({ ...formData, tickets: newTickets })
+  }
+
+  const addTicketType = () => {
+    setFormData({
+      ...formData,
+      tickets: [...formData.tickets, { type: '', price: '', quantity: '' }]
+    })
+  }
+
+  const removeTicketType = (index) => {
+    setFormData({
+      ...formData,
+      tickets: formData.tickets.filter((_, i) => i !== index)
+    })
   }
 
   const handleManualSubmit = async () => {
     try {
+      if (!formData.title || !formData.category) {
+        toast.error('Please fill in required fields')
+        return
+      }
+
       setIsSubmitting(true)
       const dataToSubmit = {
-        ...formData,
+        title: formData.title,
+        category: formData.category,
         start_datetime: formData.start_datetime ? new Date(formData.start_datetime).toISOString() : null,
         end_datetime: formData.end_datetime ? new Date(formData.end_datetime).toISOString() : null,
-        status: 'draft'
+        description: formData.description,
+        status: 'draft',
+        details: {
+          venue_name: formData.venue_name,
+          artist_name: formData.artist_name,
+          instructor_name: formData.instructor_name,
+          skill_level: formData.skill_level,
+          genre: formData.genre,
+          seating_type: formData.seating_type,
+          sound_quality: formData.sound_quality,
+          max_participants: formData.max_participants,
+          course_duration: formData.course_duration,
+          materials_provided: formData.materials_provided,
+          number_of_tracks: formData.number_of_tracks,
+          registration_fee: formData.registration_fee,
+          lunch_provided: formData.lunch_provided,
+          certificate_provided: formData.certificate_provided,
+          number_of_stages: formData.number_of_stages,
+          parking_available: formData.parking_available,
+          camping_available: formData.camping_available,
+          food_vendors: formData.food_vendors,
+          number_of_booths: formData.number_of_booths,
+          wheelchair_accessible: formData.wheelchair_accessible,
+          multimedia_displays: formData.multimedia_displays,
+          entry_fee: formData.entry_fee
+        },
+        tickets: formData.tickets
       }
       
-      const response = await eventService.createEvent(dataToSubmit);
+      const response = await eventService.createEvent(dataToSubmit)
       toast.success('Event created successfully!')
       navigate('/dashboard/events')
     } catch (error) {
-      console.error('Error creating event manually:', error)
+      console.error('Error creating event:', error)
       toast.error(error.message || 'Failed to create event')
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const renderCategoryFields = () => {
+    const category = formData.category
+    if (!category || !categoryFields[category]) return null
+
+    const fields = categoryFields[category].fields
+
+    return (
+      <div className="space-y-6">
+        {fields.includes('artist_name') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Artist/Performer Name
+            </label>
+            <input
+              type="text"
+              name="artist_name"
+              value={formData.artist_name}
+              onChange={handleChange}
+              placeholder="e.g., The Beatles"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('genre') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Genre
+            </label>
+            <select
+              name="genre"
+              value={formData.genre}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface"
+            >
+              <option value="">Select genre</option>
+              <option value="rock">Rock</option>
+              <option value="pop">Pop</option>
+              <option value="jazz">Jazz</option>
+              <option value="classical">Classical</option>
+              <option value="hip-hop">Hip-Hop</option>
+              <option value="electronic">Electronic</option>
+            </select>
+          </div>
+        )}
+
+        {fields.includes('instructor_name') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Instructor Name
+            </label>
+            <input
+              type="text"
+              name="instructor_name"
+              value={formData.instructor_name}
+              onChange={handleChange}
+              placeholder="e.g., Dr. John Smith"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('skill_level') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Skill Level
+            </label>
+            <select
+              name="skill_level"
+              value={formData.skill_level}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface"
+            >
+              <option value="">Select level</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+        )}
+
+        {fields.includes('venue_name') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Venue Name
+            </label>
+            <input
+              type="text"
+              name="venue_name"
+              value={formData.venue_name}
+              onChange={handleChange}
+              placeholder="e.g., Madison Square Garden"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('seating_type') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Seating Type
+            </label>
+            <select
+              name="seating_type"
+              value={formData.seating_type}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface"
+            >
+              <option value="">Select seating</option>
+              <option value="general">General Admission</option>
+              <option value="reserved">Reserved Seating</option>
+              <option value="vip">VIP Seating</option>
+              <option value="mixed">Mixed (GA & Reserved)</option>
+            </select>
+          </div>
+        )}
+
+        {fields.includes('sound_quality') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Sound Quality
+            </label>
+            <select
+              name="sound_quality"
+              value={formData.sound_quality}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface"
+            >
+              <option value="">Select quality</option>
+              <option value="standard">Standard</option>
+              <option value="high">High Fidelity</option>
+              <option value="surround">Surround Sound</option>
+            </select>
+          </div>
+        )}
+
+        {fields.includes('max_participants') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Maximum Participants
+            </label>
+            <input
+              type="number"
+              name="max_participants"
+              value={formData.max_participants}
+              onChange={handleChange}
+              placeholder="e.g., 30"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('course_duration') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Course Duration (hours)
+            </label>
+            <input
+              type="number"
+              name="course_duration"
+              value={formData.course_duration}
+              onChange={handleChange}
+              placeholder="e.g., 8"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('materials_provided') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="materials_provided"
+              checked={formData.materials_provided}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Materials Provided</span>
+          </label>
+        )}
+
+        {fields.includes('number_of_tracks') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Number of Tracks
+            </label>
+            <input
+              type="number"
+              name="number_of_tracks"
+              value={formData.number_of_tracks}
+              onChange={handleChange}
+              placeholder="e.g., 3"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('registration_fee') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Registration Fee (₹)
+            </label>
+            <input
+              type="number"
+              name="registration_fee"
+              value={formData.registration_fee}
+              onChange={handleChange}
+              placeholder="e.g., 500"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('lunch_provided') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="lunch_provided"
+              checked={formData.lunch_provided}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Lunch Provided</span>
+          </label>
+        )}
+
+        {fields.includes('certificate_provided') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="certificate_provided"
+              checked={formData.certificate_provided}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Certificate Provided</span>
+          </label>
+        )}
+
+        {fields.includes('number_of_stages') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Number of Stages
+            </label>
+            <input
+              type="number"
+              name="number_of_stages"
+              value={formData.number_of_stages}
+              onChange={handleChange}
+              placeholder="e.g., 2"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('parking_available') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="parking_available"
+              checked={formData.parking_available}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Parking Available</span>
+          </label>
+        )}
+
+        {fields.includes('camping_available') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="camping_available"
+              checked={formData.camping_available}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Camping Available</span>
+          </label>
+        )}
+
+        {fields.includes('food_vendors') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="food_vendors"
+              checked={formData.food_vendors}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Food Vendors Available</span>
+          </label>
+        )}
+
+        {fields.includes('number_of_booths') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Number of Exhibition Booths
+            </label>
+            <input
+              type="number"
+              name="number_of_booths"
+              value={formData.number_of_booths}
+              onChange={handleChange}
+              placeholder="e.g., 50"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+
+        {fields.includes('wheelchair_accessible') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="wheelchair_accessible"
+              checked={formData.wheelchair_accessible}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Wheelchair Accessible</span>
+          </label>
+        )}
+
+        {fields.includes('multimedia_displays') && (
+          <label className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20 cursor-pointer hover:bg-surface-container-high transition-all">
+            <input
+              type="checkbox"
+              name="multimedia_displays"
+              checked={formData.multimedia_displays}
+              onChange={handleChange}
+              className="w-5 h-5 cursor-pointer"
+            />
+            <span className="font-bold text-on-surface">Multimedia Displays</span>
+          </label>
+        )}
+
+        {fields.includes('entry_fee') && (
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+              Entry Fee (₹)
+            </label>
+            <input
+              type="number"
+              name="entry_fee"
+              value={formData.entry_fee}
+              onChange={handleChange}
+              placeholder="e.g., 200"
+              className="w-full px-6 py-4 rounded-full bg-surface-container-low border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+            />
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -144,7 +609,7 @@ export default function CreateEvent() {
 
                 <div>
                   <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
-                    Event Title
+                    Event Title *
                   </label>
                   <input
                     type="text"
@@ -158,7 +623,7 @@ export default function CreateEvent() {
 
                 <div>
                   <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
-                    Category
+                    Category *
                   </label>
                   <select 
                     name="category"
@@ -178,7 +643,7 @@ export default function CreateEvent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
-                      Start Date
+                      Start Date *
                     </label>
                     <input
                       type="datetime-local"
@@ -190,7 +655,7 @@ export default function CreateEvent() {
                   </div>
                   <div>
                     <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
-                      End Date
+                      End Date *
                     </label>
                     <input
                       type="datetime-local"
@@ -218,16 +683,192 @@ export default function CreateEvent() {
               </div>
             )}
 
-            {/* Placeholder for other steps */}
-            {step > 1 && (
-              <div className="text-center py-20">
-                <span className="material-symbols-outlined text-8xl text-on-surface-variant/20 mb-6 block">
-                  construction
-                </span>
-                <h3 className="text-2xl font-black mb-2">Step {step} Coming Soon</h3>
-                <p className="text-on-surface-variant">
-                  We're building out the detailed flow. In the meantime, you can skip to save.
+            {step === 2 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-black font-[family-name:var(--font-family-headline)] mb-2">
+                  Event Details
+                </h2>
+                <p className="text-on-surface-variant mb-6">
+                  {formData.category ? `Configure ${categoryFields[formData.category]?.label || 'event'} specific details` : 'Please select a category in step 1'}
                 </p>
+                
+                {formData.category ? renderCategoryFields() : (
+                  <div className="text-center py-12">
+                    <span className="material-symbols-outlined text-6xl text-on-surface-variant/30 mb-4 block">
+                      info
+                    </span>
+                    <p className="text-on-surface-variant">Select a category in the previous step to unlock category-specific details</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-black font-[family-name:var(--font-family-headline)] mb-6">
+                  Ticket Configuration
+                </h2>
+
+                <div className="space-y-4">
+                  {formData.tickets.map((ticket, idx) => (
+                    <motion.div
+                      key={idx}
+                      className="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/20 space-y-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold">Ticket Type {idx + 1}</h3>
+                        {formData.tickets.length > 1 && (
+                          <button
+                            onClick={() => removeTicketType(idx)}
+                            className="p-2 rounded-full text-red-500 hover:bg-red-500/10 transition-all"
+                          >
+                            <span className="material-symbols-outlined">delete</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+                          Ticket Type *
+                        </label>
+                        <input
+                          type="text"
+                          value={ticket.type}
+                          onChange={(e) => handleTicketChange(idx, 'type', e.target.value)}
+                          placeholder="e.g., Regular, VIP, Student"
+                          className="w-full px-6 py-4 rounded-full bg-surface-container-lowest border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+                            Price (₹) *
+                          </label>
+                          <input
+                            type="number"
+                            value={ticket.price}
+                            onChange={(e) => handleTicketChange(idx, 'price', e.target.value)}
+                            placeholder="e.g., 500"
+                            className="w-full px-6 py-4 rounded-full bg-surface-container-lowest border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-on-surface-variant">
+                            Quantity *
+                          </label>
+                          <input
+                            type="number"
+                            value={ticket.quantity}
+                            onChange={(e) => handleTicketChange(idx, 'quantity', e.target.value)}
+                            placeholder="e.g., 100"
+                            className="w-full px-6 py-4 rounded-full bg-surface-container-lowest border border-outline-variant/20 focus:border-secondary-container/50 outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/50"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={addTicketType}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-dashed border-secondary-container transition-all font-bold text-secondary"
+                >
+                  <span className="material-symbols-outlined">add_circle</span>
+                  Add Ticket Type
+                </button>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-black font-[family-name:var(--font-family-headline)] mb-6">
+                  Review Event Details
+                </h2>
+
+                {/* Basic Info Summary */}
+                <div className="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/20 space-y-4">
+                  <h3 className="font-bold text-lg">Basic Information</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-on-surface-variant uppercase tracking-widest mb-1">Title</p>
+                      <p className="font-bold">{formData.title || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-on-surface-variant uppercase tracking-widest mb-1">Category</p>
+                      <p className="font-bold capitalize">{formData.category || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-on-surface-variant uppercase tracking-widest mb-1">Start Date</p>
+                      <p className="font-bold">{formData.start_datetime ? new Date(formData.start_datetime).toLocaleString() : '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-on-surface-variant uppercase tracking-widest mb-1">End Date</p>
+                      <p className="font-bold">{formData.end_datetime ? new Date(formData.end_datetime).toLocaleString() : '-'}</p>
+                    </div>
+                  </div>
+                  {formData.description && (
+                    <div>
+                      <p className="text-on-surface-variant uppercase tracking-widest mb-1">Description</p>
+                      <p className="font-medium text-on-surface">{formData.description}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Category Details Summary */}
+                {formData.category && (
+                  <div className="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/20 space-y-4">
+                    <h3 className="font-bold text-lg">{categoryFields[formData.category]?.label} Details</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {formData.venue_name && <div><p className="text-on-surface-variant kb-1">Venue</p><p className="font-bold">{formData.venue_name}</p></div>}
+                      {formData.artist_name && <div><p className="text-on-surface-variant mb-1">Artist</p><p className="font-bold">{formData.artist_name}</p></div>}
+                      {formData.instructor_name && <div><p className="text-on-surface-variant mb-1">Instructor</p><p className="font-bold">{formData.instructor_name}</p></div>}
+                      {formData.genre && <div><p className="text-on-surface-variant mb-1">Genre</p><p className="font-bold">{formData.genre}</p></div>}
+                      {formData.skill_level && <div><p className="text-on-surface-variant mb-1">Skill Level</p><p className="font-bold capitalize">{formData.skill_level}</p></div>}
+                      {formData.max_participants && <div><p className="text-on-surface-variant mb-1">Max Participants</p><p className="font-bold">{formData.max_participants}</p></div>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Ticket Summary */}
+                <div className="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/20 space-y-4">
+                  <h3 className="font-bold text-lg">Ticket Configuration</h3>
+                  <div className="space-y-3">
+                    {formData.tickets.map((ticket, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-surface-container-high">
+                        <div>
+                          <p className="font-bold">{ticket.type || 'Unnamed'}</p>
+                          <p className="text-sm text-on-surface-variant">₹{ticket.price || 0} × {ticket.quantity || 0} tickets</p>
+                        </div>
+                        <p className="font-bold">₹{(ticket.price * ticket.quantity) || 0}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="pt-3 border-t border-outline-variant/20 flex items-center justify-between">
+                    <p className="font-bold">Total Revenue Potential</p>
+                    <p className="text-xl font-black">₹{formData.tickets.reduce((sum, t) => sum + (t.price * t.quantity || 0), 0)}</p>
+                  </div>
+                </div>
+
+                <motion.div
+                  className="p-6 rounded-2xl bg-secondary-container/10 border border-secondary-container/30"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <div className="flex items-start gap-4">
+                    <span className="material-symbols-outlined text-2xl text-secondary shrink-0">
+                      check_circle
+                    </span>
+                    <div>
+                      <h3 className="font-black text-lg mb-1 text-on-surface">Ready to Launch</h3>
+                      <p className="text-sm text-on-surface-variant">
+                        Click "Create Event" to save your event as draft. You can continue editing anytime.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             )}
 
@@ -243,20 +884,43 @@ export default function CreateEvent() {
               </button>
 
               <div className="flex items-center gap-3">
-                <button 
-                  onClick={handleManualSubmit}
-                  disabled={isSubmitting}
-                  className="px-8 py-4 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all font-bold disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Saving...' : 'Save & Exit'}
-                </button>
-                <button
-                  onClick={() => setStep(Math.min(4, step + 1))}
-                  className="flex items-center gap-2 px-8 py-4 rounded-full bg-secondary-container text-on-secondary-fixed hover:scale-[0.98] transition-all font-bold shadow-lg shadow-secondary-container/20"
-                >
-                  {step === 4 ? 'Review' : 'Continue'}
-                  <span className="material-symbols-outlined">arrow_forward</span>
-                </button>
+                {step < 4 && (
+                  <button 
+                    onClick={handleManualSubmit}
+                    disabled={isSubmitting}
+                    className="px-8 py-4 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all font-bold disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Saving...' : 'Save Draft'}
+                  </button>
+                )}
+                {step === 4 && (
+                  <button 
+                    onClick={handleManualSubmit}
+                    disabled={isSubmitting}
+                    className="px-8 py-4 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all font-bold disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Creating...' : 'Save as Draft'}
+                  </button>
+                )}
+                {step < 4 && (
+                  <button
+                    onClick={() => setStep(Math.min(4, step + 1))}
+                    className="flex items-center gap-2 px-8 py-4 rounded-full bg-secondary-container text-on-secondary-fixed hover:scale-[0.98] transition-all font-bold shadow-lg shadow-secondary-container/20"
+                  >
+                    Continue
+                    <span className="material-symbols-outlined">arrow_forward</span>
+                  </button>
+                )}
+                {step === 4 && (
+                  <button
+                    onClick={handleManualSubmit}
+                    disabled={isSubmitting}
+                    className="flex items-center gap-2 px-8 py-4 rounded-full bg-secondary-container text-on-secondary-fixed hover:scale-[0.98] disabled:opacity-50 transition-all font-bold shadow-lg shadow-secondary-container/20"
+                  >
+                    {isSubmitting ? 'Creating...' : 'Create Event'}
+                    <span className="material-symbols-outlined">check_circle</span>
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
@@ -273,9 +937,17 @@ export default function CreateEvent() {
                 lightbulb
               </span>
               <div>
-                <h3 className="font-black text-lg mb-2 text-on-surface">Pro Tip</h3>
+                <h3 className="font-black text-lg mb-2 text-on-surface">
+                  {step === 1 && 'Pro Tip: Basic Information'}
+                  {step === 2 && 'Pro Tip: Event Details'}
+                  {step === 3 && 'Pro Tip: Ticket Pricing'}
+                  {step === 4 && 'Pro Tip: Review & Launch'}
+                </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
-                  A compelling event title and description can increase bookings by up to 40%. Be specific about what attendees will experience!
+                  {step === 1 && 'A compelling event title and description can increase bookings by up to 40%. Be specific about what attendees will experience!'}
+                  {step === 2 && `Configure all ${formData.category ? categoryFields[formData.category]?.label : 'category'}-specific details to make your event stand out and attract the right audience.`}
+                  {step === 3 && 'Offer multiple ticket types (Regular, VIP, Student) to cater to different audience segments and maximize revenue.'}
+                  {step === 4 && 'Review all details carefully. You can edit your event anytime after creation. Click "Create Event" to save as draft.'}
                 </p>
               </div>
             </div>
