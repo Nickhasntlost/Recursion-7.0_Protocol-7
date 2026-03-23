@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
+import DashboardLayout from './components/DashboardLayout'
 import HomePage from './pages/HomePage'
 import CategoryListingPage from './pages/CategoryListingPage'
 import EventDetailPage from './pages/EventDetailPage'
@@ -13,6 +14,12 @@ import MyBookingsPage from './pages/MyBookingsPage'
 import WaitlistPage from './pages/WaitlistPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+
+// Dashboard Pages
+import DashboardOverview from './pages/dashboard/DashboardOverview'
+import EventsManagement from './pages/dashboard/EventsManagement'
+import CreateEvent from './pages/dashboard/CreateEvent'
+import Analytics from './pages/dashboard/Analytics'
 
 function App() {
   return (
@@ -64,6 +71,25 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+            </Route>
+
+            {/* Organizer Dashboard Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute organizerOnly>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<DashboardOverview />} />
+              <Route path="events" element={<EventsManagement />} />
+              <Route path="events/create" element={<CreateEvent />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="attendees" element={<Analytics />} />
+              <Route path="bookings" element={<Analytics />} />
+              <Route path="marketing" element={<Analytics />} />
+              <Route path="settings" element={<Analytics />} />
             </Route>
           </Routes>
         </AnimatePresence>

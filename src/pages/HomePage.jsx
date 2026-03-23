@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion, useMotionValueEvent, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
+import { eventService } from '../services/event'
 
 const heroEvents = [
   {
@@ -132,6 +133,12 @@ export default function HomePage() {
     return () => observer.disconnect()
   }, [])
 
+  // Backend integration
+  const [events, setEvents] = useState([])
+  const [trendingEvents, setTrendingEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
   useEffect(() => {
     const currentTitle = heroEvents[currentSlide].title
     let timeout
@@ -174,6 +181,31 @@ export default function HomePage() {
     return () => {
       window.dispatchEvent(new CustomEvent('hero-subnav-toggle', { detail: { visible: false } }))
     }
+  }, [])
+
+  // Fetch events from backend
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Fetch published events
+        const allEvents = await eventService.getAllEvents({ status: 'published' })
+        setEvents(allEvents)
+
+        // Set trending events (first 3 for now)
+        setTrendingEvents(allEvents.slice(0, 3))
+      } catch (err) {
+        console.error('Error fetching events:', err)
+        setError(err)
+        // Keep mock data as fallback - no need to show error to user
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEvents()
   }, [])
 
   return (
@@ -432,52 +464,90 @@ export default function HomePage() {
           </Link>
         </div>
         <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          {trendingCards.map((card, i) => (
-            <motion.div
-              key={card.title}
-              className="bg-white border border-outline-variant p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group flex flex-col gap-6 cursor-pointer"
-              variants={cardHover}
-              initial="rest"
-              whileHover="hover"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">{card.location}</p>
-                  <h3 className="text-2xl font-black leading-tight">{card.title}</h3>
-                </div>
-                <div className="flex -space-x-3">
-                  <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
-                  {i === 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 flex items-center justify-center text-[10px] font-bold">+4</div>}
-                  {i !== 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>}
-                </div>
+          {loading ? (
+            // Loading skeletons
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-white border border-outline-variant p-8 rounded-[2rem] animate-pulse">
+                <div className="h-24 bg-surface-container-low rounded-lg mb-4"></div>
+                <div className="h-6 bg-surface-container-low rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-surface-container-low rounded w-1/2"></div>
               </div>
-              <div className={`inline-flex self-start items-center gap-2 px-3 py-1 ${card.statusColor} font-bold text-xs rounded-full`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${card.dotColor}`} />
-                {card.status}
-              </div>
-              <div className="space-y-3 pt-4 border-t border-outline-variant/30">
-                <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">
-                  {i === 0 ? 'Event Perks' : i === 1 ? 'Highlights' : 'Event Extras'}
-                </p>
-                {card.checklist.map(item => (
-                  <div key={item.label} className="flex items-center gap-3">
-                    <span className={`material-symbols-outlined text-lg ${item.done ? 'text-primary' : 'text-outline-variant'}`}>
-                      {item.done ? 'check_circle' : 'radio_button_unchecked'}
-                    </span>
-                    <span className={`text-sm font-medium ${item.done ? '' : 'text-on-surface-variant'}`}>{item.label}</span>
+            ))
+          ) : (
+            // Use real events if available, otherwise fallback to mock
+            (trendingEvents.length > 0 ? trendingEvents : trendingCards).slice(0, 3).map((item, i) => {
+              // Check if it's a real event from backend
+              const isRealEvent = item.id && item.slug
+              const card = isRealEvent ? {
+                location: `${item.city || 'India'} • ${new Date(item.start_datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+                title: item.title,
+                status: item.available_capacity > 50 ? 'On Sale' : item.available_capacity > 0 ? 'Selling Fast' : 'Sold Out',
+                statusColor: item.available_capacity > 50 ? 'bg-surface-container-high text-on-surface-variant' : item.available_capacity > 0 ? 'bg-secondary-container/20 text-secondary' : 'bg-error-container text-on-error-container',
+                dotColor: item.available_capacity > 50 ? 'bg-outline' : item.available_capacity > 0 ? 'bg-secondary' : 'bg-error',
+                price: item.min_price ? `₹${item.min_price}` : 'TBD',
+                btnLabel: item.available_capacity > 0 ? 'View Event' : 'Join Waitlist',
+                btnStyle: item.available_capacity > 0 ? 'border border-primary text-primary hover:bg-primary hover:text-white' : 'bg-surface-container-high text-on-surface-variant cursor-not-allowed',
+                description: item.description || '',
+                eventLink: `/event/${item.slug}`
+              } : item
+
+              return (
+                <motion.div
+                  key={isRealEvent ? item.id : card.title}
+                  className="bg-white border border-outline-variant p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group flex flex-col gap-6 cursor-pointer"
+                  variants={cardHover}
+                  initial="rest"
+                  whileHover="hover"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">{card.location}</p>
+                      <h3 className="text-2xl font-black leading-tight">{card.title}</h3>
+                    </div>
+                    <div className="flex -space-x-3">
+                      <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
+                      {i === 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 flex items-center justify-center text-[10px] font-bold">+4</div>}
+                      {i !== 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>}
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="mt-auto pt-6 flex justify-between items-center">
-                <span className="text-lg font-black">{card.price}</span>
-                <Link to={card.btnLabel === 'Join Waitlist' ? '/waitlist' : '/event/sunburn-goa'}>
-                  <button className={`px-6 py-2 text-xs font-black rounded-full transition-all ${card.btnStyle}`}>
-                    {card.btnLabel}
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-          ))}
+                  <div className={`inline-flex self-start items-center gap-2 px-3 py-1 ${card.statusColor} font-bold text-xs rounded-full`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${card.dotColor}`} />
+                    {card.status}
+                  </div>
+                  <div className="space-y-3 pt-4 border-t border-outline-variant/30">
+                    <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">
+                      {i === 0 ? 'Event Perks' : i === 1 ? 'Highlights' : 'Event Extras'}
+                    </p>
+                    {isRealEvent ? (
+                      // For real events, show description or default perks
+                      <div className="flex items-center gap-3">
+                        <span className="material-symbols-outlined text-lg text-primary">check_circle</span>
+                        <span className="text-sm font-medium">Tickets Available</span>
+                      </div>
+                    ) : (
+                      // Mock event checklist
+                      card.checklist.map(item => (
+                        <div key={item.label} className="flex items-center gap-3">
+                          <span className={`material-symbols-outlined text-lg ${item.done ? 'text-primary' : 'text-outline-variant'}`}>
+                            {item.done ? 'check_circle' : 'radio_button_unchecked'}
+                          </span>
+                          <span className={`text-sm font-medium ${item.done ? '' : 'text-on-surface-variant'}`}>{item.label}</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="mt-auto pt-6 flex justify-between items-center">
+                    <span className="text-lg font-black">{card.price}</span>
+                    <Link to={isRealEvent ? card.eventLink : (card.btnLabel === 'Join Waitlist' ? '/waitlist' : '/event/sunburn-goa')}>
+                      <button className={`px-6 py-2 text-xs font-black rounded-full transition-all ${card.btnStyle}`}>
+                        {card.btnLabel}
+                      </button>
+                    </Link>
+                  </div>
+                </motion.div>
+              )
+            })
+          )}
         </motion.div>
       </motion.section>
 

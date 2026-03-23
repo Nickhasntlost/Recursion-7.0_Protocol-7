@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { eventService } from '../services/event'
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -19,6 +21,62 @@ const reviewers = [
 ]
 
 export default function EventDetailPage() {
+  const { slug } = useParams()
+  const [event, setEvent] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Fetch event details from backend
+  useEffect(() => {
+    const fetchEvent = async () => {
+      if (!slug) return
+
+      try {
+        setLoading(true)
+        setError(null)
+
+        // For now, fetch all events and find by slug (until backend supports slug param)
+        const allEvents = await eventService.getAllEvents({ status: 'published' })
+        const foundEvent = allEvents.find(e => e.slug === slug)
+
+        if (foundEvent) {
+          setEvent(foundEvent)
+        } else {
+          setError('Event not found')
+        }
+      } catch (err) {
+        console.error('Error fetching event:', err)
+        setError(err)
+        // Keep rendering mock data as fallback
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEvent()
+  }, [slug])
+
+  // Use real event data if available, otherwise use mock data
+  const displayData = event || {
+    title: 'Utsova. 2024',
+    category: 'Architecture & Design',
+    description: 'A curated symposium bringing together the brightest minds in structural aesthetics and sustainable urbanism. Join us for an evening of provocative discourse and networking.',
+    start_datetime: '2024-10-24T18:00:00',
+    venue_name: 'The Concrete Gallery',
+    city: 'Mumbai',
+    min_price: 85,
+    max_price: 295,
+    total_capacity: 200,
+    available_capacity: 43,
+    organization_name: 'Studio Nexus'
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'TBD'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
+
   return (
     <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-8 pb-32">
       {/* Hero Section */}
@@ -32,42 +90,54 @@ export default function EventDetailPage() {
           <img className="w-full h-full object-cover rounded-lg shadow-sm" alt="Event space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAGZj_6D_lFdLBlI_bgiwIzFkPGB8JLf_toOhJhosnNFUI7p23iosuSIjGOsGfDL1K9cLCPTsmCT73lFZWqKKv7eWGGkQmUABV2opwrU6MblUA8dMmnu3_0xNhjC2m5pT6p2oulqY0HHXIq5e7cin7orGLsqrkTC6vSqEpOJiGnQesLRxIfVajxLdcg1UqXpdciiqgZgiLfZwpXwwq0iJMMSHZUFrXWlxR698r0xqX4tGnrTHyk5MCFzHuFPAeimXA4oPJJw6anHo" />
         </div>
         <div className="w-full lg:w-1/2 py-8 lg:py-4 flex flex-col justify-center">
-          <span className="inline-block bg-secondary-container text-on-secondary-fixed px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6 w-max">
-            Architecture &amp; Design
-          </span>
-          <h1 className="font-[family-name:var(--font-family-headline)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
-            Utsova. 2024
-          </h1>
-          <div className="flex flex-wrap gap-8 mb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary">location_on</span>
-              </div>
-              <div>
-                <p className="text-xs text-on-surface-variant font-medium">VENUE</p>
-                <p className="font-bold">The Concrete Gallery</p>
-              </div>
+          {loading ? (
+            <div className="animate-pulse space-y-6">
+              <div className="h-8 bg-surface-container-low rounded w-1/3"></div>
+              <div className="h-20 bg-surface-container-low rounded w-3/4"></div>
+              <div className="h-24 bg-surface-container-low rounded"></div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary">calendar_today</span>
+          ) : (
+            <>
+              <span className="inline-block bg-secondary-container text-on-secondary-fixed px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6 w-max">
+                {displayData.category || 'Event'}
+              </span>
+              <h1 className="font-[family-name:var(--font-family-headline)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
+                {displayData.title}
+              </h1>
+              <div className="flex flex-wrap gap-8 mb-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary">location_on</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-on-surface-variant font-medium">VENUE</p>
+                    <p className="font-bold">{displayData.venue_name || 'TBD'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary">calendar_today</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-on-surface-variant font-medium">DATE &amp; TIME</p>
+                    <p className="font-bold">{formatDate(displayData.start_datetime)}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-on-surface-variant font-medium">DATE &amp; TIME</p>
-                <p className="font-bold">Oct 24, 18:00</p>
+              <div className="flex items-center gap-4 mb-8 p-4 rounded-lg bg-surface-container-low w-max">
+                <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary">business</span>
+                </div>
+                <div>
+                  <p className="text-xs text-on-surface-variant">ORGANIZED BY</p>
+                  <p className="font-bold">{displayData.organization_name || 'Event Organizer'}</p>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 mb-8 p-4 rounded-lg bg-surface-container-low w-max">
-            <img className="w-12 h-12 rounded-full object-cover" alt="Organizer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD10XoPC4uAZd1Gak3IGi0jH-82-B38iit-vyb4xyFI7fClvWS8Pa7zivLoiPaAjncnSQWWfgjKnBStxPq_RgAgyrmiq4KUjnDPIupxsyqpo5Z76KGxotheAVDYhJejjvCGim9mT8FVz82rh08hbUc62Duac8H16r8Op6fUOkxW9dApeb6C-A128LWH1RQ3Lva1RoPUpEmWzRQTQgaG_XXpbH3Gy6gcAs4jt9CznjVl94Go_zbw1EDzHH3wYSwK30TQm7k01I4L1LM" />
-            <div>
-              <p className="text-xs text-on-surface-variant">ORGANIZED BY</p>
-              <p className="font-bold">Studio Nexus</p>
-            </div>
-          </div>
-          <p className="text-on-surface-variant text-lg leading-relaxed mb-10 max-w-xl">
-            A curated symposium bringing together the brightest minds in structural aesthetics and sustainable urbanism. Join us for an evening of provocative discourse and networking.
-          </p>
+              <p className="text-on-surface-variant text-lg leading-relaxed mb-10 max-w-xl">
+                {displayData.description || 'Join us for an amazing event experience.'}
+              </p>
+            </>
+          )}
           <div className="flex items-center gap-3">
             <div className="flex -space-x-3">
               {avatarUrls.map((url, i) => (
@@ -81,25 +151,32 @@ export default function EventDetailPage() {
       </motion.section>
 
       {/* Availability Bar */}
-      <motion.section className="mb-20" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-        <div className="bg-surface-container-low p-8 rounded-lg flex flex-col md:flex-row items-center gap-8 shadow-sm">
-          <div className="flex-1 w-full">
-            <div className="flex justify-between mb-4">
-              <span className="font-bold flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>confirmation_number</span>
-                Live Availability
-              </span>
-              <span className="font-bold text-error">43/200 remaining</span>
+      {!loading && displayData.available_capacity !== undefined && (
+        <motion.section className="mb-20" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <div className="bg-surface-container-low p-8 rounded-lg flex flex-col md:flex-row items-center gap-8 shadow-sm">
+            <div className="flex-1 w-full">
+              <div className="flex justify-between mb-4">
+                <span className="font-bold flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>confirmation_number</span>
+                  Live Availability
+                </span>
+                <span className="font-bold text-error">{displayData.available_capacity}/{displayData.total_capacity} remaining</span>
+              </div>
+              <div className="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${displayData.available_capacity / displayData.total_capacity < 0.3 ? 'bg-error' : 'bg-primary'}`}
+                  style={{ width: `${(displayData.available_capacity / displayData.total_capacity) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
-              <div className="h-full bg-error w-[21.5%]" />
-            </div>
+            {displayData.available_capacity / displayData.total_capacity < 0.3 && (
+              <div className="bg-error-container text-on-error-container px-4 py-2 rounded-full text-xs font-bold animate-pulse">
+                Selling out fast
+              </div>
+            )}
           </div>
-          <div className="bg-error-container text-on-error-container px-4 py-2 rounded-full text-xs font-bold animate-pulse">
-            Selling out fast
-          </div>
-        </div>
-      </motion.section>
+        </motion.section>
+      )}
 
       {/* Ticket Tiers */}
       <motion.section className="mb-24" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
@@ -186,25 +263,29 @@ export default function EventDetailPage() {
       </motion.section>
 
       {/* Sticky Bottom Bar */}
-      <div className="fixed bottom-0 left-0 w-full z-50 p-6">
-        <div className="max-w-4xl mx-auto glass rounded-full px-10 py-5 shadow-[0_32px_64px_rgba(26,28,28,0.08)] flex justify-between items-center">
-          <div className="flex flex-col">
-            <p className="text-[10px] font-black tracking-widest text-on-surface-variant uppercase">Starting From</p>
-            <p className="text-2xl font-black">₹85.00</p>
+      {!loading && (
+        <div className="fixed bottom-0 left-0 w-full z-50 p-6">
+          <div className="max-w-4xl mx-auto glass rounded-full px-10 py-5 shadow-[0_32px_64px_rgba(26,28,28,0.08)] flex justify-between items-center">
+            <div className="flex flex-col">
+              <p className="text-[10px] font-black tracking-widest text-on-surface-variant uppercase">Starting From</p>
+              <p className="text-2xl font-black">
+                {displayData.min_price ? `₹${displayData.min_price.toFixed(2)}` : 'TBD'}
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full">
+              <span className="material-symbols-outlined text-on-surface-variant">person</span>
+              <span className="font-bold text-sm">1 Adult</span>
+              <span className="material-symbols-outlined text-primary text-sm cursor-pointer">expand_more</span>
+            </div>
+            <Link to={`/event/${slug || 'Utsova-2024'}/select`}>
+              <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-3 hover:scale-[0.98] transition-all">
+                Book Now
+                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+              </button>
+            </Link>
           </div>
-          <div className="hidden sm:flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full">
-            <span className="material-symbols-outlined text-on-surface-variant">person</span>
-            <span className="font-bold text-sm">1 Adult</span>
-            <span className="material-symbols-outlined text-primary text-sm cursor-pointer">expand_more</span>
-          </div>
-          <Link to="/event/Utsova-2024/select">
-            <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-3 hover:scale-[0.98] transition-all">
-              Book Now
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
-            </button>
-          </Link>
         </div>
-      </div>
+      )}
     </div>
   )
 }

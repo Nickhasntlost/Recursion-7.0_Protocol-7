@@ -1,5 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { eventService } from '../services/event'
 
 const cardHover = {
   rest: { y: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' },
@@ -385,6 +387,33 @@ export default function CategoryListingPage() {
   const { slug } = useParams()
   const config = categoryConfigs[slug] || categoryConfigs.dining
   const activeSlug = slug in categoryConfigs ? slug : 'dining'
+
+  // Backend integration
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Fetch events by category from backend
+  useEffect(() => {
+    const fetchCategoryEvents = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Fetch events for this category
+        const categoryEvents = await eventService.getEventsByCategory(slug)
+        setEvents(categoryEvents)
+      } catch (err) {
+        console.error('Error fetching category events:', err)
+        setError(err)
+        // Keep mock data as fallback - no need to show error
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCategoryEvents()
+  }, [slug])
 
   const renderLayout = () => {
     switch (config.layout) {
