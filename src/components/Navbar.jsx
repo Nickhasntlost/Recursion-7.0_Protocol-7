@@ -1,6 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useTheme } from '../contexts/ThemeContext'
+import { authService } from '../services/auth'
 
 const heroEventTabs = [
   { icon: 'restaurant', label: 'Dining', to: '/category/dining' },
@@ -15,6 +17,14 @@ export default function Navbar() {
   const location = useLocation()
   const isHome = location.pathname === '/'
   const [showHeroTabs, setShowHeroTabs] = useState(false)
+  const { theme, toggleTheme } = useTheme()
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // Get current user from localStorage
+    const currentUser = authService.getCurrentUser()
+    setUser(currentUser)
+  }, [location])
 
   useEffect(() => {
     if (!isHome) {
@@ -90,23 +100,89 @@ export default function Navbar() {
                 <Link to="/" className={`₹{isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
                   Home
                 </Link>
-                <Link to="/my-bookings" className="text-zinc-500 hover:text-black transition-colors">
-                  My Bookings
-                </Link>
+                {user && (
+                  <Link to="/my-bookings" className="text-zinc-500 hover:text-black transition-colors">
+                    My Bookings
+                  </Link>
+                )}
               </div>
               <div className="flex items-center gap-3">
-                <button className="p-2 hover:bg-zinc-100 rounded-full transition-all">
-                  <span className="material-symbols-outlined">calendar_today</span>
+                {/* Theme Toggle */}
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 hover:bg-zinc-100 rounded-full transition-all"
+                  aria-label="Toggle theme"
+                >
+                  <span className="material-symbols-outlined">
+                    {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+                  </span>
                 </button>
-                <button className="p-2 hover:bg-zinc-100 rounded-full transition-all">
-                  <span className="material-symbols-outlined">person</span>
-                </button>
-                <button className="hidden sm:block px-6 py-2.5 rounded-full text-sm font-bold bg-zinc-100 text-black hover:bg-zinc-200 transition-all">
-                  Login
-                </button>
-                <button className="px-6 py-2.5 rounded-full text-sm font-bold bg-primary text-on-primary hover:scale-[0.98] transition-all">
-                  Sign Up
-                </button>
+
+                {user ? (
+                  <>
+                    <button className="p-2 hover:bg-zinc-100 rounded-full transition-all">
+                      <span className="material-symbols-outlined">calendar_today</span>
+                    </button>
+                    <div className="relative group">
+                      <button className="p-2 hover:bg-zinc-100 rounded-full transition-all flex items-center gap-2">
+                        <span className="material-symbols-outlined">person</span>
+                        <span className="hidden sm:block text-sm font-bold">{user.username}</span>
+                      </button>
+                      {/* Dropdown Menu - Super rounded (3rem) */}
+                      <div
+                        className="absolute right-0 mt-3 w-56 rounded-3xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden"
+                        style={{
+                          backgroundColor: 'var(--color-surface-container-lowest)',
+                          boxShadow: '0 32px 64px rgba(0, 0, 0, 0.08)'
+                        }}
+                      >
+                        {/* User Info Section */}
+                        <div className="p-6" style={{ backgroundColor: 'var(--color-surface-container-low)' }}>
+                          <p className="font-bold text-sm mb-1" style={{ color: 'var(--color-on-surface)', fontFamily: 'var(--font-family-headline)' }}>
+                            {user.full_name}
+                          </p>
+                          <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)', fontFamily: 'var(--font-family-body)' }}>
+                            {user.email}
+                          </p>
+                        </div>
+
+                        {/* Logout Button - No border divider, just spacing */}
+                        <div className="p-3">
+                          <button
+                            onClick={authService.logout}
+                            className="w-full text-left px-4 py-3 rounded-full transition-all duration-200 text-sm font-medium"
+                            style={{
+                              color: 'var(--color-on-surface)',
+                              fontFamily: 'var(--font-family-label)',
+                              backgroundColor: 'transparent'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = 'var(--color-surface-container-high)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = 'transparent';
+                            }}
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login">
+                      <button className="hidden sm:block px-6 py-2.5 rounded-full text-sm font-bold bg-zinc-100 text-black hover:bg-zinc-200 transition-all">
+                        Login
+                      </button>
+                    </Link>
+                    <Link to="/signup">
+                      <button className="px-6 py-2.5 rounded-full text-sm font-bold bg-primary text-on-primary hover:scale-[0.98] transition-all">
+                        Sign Up
+                      </button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           )}
