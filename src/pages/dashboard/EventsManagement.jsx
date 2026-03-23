@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal'
+import DeleteSuccessNotification from '../../components/DeleteSuccessNotification'
 
 const tabs = ['All Events', 'Published', 'Draft', 'Archived']
 
@@ -41,11 +43,63 @@ const mockEvents = [
     revenue: '₹48,000',
     image: 'https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=400&h=300&fit=crop'
   },
+  {
+    id: 4,
+    title: 'Gourmet Dinner Night',
+    slug: 'gourmet-dinner-night',
+    date: 'May 4, 2024',
+    category: 'Dining',
+    status: 'Published',
+    bookings: 200,
+    capacity: 200,
+    revenue: '₹8,00,000',
+    image: 'https://images.unsplash.com/photo-1504674900969-f2df05b3252d?w=400&h=300&fit=crop',
+    isLiveFeedAvailable: true
+  },
 ]
 
 export default function EventsManagement() {
   const [activeTab, setActiveTab] = useState('All Events')
   const [searchQuery, setSearchQuery] = useState('')
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, eventId: null, eventTitle: '' })
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false)
+  const [deletedEventTitle, setDeletedEventTitle] = useState('')
+  const [openMenuId, setOpenMenuId] = useState(null)
+  const navigate = useNavigate()
+
+  // Handle delete confirmation
+  const handleDeleteClick = (eventId, eventTitle) => {
+    setDeleteModal({
+      isOpen: true,
+      eventId: eventId,
+      eventTitle: eventTitle
+    })
+  }
+
+  // Handle delete confirmation
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    setIsDeleting(false)
+    
+    setDeletedEventTitle(deleteModal.eventTitle)
+    setShowDeleteSuccess(true)
+    
+    // Close modal
+    setDeleteModal({ isOpen: false, eventId: null, eventTitle: '' })
+    
+    // Redirect after 3 seconds
+    setTimeout(() => {
+      navigate('/dashboard/events')
+    }, 3000)
+  }
+
+  // Handle cancel delete
+  const handleCancelDelete = () => {
+    setDeleteModal({ isOpen: false, eventId: null, eventTitle: '' })
+  }
 
   const filteredEvents = mockEvents.filter(event => {
     const matchesTab = activeTab === 'All Events' || event.status === activeTab
@@ -118,14 +172,14 @@ export default function EventsManagement() {
         {filteredEvents.map((event, idx) => (
           <motion.div
             key={event.id}
-            className="group bg-surface-container-lowest rounded-3xl overflow-hidden border border-outline-variant/20 hover:border-secondary-container/30 transition-all"
+            className="group bg-surface-container-lowest rounded-3xl border border-outline-variant/20 hover:border-secondary-container/30 transition-all flex flex-col"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
             whileHover={{ y: -8, boxShadow: '0 25px 50px rgba(0,0,0,0.08)' }}
           >
             {/* Event Image */}
-            <div className="aspect-video overflow-hidden relative">
+            <div className="aspect-video overflow-hidden relative rounded-t-3xl">
               <img
                 src={event.image}
                 alt={event.title}
@@ -143,7 +197,7 @@ export default function EventsManagement() {
             </div>
 
             {/* Event Info */}
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 flex flex-col flex-1">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-secondary-container/20 text-secondary uppercase tracking-widest">
@@ -176,18 +230,63 @@ export default function EventsManagement() {
               </div>
 
               {/* Actions */}
-              <div className="grid grid-cols-3 gap-2">
-                <button className="flex items-center justify-center gap-1 px-3 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-xs font-bold">
+              <div className="grid grid-cols-3 gap-2 relative z-10">
+                <button onClick={() => navigate(`/dashboard/events/${event.id}/edit`)} className="flex items-center justify-center gap-1 px-3 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-xs font-bold">
                   <span className="material-symbols-outlined text-[16px]">edit</span>
                   Edit
                 </button>
-                <button className="flex items-center justify-center gap-1 px-3 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-xs font-bold">
+                <button onClick={() => navigate(`/dashboard/events/${event.id}/stats`)} className="flex items-center justify-center gap-1 px-3 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-xs font-bold">
                   <span className="material-symbols-outlined text-[16px]">analytics</span>
                   Stats
                 </button>
-                <button className="flex items-center justify-center gap-1 px-3 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-xs font-bold">
-                  <span className="material-symbols-outlined text-[16px]">more_horiz</span>
-                </button>
+                {/* 3-Dot Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setOpenMenuId(openMenuId === event.id ? null : event.id)}
+                    className="w-full flex items-center justify-center gap-1 px-3 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-xs font-bold"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                    animate={openMenuId === event.id ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: -10 }}
+                    exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className={`absolute -right-2 top-12 w-48 bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden z-50 ${
+                      openMenuId === event.id ? 'pointer-events-auto' : 'pointer-events-none'
+                    }`}
+                  >
+                    {/* Live Feed Option - Only for Dining Events */}
+                    {event.category === 'Dining' && (
+                      <motion.button
+                        onClick={() => {
+                          navigate(`/dashboard/events/${event.id}/live-feed`)
+                          setOpenMenuId(null)
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-high transition-all text-sm font-bold border-b border-outline-variant/20"
+                        whileHover={{ backgroundColor: 'var(--surface-container-high, #e8e8e8)' }}
+                      >
+                        <span className="material-symbols-outlined text-[18px] text-secondary">videocam</span>
+                        Live Feed
+                      </motion.button>
+                    )}
+                    
+                    {/* Delete Option */}
+                    <motion.button
+                      onClick={() => {
+                        handleDeleteClick(event.id, event.title)
+                        setOpenMenuId(null)
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 transition-all text-sm font-bold"
+                      whileHover={{ backgroundColor: 'rgba(186, 26, 26, 0.1)' }}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                      Delete Event
+                    </motion.button>
+                  </motion.div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -211,6 +310,21 @@ export default function EventsManagement() {
           </Link>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        eventTitle={deleteModal.eventTitle}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isLoading={isDeleting}
+      />
+
+      {/* Delete Success Notification */}
+      <DeleteSuccessNotification
+        isVisible={showDeleteSuccess}
+        eventTitle={deletedEventTitle}
+      />
     </div>
   )
 }

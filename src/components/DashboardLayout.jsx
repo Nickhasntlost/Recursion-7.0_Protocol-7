@@ -1,4 +1,4 @@
-import { Link, useLocation, Outlet } from 'react-router-dom'
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
@@ -16,7 +16,9 @@ const sidebarItems = [
 
 export default function DashboardLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [showEmergencyMessage, setShowEmergencyMessage] = useState(true)
   const [theme, setTheme] = useState(() => {
     if (typeof window === 'undefined') return 'light'
     const stored = window.localStorage.getItem('eventra-theme')
@@ -42,14 +44,22 @@ export default function DashboardLayout() {
     return location.pathname.startsWith(path)
   }
 
-  // Auto-collapse sidebar when on automation page, expand when leaving
+  // Auto-collapse sidebar when on automation or live-feed pages, expand when leaving
   useEffect(() => {
-    if (location.pathname === '/dashboard/automation') {
+    if (location.pathname === '/dashboard/automation' || location.pathname.includes('/live-feed')) {
       setSidebarCollapsed(true)
     } else {
       setSidebarCollapsed(false)
     }
   }, [location.pathname])
+
+  // Hide emergency message after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowEmergencyMessage(false)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <div className="min-h-screen bg-surface flex">
@@ -143,6 +153,40 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Emergency Message */}
+      {showEmergencyMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.3 }}
+          className="fixed right-4 md:right-6 bottom-44 md:bottom-48 z-90 bg-red-500/10 border border-red-500/30 rounded-2xl p-4 max-w-xs backdrop-blur-sm"
+        >
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined text-red-500 shrink-0 mt-1">
+              warning
+            </span>
+            <div>
+              <p className="text-sm font-bold text-red-500 mb-1">Emergency?</p>
+              <p className="text-xs text-on-surface-variant leading-relaxed">
+                Need to cancel your event? Leave it to us to inform your audience. We'll handle all notifications.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      <button
+        type="button"
+        aria-label="Go to Automation"
+        onClick={() => navigate('/dashboard/automation')}
+        className="fixed right-4 md:right-6 bottom-24 md:bottom-28 z-90 h-12 w-12 md:h-14 md:w-14 border border-outline-variant/20 bg-secondary-container text-on-secondary-fixed rounded-full flex items-center justify-center shadow-[0_18px_40px_rgba(26,28,28,0.10)] transition-all duration-200 ease-out hover:scale-[1.03] hover:shadow-[0_24px_48px_rgba(26,28,28,0.14)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-container focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+      >
+        <span className="material-symbols-outlined text-[26px] md:text-[30px]">
+          automation
+        </span>
+      </button>
 
       <button
         type="button"

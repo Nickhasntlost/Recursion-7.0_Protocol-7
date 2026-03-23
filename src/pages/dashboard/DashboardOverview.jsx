@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const stats = [
   { label: 'Total Events', value: '24', change: '+12%', icon: 'event', color: 'primary' },
@@ -26,6 +27,7 @@ const itemVariants = {
 
 export default function DashboardOverview() {
   const [greeting, setGreeting] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     const hour = new Date().getHours()
@@ -33,6 +35,41 @@ export default function DashboardOverview() {
     else if (hour < 18) setGreeting('Good Afternoon')
     else setGreeting('Good Evening')
   }, [])
+
+  const handleCreateEvent = () => {
+    navigate('/dashboard/events/create')
+  }
+
+  const handleScanTickets = () => {
+    navigate('/dashboard/scanner')
+  }
+
+  const handleExportReport = () => {
+    // Simulate report generation and download
+    const reportData = {
+      totalEvents: 24,
+      totalBookings: 1429,
+      revenue: 2400000,
+      attendees: 8542,
+      generatedAt: new Date().toISOString(),
+    }
+    const csvContent = `Dashboard Report\nGenerated: ${new Date().toLocaleString()}\n\nTotal Events: ${reportData.totalEvents}\nTotal Bookings: ${reportData.totalBookings}\nRevenue: ₹${reportData.revenue}\nAttendees: ${reportData.attendees}`
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `analytics-report-${new Date().getTime()}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const handleViewAllEvents = () => {
+    navigate('/dashboard/events')
+  }
+
+  const handleEventClick = (eventTitle) => {
+    navigate(`/dashboard/events/${eventTitle.toLowerCase().replace(/\s+/g, '-')}`)
+  }
 
   return (
     <motion.div
@@ -85,7 +122,9 @@ export default function DashboardOverview() {
 
       {/* Quick Actions */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <button className="group flex items-center gap-4 p-6 rounded-3xl bg-secondary-container text-on-secondary-fixed hover:scale-[1.02] transition-all shadow-lg shadow-secondary-container/20">
+        <button 
+          onClick={handleCreateEvent}
+          className="group flex items-center gap-4 p-6 rounded-3xl bg-secondary-container text-on-secondary-fixed hover:scale-[1.02] transition-all shadow-lg shadow-secondary-container/20">
           <span className="material-symbols-outlined text-3xl">add_circle</span>
           <div className="text-left">
             <p className="font-black text-lg">Create Event</p>
@@ -96,7 +135,9 @@ export default function DashboardOverview() {
           </span>
         </button>
 
-        <button className="group flex items-center gap-4 p-6 rounded-3xl bg-surface-container-low hover:bg-surface-container-high transition-all">
+        <button 
+          onClick={handleScanTickets}
+          className="group flex items-center gap-4 p-6 rounded-3xl bg-surface-container-low hover:bg-surface-container-high transition-all">
           <span className="material-symbols-outlined text-3xl text-secondary">qr_code_scanner</span>
           <div className="text-left">
             <p className="font-black text-lg">Scan Tickets</p>
@@ -104,7 +145,9 @@ export default function DashboardOverview() {
           </div>
         </button>
 
-        <button className="group flex items-center gap-4 p-6 rounded-3xl bg-surface-container-low hover:bg-surface-container-high transition-all">
+        <button 
+          onClick={handleExportReport}
+          className="group flex items-center gap-4 p-6 rounded-3xl bg-surface-container-low hover:bg-surface-container-high transition-all">
           <span className="material-symbols-outlined text-3xl text-secondary">download</span>
           <div className="text-left">
             <p className="font-black text-lg">Export Report</p>
@@ -119,7 +162,9 @@ export default function DashboardOverview() {
           <h2 className="text-2xl font-black font-[family-name:var(--font-family-headline)]">
             Recent Events
           </h2>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-sm font-bold">
+          <button 
+            onClick={handleViewAllEvents}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-all text-sm font-bold">
             View All
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
@@ -129,6 +174,7 @@ export default function DashboardOverview() {
           {recentEvents.map((event, idx) => (
             <motion.div
               key={idx}
+              onClick={() => handleEventClick(event.title)}
               className="flex items-center gap-6 p-6 rounded-2xl bg-surface-container-low hover:bg-surface-container-high transition-all cursor-pointer group"
               whileHover={{ x: 4 }}
             >
