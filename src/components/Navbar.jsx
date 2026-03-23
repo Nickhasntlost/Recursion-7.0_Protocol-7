@@ -20,12 +20,75 @@ export default function Navbar() {
   const [showHeroTabs, setShowHeroTabs] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const [user, setUser] = useState(null)
+  const [currentCity, setCurrentCity] = useState(() => {
+    if (typeof window === 'undefined') return 'Near Me'
+    return window.localStorage.getItem('eventra-current-city') || 'Near Me'
+  })
+  const [isLocatingCity, setIsLocatingCity] = useState(false)
 
   useEffect(() => {
     // Get current user from localStorage
     const currentUser = authService.getCurrentUser()
     setUser(currentUser)
   }, [location])
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (typeof window === 'undefined' || !navigator.geolocation) {
+      return () => {
+        isMounted = false
+      }
+    }
+
+    const resolveCityFromCoords = async (latitude, longitude) => {
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+          {
+            headers: {
+              Accept: 'application/json',
+            },
+          }
+        )
+
+        if (!response.ok) return
+
+        const data = await response.json()
+        const address = data?.address || {}
+        const detected = address.city || address.town || address.village || address.county || address.state
+
+        if (detected && isMounted) {
+          setCurrentCity(detected)
+          window.localStorage.setItem('eventra-current-city', detected)
+        }
+      } catch {
+        // Keep existing fallback city if reverse geocoding fails.
+      } finally {
+        if (isMounted) setIsLocatingCity(false)
+      }
+    }
+
+    setIsLocatingCity(true)
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        resolveCityFromCoords(latitude, longitude)
+      },
+      () => {
+        if (isMounted) setIsLocatingCity(false)
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 300000,
+      }
+    )
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     if (!isHome && !isCategory) {
@@ -71,7 +134,7 @@ export default function Navbar() {
               <div className="h-4 w-[1px] bg-outline-variant mx-3" />
               <button className="flex items-center gap-1 text-xs font-bold text-primary whitespace-nowrap">
                 <span className="material-symbols-outlined text-sm">near_me</span>
-                Near Me
+                <span className="max-w-[110px] truncate">{isLocatingCity ? 'Locating...' : currentCity}</span>
               </button>
             </div>
           )}
