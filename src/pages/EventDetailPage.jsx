@@ -21,6 +21,7 @@ const reviewers = [
 ]
 
 export default function EventDetailPage() {
+<<<<<<< Updated upstream
   const { slug } = useParams()
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -76,6 +77,21 @@ export default function EventDetailPage() {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
+=======
+  const { id } = useParams()
+  const venueByEventId = {
+    'great-revival': 'restaurant',
+    'sunburn-goa': 'concertHall',
+    'comic-con': 'hackLab',
+    zomaland: 'restaurant',
+    'utsova-2024': 'concertHall',
+    'sports-cup': 'stadium',
+    'cinema-night': 'cinema',
+    'open-mic-live': 'concertHall',
+  }
+  const venueQuery = venueByEventId[String(id || '').toLowerCase()]
+  const selectionPath = `/event/${id}/select${venueQuery ? `?venue=${venueQuery}` : ''}`
+>>>>>>> Stashed changes
 
   return (
     <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-8 pb-32">
@@ -201,7 +217,7 @@ export default function EventDetailPage() {
                 </li>
               ))}
             </ul>
-            <Link to="/event/Utsova-2024/select"><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
+            <Link to={selectionPath}><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
           </motion.div>
 
           {/* Professional - Featured */}
@@ -219,7 +235,7 @@ export default function EventDetailPage() {
                 </li>
               ))}
             </ul>
-            <Link to="/event/Utsova-2024/select"><button className="w-full py-4 rounded-full bg-secondary-container text-on-secondary-fixed font-bold hover:brightness-110 transition-all">Select</button></Link>
+            <Link to={selectionPath}><button className="w-full py-4 rounded-full bg-secondary-container text-on-secondary-fixed font-bold hover:brightness-110 transition-all">Select</button></Link>
           </motion.div>
 
           {/* Executive */}
@@ -236,7 +252,7 @@ export default function EventDetailPage() {
                 </li>
               ))}
             </ul>
-            <Link to="/event/Utsova-2024/select"><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
+            <Link to={selectionPath}><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
           </motion.div>
         </div>
       </motion.section>
@@ -284,6 +300,20 @@ export default function EventDetailPage() {
               </button>
             </Link>
           </div>
+<<<<<<< Updated upstream
+=======
+          <div className="hidden sm:flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full">
+            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+            <span className="font-bold text-sm">1 Adult</span>
+            <span className="material-symbols-outlined text-primary text-sm cursor-pointer">expand_more</span>
+          </div>
+          <Link to={selectionPath}>
+            <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-3 hover:scale-[0.98] transition-all">
+              Book Now
+              <span className="material-symbols-outlined text-lg">arrow_forward</span>
+            </button>
+          </Link>
+>>>>>>> Stashed changes
         </div>
       )}
     </div>
