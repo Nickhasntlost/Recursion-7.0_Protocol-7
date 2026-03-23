@@ -1,34 +1,8 @@
 import { Link } from 'react-router-dom'
 import { motion, useMotionValueEvent, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { eventService } from '../services/event'
+import api from '../services/api'
 
-const heroEvents = [
-  {
-    tag: 'Featured Event',
-    title: 'Sunburn Festival 2026',
-    description: "Experience Asia's biggest electronic music festival. Discover and book tickets for the most anticipated performances happening in Goa.",
-    date: 'Dec 28-30',
-    location: 'Vagator, Goa',
-    link: '/event/sunburn-goa',
-  },
-  {
-    tag: 'Pop Culture',
-    title: 'Comic Con India',
-    description: "Experience the ultimate pop culture celebration. Cosplay, gaming tournaments, and massive fan meetups.",
-    date: 'Dec 11-13',
-    location: 'NSIC Grounds, Delhi',
-    link: '/event/comic-con',
-  },
-  {
-    tag: 'Culinary Carnival',
-    title: 'Zomaland India',
-    description: "India's greatest food and music carnival. A grand weekend of exquisite culinary delights and top-tier entertainment.",
-    date: 'Nov 20-22',
-    location: 'Jio World Garden, Mumbai',
-    link: '/event/zomaland',
-  }
-]
 
 const floatingElements = [
   { icon: 'restaurant', label: 'Dining', link: '/category/dining', position: 'left-[3%] top-[18%]', rotate: '-12deg', delay: 0, bg: 'bg-white' },
@@ -48,50 +22,7 @@ const categories = [
   { icon: 'code', label: 'Hackathons', slug: 'hackathons' },
 ]
 
-const trendingCards = [
-  {
-    location: 'Bandra, Mumbai • Nov 14',
-    title: 'The Piano Man Jazz Club',
-    status: 'Selling Fast',
-    statusColor: 'bg-secondary-container/20 text-secondary',
-    dotColor: 'bg-secondary',
-    checklist: [
-      { label: 'VIP Seating Available', done: true },
-      { label: 'Includes welcome drink', done: true },
-    ],
-    price: '₹2500',
-    btnLabel: 'Book Tickets',
-    btnStyle: 'bg-primary text-white',
-  },
-  {
-    location: 'NESCO Center • Nov 16',
-    title: 'Sunburn Arena ft. Garrix',
-    status: 'On Sale',
-    statusColor: 'bg-surface-container-high text-on-surface-variant',
-    dotColor: 'bg-outline',
-    checklist: [
-      { label: 'Early Bird Pricing', done: true },
-      { label: 'Backstage Pass Add-on', done: false },
-    ],
-    price: '₹4500',
-    btnLabel: 'View Event',
-    btnStyle: 'border border-primary text-primary hover:bg-primary hover:text-white',
-  },
-  {
-    location: 'NMACC Mumbai • Nov 18',
-    title: 'Art Mumbai 2026',
-    status: 'Sold Out',
-    statusColor: 'bg-error-container text-on-error-container',
-    dotColor: 'bg-error',
-    checklist: [
-      { label: 'Exclusive Art Tour', done: true },
-      { label: 'Artist Meet & Greet', done: true },
-    ],
-    price: '₹1500',
-    btnLabel: 'Join Waitlist',
-    btnStyle: 'bg-surface-container-high text-on-surface-variant cursor-not-allowed',
-  },
-]
+
 
 const avatarUrls = [
   'https://images.pexels.com/photos/2085739/pexels-photo-2085739.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
@@ -114,6 +45,13 @@ const cardHover = {
 }
 
 export default function HomePage() {
+  const [eventsData, setEventsData] = useState([])
+  const [dynamicHeroEvents, setDynamicHeroEvents] = useState([])
+  const [dynamicTrending, setDynamicTrending] = useState([])
+  const [globalEvents, setGlobalEvents] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+  
   const [currentSlide, setCurrentSlide] = useState(0)
   const [displayedText, setDisplayedText] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
@@ -121,6 +59,64 @@ export default function HomePage() {
     if (typeof document === 'undefined') return false
     return document.documentElement.classList.contains('theme-dark')
   })
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await api.get('/events')
+        const data = res.data
+        if (data && data.length > 0) {
+          setEventsData(data)
+          
+          const featured = data.filter(e => e.is_featured).slice(0, 3).map(e => ({
+            tag: e.category.toUpperCase(),
+            title: e.title,
+            description: e.description,
+            date: new Date(e.start_datetime).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }),
+            location: 'Event Venue',
+            link: `/event/${e.id}`,
+            cover: e.cover_image
+          }))
+          if (featured.length > 0) setDynamicHeroEvents(featured)
+          
+          const trending = data.slice(0, 3).map(e => ({
+            location: `India • ${new Date(e.start_datetime).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`,
+            title: e.title,
+            status: 'Selling Fast',
+            statusColor: 'bg-secondary-container/20 text-secondary',
+            dotColor: 'bg-secondary',
+            cover: e.cover_image,
+            checklist: [
+              { label: 'E-Tickets Only', done: true },
+              { label: 'Limited Capacity', done: true },
+            ],
+            price: `₹${e.min_price}`,
+            btnLabel: 'Book Tickets',
+            btnStyle: 'bg-primary text-white',
+            link: `/event/${e.id}`
+          }))
+          if (trending.length > 0) setDynamicTrending(trending)
+
+          const globals = data.filter(e => !e.is_featured).slice(0, 2).map(e => ({
+            date: new Date(e.start_datetime).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }),
+            title: e.title,
+            description: e.description,
+            cover: e.cover_image,
+            link: `/event/${e.id}`
+          }))
+          if (globals.length > 0) setGlobalEvents(globals)
+        } else {
+          setError('No events found in database.')
+        }
+      } catch (err) {
+        console.error("Error fetching events:", err)
+        setError('Failed to load events from the backend.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchEvents()
+  }, [])
 
   useEffect(() => {
     const root = document.documentElement
@@ -133,21 +129,17 @@ export default function HomePage() {
     return () => observer.disconnect()
   }, [])
 
-  // Backend integration
-  const [events, setEvents] = useState([])
-  const [trendingEvents, setTrendingEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  // Semantic states defined above
 
   useEffect(() => {
-    const currentTitle = heroEvents[currentSlide].title
+    const currentTitle = dynamicHeroEvents[currentSlide]?.title || ''
     let timeout
 
     if (!isDeleting && displayedText === currentTitle) {
       timeout = setTimeout(() => setIsDeleting(true), 2500)
     } else if (isDeleting && displayedText === '') {
       setIsDeleting(false)
-      setCurrentSlide((prev) => (prev + 1) % heroEvents.length)
+      setCurrentSlide((prev) => (prev + 1) % dynamicHeroEvents.length)
     } else {
       timeout = setTimeout(() => {
         setDisplayedText(
@@ -183,36 +175,40 @@ export default function HomePage() {
     }
   }, [])
 
-  // Fetch events from backend
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true)
-        setError(null)
+  if (isLoading) {
+    return (
+      <div className="min-h-[80vh] flex flex-col gap-4 items-center justify-center font-bold text-xl text-on-surface-variant">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        Connecting to the Live Backend...
+      </div>
+    )
+  }
 
-        // Fetch published events
-        const allEvents = await eventService.getAllEvents({ status: 'published' })
-        setEvents(allEvents)
-
-        // Set trending events (first 3 for now)
-        setTrendingEvents(allEvents.slice(0, 3))
-      } catch (err) {
-        console.error('Error fetching events:', err)
-        setError(err)
-        // Keep mock data as fallback - no need to show error to user
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchEvents()
-  }, [])
+  if (error || dynamicHeroEvents.length === 0) {
+    return (
+      <div className="min-h-[80vh] flex flex-col gap-4 items-center justify-center text-center px-4">
+        <span className="material-symbols-outlined text-6xl text-error mb-4">cloud_off</span>
+        <h2 className="font-bold text-2xl mb-2">Backend Connection Failed</h2>
+        <p className="text-on-surface-variant max-w-md">
+          {error || 'No live events found. Please ensure the FastAPI backend is running on port 8000 and the MongoDB database is seeded with data.'}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <>
       {/* Hero Section */}
       <section ref={heroRef} className="px-4 md:px-8 mb-20 relative overflow-hidden">
-        <div className="relative w-full h-[870px] rounded-xl bg-surface-container-low flex items-center justify-center text-center">
+        <div className="relative w-full h-[870px] rounded-xl bg-surface-container-low flex items-center justify-center text-center overflow-hidden">
+          {/* Hero Background Image */}
+          {dynamicHeroEvents[currentSlide]?.cover && (
+            <img
+              src={dynamicHeroEvents[currentSlide].cover}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover opacity-15 transition-all duration-700"
+            />
+          )}
           {/* Floating Elements */}
           {floatingElements.map((el, i) => (
             <motion.div
@@ -250,26 +246,26 @@ export default function HomePage() {
           <div className="relative z-10 max-w-4xl px-8 flex flex-col items-center min-h-[420px] justify-center overflow-hidden">
             <div className="flex flex-col items-center transition-opacity duration-300">
               <span className="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold tracking-widest uppercase mb-8">
-                {heroEvents[currentSlide].tag}
+                {dynamicHeroEvents[currentSlide]?.tag}
               </span>
               <h1 className="text-6xl md:text-[7.5rem] font-black tracking-tighter text-black leading-[0.9] mb-8 font-[family-name:var(--font-family-headline)] min-h-[1.2em] flex items-center justify-center">
                 {displayedText}
                 <span className="inline-block w-2 md:w-[6px] h-[0.8em] bg-primary ml-2 animate-pulse align-middle" />
               </h1>
               <p className="text-xl md:text-2xl text-on-surface-variant font-medium max-w-2xl mx-auto mb-10 leading-relaxed text-center min-h-[60px]">
-                {heroEvents[currentSlide].description}
+                {dynamicHeroEvents[currentSlide]?.description}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-8 mb-12">
                 <div className="flex items-center gap-2 text-black">
                   <span className="material-symbols-outlined text-primary">calendar_month</span>
-                  <span className="font-bold text-lg min-w-[120px]">{heroEvents[currentSlide].date}</span>
+                  <span className="font-bold text-lg min-w-[120px]">{dynamicHeroEvents[currentSlide]?.date}</span>
                 </div>
                 <div className="flex items-center gap-2 text-black">
                   <span className="material-symbols-outlined text-primary">location_on</span>
-                  <span className="font-bold text-lg min-w-[200px] text-center">{heroEvents[currentSlide].location}</span>
+                  <span className="font-bold text-lg min-w-[200px] text-center">{dynamicHeroEvents[currentSlide]?.location}</span>
                 </div>
               </div>
-              <Link to={heroEvents[currentSlide].link}>
+              <Link to={dynamicHeroEvents[currentSlide]?.link || '#'}>
                 <motion.button
                   className="group flex items-center gap-3 px-12 py-6 bg-primary text-white rounded-full font-bold text-xl shadow-xl shadow-primary/20"
                   whileHover={{ scale: 0.97 }}
@@ -284,7 +280,7 @@ export default function HomePage() {
 
           {/* Carousel Indicators */}
           <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-20">
-            {heroEvents.map((_, idx) => (
+            {dynamicHeroEvents.map((_, idx) => (
               <div
                 key={idx}
                 onClick={() => handleIndicatorClick(idx)}
@@ -464,90 +460,58 @@ export default function HomePage() {
           </Link>
         </div>
         <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          {loading ? (
-            // Loading skeletons
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-white border border-outline-variant p-8 rounded-[2rem] animate-pulse">
-                <div className="h-24 bg-surface-container-low rounded-lg mb-4"></div>
-                <div className="h-6 bg-surface-container-low rounded w-3/4 mb-4"></div>
-                <div className="h-4 bg-surface-container-low rounded w-1/2"></div>
+          {dynamicTrending.map((card, i) => (
+            <motion.div
+              key={card.title}
+              className="bg-white border border-outline-variant p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group flex flex-col gap-6 cursor-pointer"
+              variants={cardHover}
+              initial="rest"
+              whileHover="hover"
+            >
+              {/* Cover Image */}
+              {card.cover && (
+                <div className="w-full h-40 rounded-xl overflow-hidden mb-2 -mt-2">
+                  <img src={card.cover} alt={card.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">{card.location}</p>
+                  <h3 className="text-2xl font-black leading-tight">{card.title}</h3>
+                </div>
+                <div className="flex -space-x-3">
+                  <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
+                  {i === 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 flex items-center justify-center text-[10px] font-bold">+4</div>}
+                  {i !== 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>}
+                </div>
               </div>
-            ))
-          ) : (
-            // Use real events if available, otherwise fallback to mock
-            (trendingEvents.length > 0 ? trendingEvents : trendingCards).slice(0, 3).map((item, i) => {
-              // Check if it's a real event from backend
-              const isRealEvent = item.id && item.slug
-              const card = isRealEvent ? {
-                location: `${item.city || 'India'} • ${new Date(item.start_datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-                title: item.title,
-                status: item.available_capacity > 50 ? 'On Sale' : item.available_capacity > 0 ? 'Selling Fast' : 'Sold Out',
-                statusColor: item.available_capacity > 50 ? 'bg-surface-container-high text-on-surface-variant' : item.available_capacity > 0 ? 'bg-secondary-container/20 text-secondary' : 'bg-error-container text-on-error-container',
-                dotColor: item.available_capacity > 50 ? 'bg-outline' : item.available_capacity > 0 ? 'bg-secondary' : 'bg-error',
-                price: item.min_price ? `₹${item.min_price}` : 'TBD',
-                btnLabel: item.available_capacity > 0 ? 'View Event' : 'Join Waitlist',
-                btnStyle: item.available_capacity > 0 ? 'border border-primary text-primary hover:bg-primary hover:text-white' : 'bg-surface-container-high text-on-surface-variant cursor-not-allowed',
-                description: item.description || '',
-                eventLink: `/event/${item.slug}`
-              } : item
-
-              return (
-                <motion.div
-                  key={isRealEvent ? item.id : card.title}
-                  className="bg-white border border-outline-variant p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group flex flex-col gap-6 cursor-pointer"
-                  variants={cardHover}
-                  initial="rest"
-                  whileHover="hover"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">{card.location}</p>
-                      <h3 className="text-2xl font-black leading-tight">{card.title}</h3>
-                    </div>
-                    <div className="flex -space-x-3">
-                      <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
-                      {i === 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 flex items-center justify-center text-[10px] font-bold">+4</div>}
-                      {i !== 2 && <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-100 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>}
-                    </div>
+              <div className={`inline-flex self-start items-center gap-2 px-3 py-1 ${card.statusColor} font-bold text-xs rounded-full`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${card.dotColor}`} />
+                {card.status}
+              </div>
+              <div className="space-y-3 pt-4 border-t border-outline-variant/30">
+                <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">
+                  {i === 0 ? 'Event Perks' : i === 1 ? 'Highlights' : 'Event Extras'}
+                </p>
+                {card.checklist.map(item => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <span className={`material-symbols-outlined text-lg ${item.done ? 'text-primary' : 'text-outline-variant'}`}>
+                      {item.done ? 'check_circle' : 'radio_button_unchecked'}
+                    </span>
+                    <span className={`text-sm font-medium ${item.done ? '' : 'text-on-surface-variant'}`}>{item.label}</span>
                   </div>
-                  <div className={`inline-flex self-start items-center gap-2 px-3 py-1 ${card.statusColor} font-bold text-xs rounded-full`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${card.dotColor}`} />
-                    {card.status}
-                  </div>
-                  <div className="space-y-3 pt-4 border-t border-outline-variant/30">
-                    <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">
-                      {i === 0 ? 'Event Perks' : i === 1 ? 'Highlights' : 'Event Extras'}
-                    </p>
-                    {isRealEvent ? (
-                      // For real events, show description or default perks
-                      <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-lg text-primary">check_circle</span>
-                        <span className="text-sm font-medium">Tickets Available</span>
-                      </div>
-                    ) : (
-                      // Mock event checklist
-                      card.checklist.map(item => (
-                        <div key={item.label} className="flex items-center gap-3">
-                          <span className={`material-symbols-outlined text-lg ${item.done ? 'text-primary' : 'text-outline-variant'}`}>
-                            {item.done ? 'check_circle' : 'radio_button_unchecked'}
-                          </span>
-                          <span className={`text-sm font-medium ${item.done ? '' : 'text-on-surface-variant'}`}>{item.label}</span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  <div className="mt-auto pt-6 flex justify-between items-center">
-                    <span className="text-lg font-black">{card.price}</span>
-                    <Link to={isRealEvent ? card.eventLink : (card.btnLabel === 'Join Waitlist' ? '/waitlist' : '/event/sunburn-goa')}>
-                      <button className={`px-6 py-2 text-xs font-black rounded-full transition-all ${card.btnStyle}`}>
-                        {card.btnLabel}
-                      </button>
-                    </Link>
-                  </div>
-                </motion.div>
-              )
-            })
-          )}
+                ))}
+              </div>
+              <div className="mt-auto pt-6 flex justify-between items-center">
+                <span className="text-lg font-black">{card.price}</span>
+                <Link to={card.link || '#'}>
+                  <button className={`px-6 py-2 text-xs font-black rounded-full transition-all ${card.btnStyle}`}>
+                    {card.btnLabel}
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </motion.section>
 
@@ -565,76 +529,42 @@ export default function HomePage() {
             <h2 className="text-5xl font-black tracking-tighter">Upcoming Global Events</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Large Card 1 */}
-            <motion.div
-              className="bg-white border border-outline-variant p-10 rounded-[3rem] flex flex-col md:flex-row gap-10 cursor-pointer"
-              whileHover={{ boxShadow: '0 25px 50px rgba(0,0,0,0.1)' }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="w-full md:w-1/2 aspect-square rounded-[2rem] overflow-hidden">
-                <img alt="Event preview" className="w-full h-full object-cover" src="https://images.pexels.com/photos/3319726/pexels-photo-3319726.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2" />
-              </div>
-              <div className="w-full md:w-1/2 flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <span className="px-4 py-1.5 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">Dec 27-29</span>
-                  <div className="flex -space-x-3">
-                    <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
-                    <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>
-                  </div>
+            {globalEvents.map((evt, idx) => (
+              <motion.div
+                key={idx}
+                className={`${idx === 1 ? 'bg-primary text-white cursor-pointer' : 'bg-white border border-outline-variant cursor-pointer'} p-10 rounded-[3rem] flex flex-col md:flex-row gap-10`}
+                whileHover={{ boxShadow: idx === 1 ? '0 25px 50px rgba(0,0,0,0.2)' : '0 25px 50px rgba(0,0,0,0.1)' }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="w-full md:w-1/2 aspect-square rounded-[2rem] overflow-hidden">
+                  <img alt={evt.title} className="w-full h-full object-cover" src={evt.cover || "https://images.pexels.com/photos/3319726/pexels-photo-3319726.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2"} />
                 </div>
-                <h4 className="text-3xl font-black mb-2">Techfest IIT Bombay</h4>
-                <p className="text-on-surface-variant text-sm mb-8">Asia's largest science and technology festival. Experience cutting-edge exhibitions, robotics, and EDM nights.</p>
-                <div className="space-y-4 mb-10">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary">confirmation_number</span>
-                    <span className="text-sm font-bold">VIP Passes Available</span>
+                <div className="w-full md:w-1/2 flex flex-col">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="px-4 py-1.5 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">{evt.date}</span>
+                    {idx === 1 ? <span className="material-symbols-outlined">auto_awesome</span> : (
+                      <div className="flex -space-x-3">
+                        <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[0]} alt="" /></div>
+                        <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden"><img className="w-full h-full object-cover" src={avatarUrls[1]} alt="" /></div>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-outline-variant">restaurant</span>
-                    <span className="text-sm font-medium text-on-surface-variant">Catering included with ticket</span>
+                  <h4 className={`text-3xl font-black mb-2 ${idx === 1 ? 'text-white' : ''}`}>{evt.title}</h4>
+                  <p className={`${idx === 1 ? 'text-zinc-400' : 'text-on-surface-variant'} text-sm mb-8 line-clamp-3`}>{evt.description}</p>
+                  <div className="space-y-4 mb-10">
+                    <div className="flex items-center gap-3">
+                      <span className={`material-symbols-outlined ${idx === 1 ? 'text-secondary-container' : 'text-primary'}`}>confirmation_number</span>
+                      <span className="text-sm font-bold">Featured Access</span>
+                    </div>
                   </div>
+                  <Link to={evt.link}>
+                    <button className={`mt-auto w-full py-4 font-black rounded-full hover:scale-95 transition-all ${idx === 1 ? 'bg-white text-black' : 'bg-primary text-white'}`}>
+                      Book Tickets Now
+                    </button>
+                  </Link>
                 </div>
-                <Link to="/event/techfest-iitb">
-                  <button className="mt-auto w-full py-4 bg-primary text-white font-black rounded-full hover:scale-95 transition-all">
-                    Book Tickets Now
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* Large Card 2 - Dark */}
-            <motion.div
-              className="bg-primary text-white p-10 rounded-[3rem] flex flex-col md:flex-row gap-10 cursor-pointer"
-              whileHover={{ boxShadow: '0 25px 50px rgba(0,0,0,0.2)' }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="w-full md:w-1/2 aspect-square rounded-[2rem] overflow-hidden">
-                <img alt="Event preview" className="w-full h-full object-cover" src="https://images.pexels.com/photos/4072509/pexels-photo-4072509.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2" />
-              </div>
-              <div className="w-full md:w-1/2 flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <span className="px-4 py-1.5 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">Dec 12-14</span>
-                  <span className="material-symbols-outlined">auto_awesome</span>
-                </div>
-                <h4 className="text-3xl font-black mb-2 text-white">Echoes of Earth</h4>
-                <p className="text-zinc-400 text-sm mb-8">India's greenest music festival set in the lush outskirts of Bengaluru. Book your spot to secure entry before tickets sell out.</p>
-                <div className="space-y-4 mb-10">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary-container">star</span>
-                    <span className="text-sm font-bold">Featured Artist Access</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-zinc-600">group</span>
-                    <span className="text-sm font-medium text-zinc-500">Group Booking Discounts</span>
-                  </div>
-                </div>
-                <Link to="/event/echoes-of-earth">
-                  <button className="mt-auto w-full py-4 bg-white text-black font-black rounded-full hover:scale-95 transition-all">
-                    Buy Tickets
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </motion.section>

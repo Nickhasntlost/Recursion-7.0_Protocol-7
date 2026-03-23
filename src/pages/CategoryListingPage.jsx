@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import { eventService } from '../services/event'
+import { useState, useEffect } from 'react'
+import api from '../services/api'
 
 const cardHover = {
   rest: { y: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' },
@@ -191,7 +191,7 @@ const DetailedGridComponent = ({ config }) => (
               <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 block">{card.bookable ? 'From' : 'Price'}</span>
               <span className="text-xl font-black">{card.price}</span>
             </div>
-            <Link to={card.bookable ? '/event/great-revival' : '/waitlist'}>
+            <Link to={card.bookable ? `/event/${card.id}` : '/waitlist'}>
               <button className={`px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 active:scale-95 transition-transform ${card.bookable ? 'bg-black text-white' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}>
                 {card.bookable ? 'Book Now' : 'Join Waitlist'}
                 {card.bookable && <span className="material-symbols-outlined text-sm">arrow_forward</span>}
@@ -367,53 +367,143 @@ const SportsLayout = ({ config }) => (
 
 const ConcertsLayout = ({ config }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="space-y-12">
-    <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden">
-      <div className="flex flex-col md:flex-row">
-        <div className="w-full md:w-2/5 aspect-square overflow-hidden">
-          <img src="https://images.pexels.com/photos/2372945/pexels-photo-2372945.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1600&dpr=2" alt="Concert" className="w-full h-full object-cover" />
-        </div>
-        <div className="flex-1 p-8 md:p-12">
-          <div className="flex items-center gap-4 mb-6"><span className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase">Live Performance</span><span className="text-secondary">May 24, 2024</span></div>
-          <h2 className="text-4xl md:text-5xl font-headline font-black tracking-tight mb-8">Velvet Echoes: The Orchestral Session</h2>
-          <div className="space-y-4 mb-8"><div><span className="text-[10px] font-black uppercase tracking-widest text-black/40">Set Times</span><ul className="space-y-2 mt-4"><li className="flex justify-between border-b border-outline-variant/10 pb-2"><span>Doors Open</span><span className="font-bold">19:30</span></li><li className="flex justify-between border-b border-outline-variant/10 pb-2"><span>Opening Act</span><span className="font-bold">20:15</span></li><li className="flex justify-between border-b border-outline-variant/10 pb-2"><span>Velvet Echoes</span><span className="font-bold">21:30</span></li></ul></div></div>
-          <div className="flex items-center justify-between pt-8 border-t"><div className="text-2xl font-black">$45.00 — $120.00</div><button className="px-8 py-4 bg-primary text-white rounded-full font-bold hover:opacity-90 flex items-center gap-2">Reserve Seat <span className="material-symbols-outlined">arrow_forward</span></button></div>
+    {config.cards && config.cards.map((card, idx) => (
+      <div key={card.id || idx} className="bg-surface-container-lowest text-black rounded-xl overflow-hidden mb-12">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-2/5 aspect-square overflow-hidden">
+            <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1 p-8 md:p-12">
+            <div className="flex items-center gap-4 mb-6">
+              <span className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase">{card.badge || 'Live Performance'}</span>
+              <span className="text-secondary">{card.date || 'TBA'}</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-headline font-black tracking-tight mb-8">{card.title}</h2>
+            <div className="space-y-4 mb-8">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-black/40">Set Times</span>
+                <ul className="space-y-2 mt-4">
+                  <li className="flex justify-between border-b border-outline-variant/10 pb-2"><span>Doors Open</span><span className="font-bold">{card.time || '19:00'}</span></li>
+                  <li className="flex justify-between border-b border-outline-variant/10 pb-2"><span>Opening Act</span><span className="font-bold">TBA</span></li>
+                  <li className="flex justify-between border-b border-outline-variant/10 pb-2"><span>Main Event</span><span className="font-bold">{card.time || '20:30'}</span></li>
+                </ul>
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-8 border-t">
+              <div className="text-2xl font-black">{card.price || '₹1500'}</div>
+              <Link to={`/event/${card.id}`}>
+                <button className="px-8 py-4 bg-primary text-white rounded-full font-bold hover:opacity-90 flex items-center gap-2">Reserve Seat <span className="material-symbols-outlined">arrow_forward</span></button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    ))}
   </motion.div>
 )
 
 export default function CategoryListingPage() {
   const { slug } = useParams()
-  const config = categoryConfigs[slug] || categoryConfigs.dining
   const activeSlug = slug in categoryConfigs ? slug : 'dining'
+  const baseConfig = categoryConfigs[activeSlug] || categoryConfigs.dining
+  
+  const [config, setConfig] = useState(baseConfig)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Backend integration
-  const [events, setEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  // Fetch events by category from backend
   useEffect(() => {
-    const fetchCategoryEvents = async () => {
-      try {
-        setLoading(true)
-        setError(null)
+    // Reset to base config when slug changes
+    setConfig(categoryConfigs[activeSlug] || categoryConfigs.dining)
+    setIsLoading(true)
 
-        // Fetch events for this category
-        const categoryEvents = await eventService.getEventsByCategory(slug)
-        setEvents(categoryEvents)
+    const fetchEvents = async () => {
+      try {
+        const res = await api.get('/events')
+        const allEvents = res.data
+
+        const categoryMap = {
+          'dining': 'other',
+          'open-mic': 'theater',
+          'cinema': 'theater',
+          'concerts': 'concert',
+          'sports': 'sports',
+          'hackathons': 'conference',
+          'comedy': 'comedy'
+        }
+        
+        let filteredEvents = allEvents.filter(e => e.category === categoryMap[activeSlug])
+        
+        // Special mapping to disambiguate theater and other tags
+        if (activeSlug === 'open-mic') {
+           filteredEvents = allEvents.filter(e => e.category === 'theater' && e.title.includes('Open Mic'))
+        }
+        if (activeSlug === 'cinema') {
+           filteredEvents = allEvents.filter(e => e.category === 'theater' && e.title.includes('Cinema'))
+        }
+        if (activeSlug === 'dining') {
+           filteredEvents = allEvents.filter(e => e.tags && e.tags.includes('Dining'))
+        }
+
+        const dynamicCards = filteredEvents.map((event, index) => {
+          const dateObj = new Date(event.start_datetime)
+          const dateStr = dateObj.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })
+          const timeStr = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+          
+          return {
+            id: event.id || index,
+            // Generic fallback image
+            image: event.cover_image || 'https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=2',
+            
+            // Detailed Grid (Dining)
+            title: event.title,
+            location: event.venue_name || 'India',
+            date: dateStr,
+            time: timeStr,
+            price: `₹${event.min_price}`,
+            people: event.total_capacity || 100,
+            bookable: event.status === 'published',
+            badge: event.tags && event.tags.length > 0 ? event.tags[0] : 'Featured',
+            availableLabel: event.total_sold < event.total_capacity ? 'Available' : 'Sold Out',
+            available: event.total_sold < event.total_capacity,
+            
+            // Cinema Grid
+            genre: event.tags && event.tags.length > 0 ? event.tags[0] : 'Feature',
+            rating: '4.8 ★',
+            director: 'Assemble Verified',
+            
+            // Comedy Masonry
+            artist: event.tags && event.tags[1] ? event.tags[1] : 'Featured Artist',
+            quote: event.description,
+            featured: index === 0,
+            note: dateStr,
+            
+            // Hackathons / Brutalist Grid
+            status: 'OPEN',
+            desc: event.description,
+            prize: `₹${((event.max_price || 1000) * 100).toLocaleString()}`,
+            icon: 'terminal',
+            
+            // Sports
+            sport: event.tags && event.tags[1] ? event.tags[1] : 'Live Sports',
+            bpm: '135',
+            rank: `#${index + 1}`
+          }
+        })
+        
+        if (dynamicCards.length > 0) {
+          setConfig(prev => ({ ...prev, cards: dynamicCards }))
+        }
+        
       } catch (err) {
-        console.error('Error fetching category events:', err)
-        setError(err)
-        // Keep mock data as fallback - no need to show error
+        console.error('Failed to fetch category events:', err)
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     }
+    
+    fetchEvents()
+  }, [activeSlug])
 
-    fetchCategoryEvents()
-  }, [slug])
+  // Relying on my semantic api mapping hook above
 
   const renderLayout = () => {
     switch (config.layout) {

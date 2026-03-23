@@ -1,8 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { eventService } from '../services/event'
-
+import api from '../services/api'
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }
@@ -21,74 +20,43 @@ const reviewers = [
 ]
 
 export default function EventDetailPage() {
-  const { slug } = useParams()
+  const { id } = useParams()
   const [event, setEvent] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  // Fetch event details from backend
+  const [error, setError] = useState(false)
+  
   useEffect(() => {
     const fetchEvent = async () => {
-      if (!slug) return
-
       try {
-        setLoading(true)
-        setError(null)
-
-        // For now, fetch all events and find by slug (until backend supports slug param)
-        const allEvents = await eventService.getAllEvents({ status: 'published' })
-        const foundEvent = allEvents.find(e => e.slug === slug)
-
-        if (foundEvent) {
-          setEvent(foundEvent)
-        } else {
-          setError('Event not found')
-        }
+        const res = await api.get(`/events/${id}`)
+        setEvent(res.data)
       } catch (err) {
-        console.error('Error fetching event:', err)
-        setError(err)
-        // Keep rendering mock data as fallback
-      } finally {
-        setLoading(false)
+        console.error(err)
+        setError(true)
       }
     }
-
     fetchEvent()
-  }, [slug])
+  }, [id])
 
-  // Use real event data if available, otherwise use mock data
-  const displayData = event || {
-    title: 'Utsova. 2024',
-    category: 'Architecture & Design',
-    description: 'A curated symposium bringing together the brightest minds in structural aesthetics and sustainable urbanism. Join us for an evening of provocative discourse and networking.',
-    start_datetime: '2024-10-24T18:00:00',
-    venue_name: 'The Concrete Gallery',
-    city: 'Mumbai',
-    min_price: 85,
-    max_price: 295,
-    total_capacity: 200,
-    available_capacity: 43,
-    organization_name: 'Studio Nexus'
+  if (error) {
+    return (
+      <div className="min-h-[80vh] flex flex-col gap-4 items-center justify-center text-center px-4">
+        <span className="material-symbols-outlined text-6xl text-error mb-4">cloud_off</span>
+        <h2 className="font-bold text-2xl mb-2">Failed to load event</h2>
+        <p className="text-on-surface-variant max-w-md">The backend could not fetch this event's details. Please verify your connection.</p>
+      </div>
+    )
   }
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'TBD'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  if (!event) {
+    return (
+      <div className="min-h-[80vh] flex flex-col gap-4 items-center justify-center font-bold text-xl text-on-surface-variant">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        Loading event details...
+      </div>
+    )
   }
-  const { id } = useParams()
-  const venueByEventId = {
-    'great-revival': 'restaurant',
-    'sunburn-goa': 'concertHall',
-    'comic-con': 'hackLab',
-    zomaland: 'restaurant',
-    'utsova-2024': 'concertHall',
-    'sports-cup': 'stadium',
-    'cinema-night': 'cinema',
-    'open-mic-live': 'concertHall',
-  }
-  const venueQuery = venueByEventId[String(id || '').toLowerCase()]
-  const selectionPath = `/event/${id}/select${venueQuery ? `?venue=${venueQuery}` : ''}`
+
+  const selectionPath = `/event/${event.id}/select`
 
   return (
     <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-8 pb-32">
@@ -100,57 +68,47 @@ export default function EventDetailPage() {
         transition={{ duration: 0.6 }}
       >
         <div className="w-full lg:w-1/2 aspect-[4/5] lg:aspect-auto">
-          <img className="w-full h-full object-cover rounded-lg shadow-sm" alt="Event space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAGZj_6D_lFdLBlI_bgiwIzFkPGB8JLf_toOhJhosnNFUI7p23iosuSIjGOsGfDL1K9cLCPTsmCT73lFZWqKKv7eWGGkQmUABV2opwrU6MblUA8dMmnu3_0xNhjC2m5pT6p2oulqY0HHXIq5e7cin7orGLsqrkTC6vSqEpOJiGnQesLRxIfVajxLdcg1UqXpdciiqgZgiLfZwpXwwq0iJMMSHZUFrXWlxR698r0xqX4tGnrTHyk5MCFzHuFPAeimXA4oPJJw6anHo" />
+          <img className="w-full h-full object-cover rounded-lg shadow-sm" alt="Event space" src={event.cover_image || 'https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=2'} />
         </div>
         <div className="w-full lg:w-1/2 py-8 lg:py-4 flex flex-col justify-center">
-          {loading ? (
-            <div className="animate-pulse space-y-6">
-              <div className="h-8 bg-surface-container-low rounded w-1/3"></div>
-              <div className="h-20 bg-surface-container-low rounded w-3/4"></div>
-              <div className="h-24 bg-surface-container-low rounded"></div>
+          <span className="inline-block bg-secondary-container text-on-secondary-fixed px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6 w-max">
+            {event.category}
+          </span>
+          <h1 className="font-[family-name:var(--font-family-headline)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
+            {event.title}
+          </h1>
+          <div className="flex flex-wrap gap-8 mb-10">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary">location_on</span>
+              </div>
+              <div>
+                <p className="text-xs text-on-surface-variant font-medium">VENUE</p>
+                <p className="font-bold">{event.venue_name || 'India Event Venue'}</p>
+              </div>
             </div>
-          ) : (
-            <>
-              <span className="inline-block bg-secondary-container text-on-secondary-fixed px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6 w-max">
-                {displayData.category || 'Event'}
-              </span>
-              <h1 className="font-[family-name:var(--font-family-headline)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
-                {displayData.title}
-              </h1>
-              <div className="flex flex-wrap gap-8 mb-10">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary">location_on</span>
-                  </div>
-                  <div>
-                    <p className="text-xs text-on-surface-variant font-medium">VENUE</p>
-                    <p className="font-bold">{displayData.venue_name || 'TBD'}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary">calendar_today</span>
-                  </div>
-                  <div>
-                    <p className="text-xs text-on-surface-variant font-medium">DATE &amp; TIME</p>
-                    <p className="font-bold">{formatDate(displayData.start_datetime)}</p>
-                  </div>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary">calendar_today</span>
               </div>
-              <div className="flex items-center gap-4 mb-8 p-4 rounded-lg bg-surface-container-low w-max">
-                <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary">business</span>
-                </div>
-                <div>
-                  <p className="text-xs text-on-surface-variant">ORGANIZED BY</p>
-                  <p className="font-bold">{displayData.organization_name || 'Event Organizer'}</p>
-                </div>
+              <div>
+                <p className="text-xs text-on-surface-variant font-medium">DATE &amp; TIME</p>
+                <p className="font-bold">{new Date(event.start_datetime).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
               </div>
-              <p className="text-on-surface-variant text-lg leading-relaxed mb-10 max-w-xl">
-                {displayData.description || 'Join us for an amazing event experience.'}
-              </p>
-            </>
-          )}
+            </div>
+          </div>
+          <div className="flex items-center gap-4 mb-8 p-4 rounded-lg bg-surface-container-low w-max">
+            <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary">business</span>
+            </div>
+            <div>
+              <p className="text-xs text-on-surface-variant">ORGANIZED BY</p>
+              <p className="font-bold">{event.organization_name || 'Assemble Organizer'}</p>
+            </div>
+          </div>
+          <p className="text-on-surface-variant text-lg leading-relaxed mb-10 max-w-xl">
+            {event.description}
+          </p>
           <div className="flex items-center gap-3">
             <div className="flex -space-x-3">
               {avatarUrls.map((url, i) => (
@@ -164,32 +122,30 @@ export default function EventDetailPage() {
       </motion.section>
 
       {/* Availability Bar */}
-      {!loading && displayData.available_capacity !== undefined && (
-        <motion.section className="mb-20" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          <div className="bg-surface-container-low p-8 rounded-lg flex flex-col md:flex-row items-center gap-8 shadow-sm">
-            <div className="flex-1 w-full">
-              <div className="flex justify-between mb-4">
-                <span className="font-bold flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>confirmation_number</span>
-                  Live Availability
-                </span>
-                <span className="font-bold text-error">{displayData.available_capacity}/{displayData.total_capacity} remaining</span>
-              </div>
-              <div className="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${displayData.available_capacity / displayData.total_capacity < 0.3 ? 'bg-error' : 'bg-primary'}`}
-                  style={{ width: `${(displayData.available_capacity / displayData.total_capacity) * 100}%` }}
-                />
-              </div>
+      <motion.section className="mb-20" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+        <div className="bg-surface-container-low p-8 rounded-lg flex flex-col md:flex-row items-center gap-8 shadow-sm">
+          <div className="flex-1 w-full">
+            <div className="flex justify-between mb-4">
+              <span className="font-bold flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>confirmation_number</span>
+                Live Availability
+              </span>
+              <span className="font-bold text-error">{event.total_capacity - event.total_sold} remaining</span>
             </div>
-            {displayData.available_capacity / displayData.total_capacity < 0.3 && (
-              <div className="bg-error-container text-on-error-container px-4 py-2 rounded-full text-xs font-bold animate-pulse">
-                Selling out fast
-              </div>
-            )}
+            <div className="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
+              <div
+                className={`h-full ${((event.total_capacity - event.total_sold) / event.total_capacity) < 0.3 ? 'bg-error' : 'bg-primary'}`}
+                style={{ width: `${Math.max(5, (event.total_sold / event.total_capacity) * 100)}%` }}
+              />
+            </div>
           </div>
-        </motion.section>
-      )}
+          {((event.total_capacity - event.total_sold) / event.total_capacity) < 0.3 && (
+            <div className="bg-error-container text-on-error-container px-4 py-2 rounded-full text-xs font-bold animate-pulse">
+              Selling out fast
+            </div>
+          )}
+        </div>
+      </motion.section>
 
       {/* Ticket Tiers */}
       <motion.section className="mb-24" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
@@ -200,57 +156,32 @@ export default function EventDetailPage() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Standard */}
-          <motion.div className="bg-surface-container-lowest p-8 rounded-lg flex flex-col border border-transparent hover:border-outline-variant transition-all group" whileHover={{ y: -5 }}>
-            <div className="flex justify-between items-start mb-8">
-              <div><h3 className="text-2xl font-black mb-1">Standard</h3><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Available</span></div></div>
-              <p className="text-3xl font-black">₹85</p>
-            </div>
-            <ul className="space-y-4 mb-12 flex-grow">
-              {['General Admission', 'Digital Resource Pack', 'Networking Lounge'].map(f => (
-                <li key={f} className="flex items-center gap-3 text-on-surface-variant">
-                  <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link to={selectionPath}><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
-          </motion.div>
-
-          {/* Professional - Featured */}
-          <motion.div className="bg-primary text-on-primary p-8 rounded-lg flex flex-col shadow-2xl scale-105 relative z-10" whileHover={{ y: -5 }}>
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-container text-on-secondary-fixed px-4 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">Most Popular</div>
-            <div className="flex justify-between items-start mb-8">
-              <div><h3 className="text-2xl font-black mb-1">Professional</h3><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-secondary-container" /><span className="text-xs font-bold uppercase tracking-wider opacity-70">Limited Space</span></div></div>
-              <p className="text-3xl font-black">₹145</p>
-            </div>
-            <ul className="space-y-4 mb-12 flex-grow">
-              {['Priority Front Seating', 'Workshop Access', 'Hardcover Event Guide', 'Evening Cocktail Mix'].map(f => (
-                <li key={f} className="flex items-center gap-3 opacity-90">
-                  <span className="material-symbols-outlined text-secondary-container text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link to={selectionPath}><button className="w-full py-4 rounded-full bg-secondary-container text-on-secondary-fixed font-bold hover:brightness-110 transition-all">Select</button></Link>
-          </motion.div>
-
-          {/* Executive */}
-          <motion.div className="bg-surface-container-lowest p-8 rounded-lg flex flex-col border border-transparent hover:border-outline-variant transition-all" whileHover={{ y: -5 }}>
-            <div className="flex justify-between items-start mb-8">
-              <div><h3 className="text-2xl font-black mb-1">Executive</h3><div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-error" /><span className="text-xs font-bold uppercase tracking-wider text-error">Only 4 Left</span></div></div>
-              <p className="text-3xl font-black">₹295</p>
-            </div>
-            <ul className="space-y-4 mb-12 flex-grow">
-              {['Private VIP Lounge', 'Speaker Meet & Greet', 'All-Day Concierge'].map(f => (
-                <li key={f} className="flex items-center gap-3 text-on-surface-variant">
-                  <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link to={selectionPath}><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
-          </motion.div>
+          {event.ticket_tiers && event.ticket_tiers.map((tier, idx) => (
+            <motion.div key={tier.tier_id || idx} className={`p-8 rounded-lg flex flex-col border border-transparent shadow-sm transition-all group ${idx === 1 ? 'bg-primary text-on-primary shadow-2xl scale-105 relative z-10' : 'bg-surface-container-lowest hover:border-outline-variant'} `} whileHover={{ y: -5 }}>
+              {idx === 1 && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-container text-on-secondary-fixed px-4 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">Most Popular</div>}
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <h3 className="text-2xl font-black mb-1">{tier.tier_name}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${tier.available_quantity > 10 ? 'bg-green-500' : 'bg-error'}`} />
+                    <span className="text-xs font-bold uppercase tracking-wider opacity-70">
+                      {tier.available_quantity > 10 ? 'Available' : 'Limited Space'}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-3xl font-black">₹{tier.price}</p>
+              </div>
+              <ul className="space-y-4 mb-12 flex-grow">
+                {tier.perks && tier.perks.length > 0 ? tier.perks.map((p, i) => (
+                  <li key={i} className="flex items-center gap-3 opacity-90">
+                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    {p}
+                  </li>
+                )) : <li className="text-sm opacity-80">Access to all general areas</li>}
+              </ul>
+              <Link to={selectionPath}><button className={`w-full py-4 rounded-full font-bold transition-all ${idx === 1 ? 'bg-secondary-container text-on-secondary-fixed hover:brightness-110' : 'border-2 border-primary hover:bg-primary hover:text-on-primary'}`}>Select</button></Link>
+            </motion.div>
+          ))}
         </div>
       </motion.section>
 
@@ -276,29 +207,25 @@ export default function EventDetailPage() {
       </motion.section>
 
       {/* Sticky Bottom Bar */}
-      {!loading && (
-        <div className="fixed bottom-0 left-0 w-full z-50 p-6">
-          <div className="max-w-4xl mx-auto glass rounded-full px-10 py-5 shadow-[0_32px_64px_rgba(26,28,28,0.08)] flex justify-between items-center">
-            <div className="flex flex-col">
-              <p className="text-[10px] font-black tracking-widest text-on-surface-variant uppercase">Starting From</p>
-              <p className="text-2xl font-black">
-                {displayData.min_price ? `₹${displayData.min_price.toFixed(2)}` : 'TBD'}
-              </p>
-            </div>
-            <div className="hidden sm:flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full">
-              <span className="material-symbols-outlined text-on-surface-variant">person</span>
-              <span className="font-bold text-sm">1 Adult</span>
-              <span className="material-symbols-outlined text-primary text-sm cursor-pointer">expand_more</span>
-            </div>
-            <Link to={selectionPath}>
-              <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-3 hover:scale-[0.98] transition-all">
-                Book Now
-                <span className="material-symbols-outlined text-lg">arrow_forward</span>
-              </button>
-            </Link>
+      <div className="fixed bottom-0 left-0 w-full z-50 p-6">
+        <div className="max-w-4xl mx-auto glass rounded-full px-10 py-5 shadow-[0_32px_64px_rgba(26,28,28,0.08)] flex justify-between items-center">
+          <div className="flex flex-col">
+            <p className="text-[10px] font-black tracking-widest text-on-surface-variant uppercase">Starting From</p>
+            <p className="text-2xl font-black">₹{event.min_price?.toFixed(2)}</p>
           </div>
+          <div className="hidden sm:flex items-center gap-4 bg-surface-container-low px-6 py-2 rounded-full">
+            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+            <span className="font-bold text-sm">1 Adult</span>
+            <span className="material-symbols-outlined text-primary text-sm cursor-pointer">expand_more</span>
+          </div>
+          <Link to={selectionPath}>
+            <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-3 hover:scale-[0.98] transition-all">
+              Book Now
+              <span className="material-symbols-outlined text-lg">arrow_forward</span>
+            </button>
+          </Link>
         </div>
-      )}
+      </div>
     </div>
   )
 }
