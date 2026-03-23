@@ -132,6 +132,8 @@ export default function HomePage() {
   // Semantic states defined above
 
   useEffect(() => {
+    if (dynamicHeroEvents.length === 0) return
+
     const currentTitle = dynamicHeroEvents[currentSlide]?.title || ''
     let timeout
 
@@ -149,7 +151,7 @@ export default function HomePage() {
     }
 
     return () => clearTimeout(timeout)
-  }, [displayedText, isDeleting, currentSlide])
+  }, [displayedText, isDeleting, currentSlide, dynamicHeroEvents])
 
   const handleIndicatorClick = (idx) => {
     setCurrentSlide(idx)
@@ -175,29 +177,30 @@ export default function HomePage() {
     }
   }, [])
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[80vh] flex flex-col gap-4 items-center justify-center font-bold text-xl text-on-surface-variant">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        Connecting to the Live Backend...
-      </div>
-    )
-  }
-
-  if (error || dynamicHeroEvents.length === 0) {
-    return (
-      <div className="min-h-[80vh] flex flex-col gap-4 items-center justify-center text-center px-4">
-        <span className="material-symbols-outlined text-6xl text-error mb-4">cloud_off</span>
-        <h2 className="font-bold text-2xl mb-2">Backend Connection Failed</h2>
-        <p className="text-on-surface-variant max-w-md">
-          {error || 'No live events found. Please ensure the FastAPI backend is running on port 8000 and the MongoDB database is seeded with data.'}
-        </p>
-      </div>
-    )
-  }
+  const hasHeroEvents = dynamicHeroEvents.length > 0
+  const hasTrendingEvents = dynamicTrending.length > 0
+  const hasGlobalEvents = globalEvents.length > 0
+  const currentHero = hasHeroEvents
+    ? dynamicHeroEvents[currentSlide]
+    : {
+        tag: 'Featured',
+        title: 'Discover Curated Events',
+        description: 'Explore experiences across concerts, cinema, open mics, sports, dining and hackathons.',
+        date: 'Updating',
+        location: 'India',
+        link: '#',
+      }
 
   return (
     <>
+      {error && (
+        <div className="max-w-[1440px] mx-auto px-8 pt-6">
+          <div className="rounded-xl border border-error/30 bg-error-container/50 px-5 py-4 text-sm text-on-error-container">
+            Live event data is unavailable right now. Showing loading placeholders.
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section ref={heroRef} className="px-4 md:px-8 mb-20 relative overflow-hidden">
         <div className="relative w-full h-[870px] rounded-xl bg-surface-container-low flex items-center justify-center text-center overflow-hidden">
@@ -238,30 +241,31 @@ export default function HomePage() {
           <div className="relative z-10 max-w-4xl px-8 flex flex-col items-center min-h-[420px] justify-center overflow-hidden">
             <div className="flex flex-col items-center transition-opacity duration-300">
               <span className="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold tracking-widest uppercase mb-8">
-                {dynamicHeroEvents[currentSlide]?.tag}
+                {currentHero.tag}
               </span>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-black leading-[0.9] mb-8 font-[family-name:var(--font-family-headline)] min-h-[1.2em] flex items-center justify-center">
-                {displayedText}
-                <span className="inline-block w-2 md:w-[6px] h-[0.8em] bg-primary ml-2 animate-pulse align-middle" />
+                {hasHeroEvents ? displayedText : currentHero.title}
+                {hasHeroEvents && <span className="inline-block w-2 md:w-[6px] h-[0.8em] bg-primary ml-2 animate-pulse align-middle" />}
               </h1>
               <p className="text-xl md:text-2xl text-on-surface-variant font-medium max-w-2xl mx-auto mb-10 leading-relaxed text-center min-h-[60px]">
-                {dynamicHeroEvents[currentSlide]?.description}
+                {currentHero.description}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-8 mb-12">
                 <div className="flex items-center gap-2 text-black">
                   <span className="material-symbols-outlined text-primary">calendar_month</span>
-                  <span className="font-bold text-lg min-w-[120px]">{dynamicHeroEvents[currentSlide]?.date}</span>
+                  <span className="font-bold text-lg min-w-[120px]">{currentHero.date}</span>
                 </div>
                 <div className="flex items-center gap-2 text-black">
                   <span className="material-symbols-outlined text-primary">location_on</span>
-                  <span className="font-bold text-lg min-w-[200px] text-center">{dynamicHeroEvents[currentSlide]?.location}</span>
+                  <span className="font-bold text-lg min-w-[200px] text-center">{currentHero.location}</span>
                 </div>
               </div>
-              <Link to={dynamicHeroEvents[currentSlide]?.link || '#'}>
+              <Link to={currentHero.link || '#'}>
                 <motion.button
                   className="group flex items-center gap-3 px-12 py-6 bg-primary text-white rounded-full font-bold text-xl shadow-xl shadow-primary/20"
                   whileHover={{ scale: 0.97 }}
                   whileTap={{ scale: 0.95 }}
+                  disabled={!hasHeroEvents}
                 >
                   Book Tickets
                   <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -271,17 +275,19 @@ export default function HomePage() {
           </div>
 
           {/* Carousel Indicators */}
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-20">
-            {dynamicHeroEvents.map((_, idx) => (
-              <div
-                key={idx}
-                onClick={() => handleIndicatorClick(idx)}
-                className={`w-16 h-1.5 rounded-full cursor-pointer transition-all ${
-                  currentSlide === idx ? 'bg-primary' : 'bg-outline-variant opacity-30 hover:opacity-50'
-                }`}
-              />
-            ))}
-          </div>
+          {!isLoading && hasHeroEvents && (
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+              {dynamicHeroEvents.map((_, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => handleIndicatorClick(idx)}
+                  className={`w-16 h-1.5 rounded-full cursor-pointer transition-all ${
+                    currentSlide === idx ? 'bg-primary' : 'bg-outline-variant opacity-30 hover:opacity-50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -452,7 +458,26 @@ export default function HomePage() {
           </Link>
         </div>
         <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          {dynamicTrending.map((card, i) => (
+          {(isLoading || !hasTrendingEvents ? Array.from({ length: 3 }) : dynamicTrending).map((card, i) => (
+            isLoading || !hasTrendingEvents ? (
+              <div
+                key={`trending-skeleton-${i}`}
+                className="bg-white border border-outline-variant p-8 rounded-[2rem] shadow-sm flex flex-col gap-6 animate-pulse"
+              >
+                <div className="w-full h-40 rounded-xl bg-surface-container-high" />
+                <div className="h-4 w-1/2 rounded bg-surface-container-high" />
+                <div className="h-8 w-5/6 rounded bg-surface-container-high" />
+                <div className="h-6 w-32 rounded-full bg-surface-container-high" />
+                <div className="space-y-3 pt-4 border-t border-outline-variant/30">
+                  <div className="h-4 w-3/4 rounded bg-surface-container-high" />
+                  <div className="h-4 w-2/3 rounded bg-surface-container-high" />
+                </div>
+                <div className="mt-auto pt-6 flex justify-between items-center">
+                  <div className="h-6 w-20 rounded bg-surface-container-high" />
+                  <div className="h-9 w-28 rounded-full bg-surface-container-high" />
+                </div>
+              </div>
+            ) : (
             <motion.div
               key={card.title}
               className="bg-white border border-outline-variant p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group flex flex-col gap-6 cursor-pointer"
@@ -503,6 +528,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </motion.div>
+            )
           ))}
         </motion.div>
       </motion.section>
@@ -521,7 +547,23 @@ export default function HomePage() {
             <h2 className="text-5xl font-black tracking-tighter">Upcoming Global Events</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {globalEvents.map((evt, idx) => (
+            {(isLoading || !hasGlobalEvents ? Array.from({ length: 2 }) : globalEvents).map((evt, idx) => (
+              isLoading || !hasGlobalEvents ? (
+                <div
+                  key={`global-skeleton-${idx}`}
+                  className="bg-white border border-outline-variant p-10 rounded-[3rem] flex flex-col md:flex-row gap-10 animate-pulse"
+                >
+                  <div className="w-full md:w-1/2 aspect-square rounded-[2rem] bg-surface-container-high" />
+                  <div className="w-full md:w-1/2 flex flex-col">
+                    <div className="h-6 w-24 rounded-full bg-surface-container-high mb-6" />
+                    <div className="h-10 w-4/5 rounded bg-surface-container-high mb-3" />
+                    <div className="h-4 w-full rounded bg-surface-container-high mb-2" />
+                    <div className="h-4 w-5/6 rounded bg-surface-container-high mb-8" />
+                    <div className="h-4 w-40 rounded bg-surface-container-high mb-10" />
+                    <div className="h-12 w-full rounded-full bg-surface-container-high mt-auto" />
+                  </div>
+                </div>
+              ) : (
               <motion.div
                 key={idx}
                 className={`${idx === 1 ? 'bg-primary text-white cursor-pointer' : 'bg-white border border-outline-variant cursor-pointer'} p-10 rounded-[3rem] flex flex-col md:flex-row gap-10`}
@@ -556,6 +598,7 @@ export default function HomePage() {
                   </Link>
                 </div>
               </motion.div>
+              )
             ))}
           </div>
         </div>

@@ -56,7 +56,19 @@ export default function EventDetailPage() {
     )
   }
 
-  const selectionPath = `/event/${event.id}/select`
+  const categoryToVenue = (categoryValue) => {
+    const category = String(categoryValue || '').toLowerCase()
+    if (category.includes('sport')) return 'stadium'
+    if (category.includes('open') && category.includes('mic')) return 'openMic'
+    if (category.includes('concert') || category.includes('music')) return 'concertHall'
+    if (category.includes('cinema') || category.includes('movie') || category.includes('film')) return 'cinema'
+    if (category.includes('dining') || category.includes('food') || category.includes('restaurant')) return 'restaurant'
+    if (category.includes('hack') || category.includes('code')) return 'hackLab'
+    return 'openMic'
+  }
+
+  const selectionVenue = categoryToVenue(event.category)
+  const selectionPath = `/event/${event.id}/select?venue=${selectionVenue}`
 
   return (
     <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-8 pb-32">

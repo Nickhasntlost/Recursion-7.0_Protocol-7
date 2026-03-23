@@ -1,6 +1,6 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Stage, Layer, Circle, Ellipse, Rect, Text, Group, Line } from 'react-konva'
 
 const seatClassByStatus = {
@@ -136,6 +136,35 @@ function seededRatio(seedText) {
 }
 
 function detectVenueFromEvent(eventId, providedVenue) {
+  const normalizedVenue = String(providedVenue || '').trim().toLowerCase()
+  const venueAliasMap = {
+    stadium: 'stadium',
+    sports: 'stadium',
+    sport: 'stadium',
+    openmic: 'openMic',
+    'open-mic': 'openMic',
+    open_mic: 'openMic',
+    concert: 'concertHall',
+    concerts: 'concertHall',
+    concerthall: 'concertHall',
+    concert_hall: 'concertHall',
+    cinemahall: 'cinema',
+    cinema: 'cinema',
+    movie: 'cinema',
+    film: 'cinema',
+    dining: 'restaurant',
+    restaurant: 'restaurant',
+    food: 'restaurant',
+    hackathon: 'hackLab',
+    hackathons: 'hackLab',
+    hacklab: 'hackLab',
+  }
+
+  const aliasMatch = venueAliasMap[normalizedVenue]
+  if (aliasMatch && venueConfigs[aliasMatch]) {
+    return aliasMatch
+  }
+
   if (providedVenue && venueConfigs[providedVenue]) {
     return providedVenue
   }
@@ -1394,11 +1423,17 @@ export default function SelectionPage() {
   const location = useLocation()
   const search = new URLSearchParams(location.search)
 
-  const initialVenue = detectVenueFromEvent(id, search.get('venue'))
-  const [activeVenue, setActiveVenue] = useState(initialVenue)
+  const requestedVenue = detectVenueFromEvent(id, search.get('venue'))
+  const [activeVenue, setActiveVenue] = useState(requestedVenue)
   const [ticketCount, setTicketCount] = useState(2)
   const [selectedSeatIds, setSelectedSeatIds] = useState([])
-  const [selectedCompartment, setSelectedCompartment] = useState(initialVenue === 'stadium' ? 'North Stand' : null)
+  const [selectedCompartment, setSelectedCompartment] = useState(requestedVenue === 'stadium' ? 'North Stand' : null)
+
+  useEffect(() => {
+    setActiveVenue(requestedVenue)
+    setSelectedSeatIds([])
+    setSelectedCompartment(requestedVenue === 'stadium' ? 'North Stand' : null)
+  }, [requestedVenue])
 
   const venue = venueConfigs[activeVenue]
 

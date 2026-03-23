@@ -142,6 +142,13 @@ const categoryConfigs = {
   }
 }
 
+const getCardEventLink = (card) => {
+  if (typeof card.link === 'string' && card.link.trim().length > 0) {
+    return card.link
+  }
+  return null
+}
+
 // Layout Components
 
 const DetailedGridComponent = ({ config }) => (
@@ -208,25 +215,26 @@ const CinemaLayout = ({ config }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {config.cards.map((card, idx) => (
-        <motion.article
-          key={card.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.1 }}
-          className="group relative flex flex-col cursor-pointer"
-        >
-          <div className="aspect-2/3 w-full overflow-hidden rounded-xl bg-zinc-900 relative">
-            <img src={card.image} alt={card.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">{card.genre}</span>
-                <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-[#f8fafc] text-[10px] font-black uppercase tracking-widest rounded-full">{card.rating}</span>
+        <Link key={card.id} to={getCardEventLink(card) || '#'} className={!getCardEventLink(card) ? 'pointer-events-none' : ''}>
+          <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="group relative flex flex-col cursor-pointer"
+          >
+            <div className="aspect-2/3 w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+              <img src={card.image} alt={card.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">{card.genre}</span>
+                  <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-[#f8fafc] text-[10px] font-black uppercase tracking-widest rounded-full">{card.rating}</span>
+                </div>
+                <h3 className="text-3xl font-headline font-extrabold tracking-tighter mb-1 text-[#f8fafc]">{card.title}</h3>
+                <p className="text-sm text-zinc-300 font-medium">{card.director}</p>
               </div>
-              <h3 className="text-3xl font-headline font-extrabold tracking-tighter mb-1 text-[#f8fafc]">{card.title}</h3>
-              <p className="text-sm text-zinc-300 font-medium">{card.director}</p>
             </div>
-          </div>
-        </motion.article>
+          </motion.article>
+        </Link>
       ))}
     </div>
   </motion.div>
@@ -237,22 +245,24 @@ const ComedyLayout = ({ config }) => (
     {config.cards.map((card, idx) => (
       <motion.div key={card.id} initial={{ opacity: 0, x: idx % 2 ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.15 }}>
         {card.featured ? (
-          <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden relative group">
-            <div className="h-100 w-full bg-surface-container-high overflow-hidden">
-              <img alt={card.title} src={card.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-            </div>
-            <div className="p-8 relative">
-              <div className="absolute -top-6 right-8 bg-secondary-container text-on-secondary-fixed px-4 py-2 rounded-full font-bold text-xs uppercase tracking-widest">Selling Fast</div>
-              <h3 className="font-headline text-4xl font-black leading-none mb-4 -ml-4 -rotate-1 origin-left">{card.title}</h3>
-              <p className="text-on-surface-variant italic mb-6">{card.quote}</p>
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-lg">{card.artist}</span>
-                <button className="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                  <span className="material-symbols-outlined">arrow_forward</span>
-                </button>
+          <Link to={getCardEventLink(card) || '#'} className={!getCardEventLink(card) ? 'pointer-events-none' : ''}>
+            <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden relative group cursor-pointer">
+              <div className="h-100 w-full bg-surface-container-high overflow-hidden">
+                <img alt={card.title} src={card.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <div className="p-8 relative">
+                <div className="absolute -top-6 right-8 bg-secondary-container text-on-secondary-fixed px-4 py-2 rounded-full font-bold text-xs uppercase tracking-widest">Selling Fast</div>
+                <h3 className="font-headline text-4xl font-black leading-none mb-4 -ml-4 -rotate-1 origin-left">{card.title}</h3>
+                <p className="text-on-surface-variant italic mb-6">{card.quote}</p>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-lg">{card.artist}</span>
+                  <button className="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <span className="material-symbols-outlined">arrow_forward</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         ) : (
           <div className="bg-secondary-container p-8 rounded-xl text-black">
             <h3 className="font-headline text-5xl font-black tracking-tighter leading-none mb-8">{card.title}</h3>
@@ -293,6 +303,11 @@ const HackathonsLayout = ({ config }) => (
               </div>
             </div>
             <button className="mt-6 w-full border-2 border-black py-3 font-headline font-black uppercase hover:bg-secondary-container transition-colors">Register →</button>
+            {getCardEventLink(card) && (
+              <Link to={getCardEventLink(card)}>
+                <button className="mt-3 w-full border-2 border-black py-3 font-headline font-black uppercase bg-primary text-white hover:opacity-90 transition-opacity">Book Now</button>
+              </Link>
+            )}
           </div>
         </motion.div>
       ))}
@@ -304,28 +319,29 @@ const OpenMicLayout = ({ config }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-20 items-start">
       {config.cards.map((card, idx) => (
-        <motion.div
-          key={card.id}
-          initial={{ opacity: 0, rotate: idx % 2 ? 3 : -2 }}
-          animate={{ opacity: 1, rotate: 0 }}
-          transition={{ delay: idx * 0.1 }}
-          className="flex flex-col gap-6"
-        >
-          <div className="bg-surface-container-lowest text-black p-4 pb-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:rotate-0 transition-transform" style={{ transform: `rotate(${idx % 2 ? 3 : -2}deg)` }}>
-            <div className="aspect-square bg-surface-container overflow-hidden mb-6">
-              <img alt={card.title} src={card.image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
+        <Link key={card.id} to={getCardEventLink(card) || '#'} className={!getCardEventLink(card) ? 'pointer-events-none' : ''}>
+          <motion.div
+            initial={{ opacity: 0, rotate: idx % 2 ? 3 : -2 }}
+            animate={{ opacity: 1, rotate: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="flex flex-col gap-6 cursor-pointer"
+          >
+            <div className="bg-surface-container-lowest text-black p-4 pb-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:rotate-0 transition-transform" style={{ transform: `rotate(${idx % 2 ? 3 : -2}deg)` }}>
+              <div className="aspect-square bg-surface-container overflow-hidden mb-6">
+                <img alt={card.title} src={card.image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
+              </div>
+              <div className="px-2">
+                <p className="text-3xl font-light text-on-surface-variant italic">{card.title} / {card.time}</p>
+              </div>
             </div>
-            <div className="px-2">
-              <p className="text-3xl font-light text-on-surface-variant italic">{card.title} / {card.time}</p>
+            <div className="px-4">
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="bg-secondary-container text-on-secondary-fixed px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">{card.genre}</span>
+              </div>
+              <p className="text-on-surface-variant leading-relaxed">{card.desc}</p>
             </div>
-          </div>
-          <div className="px-4">
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="bg-secondary-container text-on-secondary-fixed px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">{card.genre}</span>
-            </div>
-            <p className="text-on-surface-variant leading-relaxed">{card.desc}</p>
-          </div>
-        </motion.div>
+          </motion.div>
+        </Link>
       ))}
     </div>
   </motion.div>
@@ -358,6 +374,16 @@ const SportsLayout = ({ config }) => (
               {card.bpm && <div className="bg-white p-4 rounded-lg"><span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">BPM</span><span className="text-xl font-black font-headline text-black">{card.bpm}</span></div>}
               {card.rank && <div className="bg-secondary-container p-4 rounded-lg"><span className="text-[10px] font-bold text-on-secondary-fixed-variant uppercase block mb-1">Rank</span><span className="text-xl font-black font-headline text-on-secondary-fixed">{card.rank}</span></div>}
             </div>
+            {getCardEventLink(card) && (
+              <div className="mt-8">
+                <Link to={getCardEventLink(card)}>
+                  <button className="px-6 py-3 rounded-full bg-primary text-white font-bold text-sm flex items-center gap-2">
+                    Book Now
+                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         </motion.div>
       ))}
@@ -450,6 +476,7 @@ export default function CategoryListingPage() {
           
           return {
             id: event.id || index,
+            link: event.id ? `/event/${event.id}` : null,
             // Generic fallback image
             image: event.cover_image || 'https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=2',
             
