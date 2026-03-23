@@ -93,8 +93,8 @@ const trendingCards = [
 ]
 
 const avatarUrls = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCG5MqSvTyNBhS2q4lWQi2xAGGcJ7i-IZ_jRS01dLvvzAuPkdsANuOpgPoe_JxWE8RA0Dzbx4hFsfY08uX10h-e4_nmn-LzJ3sSFwwJgLVIOy_Esd6bFvLH_0qLqD46lc1Ex5b3jhuRq6AIoPwRhUBCD8sHgMxyQmlbXXOiMSIJmYNE4BI1hS5v6dN82srZ5t_YAl-u1uqPjNusXYkr1IC4O3WDaFVtZNLCpPm3Y9V2M1STF2ceKfJNgly1TVgcAT078cWmXdJ3DWc',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCyGC5ZFJO9KeUk2T4UzK59gMQJa-SD0jCkCQMgaTRe-9N8SDByv7TRWnJfwDvjKHCTL4kz5KNHbprqbOWge-EyY784hejsXOdALhBom2Nn6ZCmti_9Yvllx39wh6Jn7jH8tJAFaku5E96lCRRmQwT5T4OXTCHStimBW1BafSzR48yWp7WRtDdBVJ5yXXuqWDldsaVGwzxRI_3kliHK2PiXt3-d_b-mA3ec0c1hOADiS0bCSF_kSzHjhASmyaCZCHAgV2-GA68RO0M',
+  'https://images.pexels.com/photos/2085739/pexels-photo-2085739.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
+  'https://images.pexels.com/photos/13067379/pexels-photo-13067379.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
 ]
 
 const containerVariants = {
@@ -502,7 +502,7 @@ export default function HomePage() {
               transition={{ duration: 0.3 }}
             >
               <div className="w-full md:w-1/2 aspect-square rounded-[2rem] overflow-hidden">
-                <img alt="Event preview" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIZc5qlxZ7qzf9mcnrXJDiorGynepBwSdoMLK7uU9VzGWfIjor6b2R-IwX__x97zFH3XsYnkhvgPb7LfwR-IGAno2N6k46kNPSj9SLw_lN63w4jU4CaOeHxY7ibUC3y4sqRca-rtfTFmLpIPacH9QDd5cr3YEhiYPfKJI7Gc1CqfLC7rH1SROxuWl31YLZAHK71WDTZD0RBDK6FSdR6xW9tROsIb7Qhmcwd0Me-gyk7mzPQ83kJ7hbzH8wmA3oXUBtgH8jSJKno4Y" />
+                <img alt="Event preview" className="w-full h-full object-cover" src="https://images.pexels.com/photos/3319726/pexels-photo-3319726.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2" />
               </div>
               <div className="w-full md:w-1/2 flex flex-col">
                 <div className="flex justify-between items-center mb-6">
@@ -539,7 +539,7 @@ export default function HomePage() {
               transition={{ duration: 0.3 }}
             >
               <div className="w-full md:w-1/2 aspect-square rounded-[2rem] overflow-hidden">
-                <img alt="Event preview" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGy3zF-jg3Opymsx6k-hW9tiacAz_EanRvaVyNYOHFhWsl9TskcDQH4D44s3BAVRBCefhdnKlbH5iooQ_EDr52X4OVWw548dTQ64adh3EmigdI6n7FSSyRtNSLTj3AET7iR0L15KSXtme1ezMTssM3FIH4odeUPa1e8Lr1Dnajd6OTs2QHEaCHkDXAm1thGhGljJ7jN5c-qby-kAEqJ2Y8DTIqnWenidr3I4DT0ckanmVT4qK_5cqEC6SWGzJfinZ80Fz91monsgQ" />
+                <img alt="Event preview" className="w-full h-full object-cover" src="https://images.pexels.com/photos/4072509/pexels-photo-4072509.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2" />
               </div>
               <div className="w-full md:w-1/2 flex flex-col">
                 <div className="flex justify-between items-center mb-6">

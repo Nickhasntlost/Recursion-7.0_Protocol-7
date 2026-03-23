@@ -7,9 +7,9 @@ const cardHover = {
 }
 
 const avatarUrls = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBui7wRyNhmPpprBqnjS4uY1YxLKZaLISSPzDl-QR8s2j5AJjSCat7wumW3vH9dFA42SuqgPUhVXJLvfCGSiU8hJ4Jhy0exv_anFmPRNUc4Zx5PLKPMIzfKWMkHH9sZlJZ1rAtW0A03Fa1K34a-NeGa7EnuY9GPQHugXh0NFNAuxoLvG0DQL9Q2guA4ib-J7zfEMHLEe4XqaiXx7ZNw8cvmtrzKVoTSeB3_MXP3YN9AzKSktYnBmVYO2bnsk5VA5_lWkTDlgey5-i4',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCW7RpMtxO7Adqrpc-7JgEckpTQoX3U99DkdZxWcs0mzOC3w8mXnir-wpUjWadr9PfRuDWXwP5eip9VUgt5gaY0wMcvlWy_cj4jzoAByDc1koTmW24OjGE7bTEjdmtLX1YjW1VMxntFeEiMU6G7P2n6T73KtE9OEyNswjimnV78kLywHmRgX8mND10dk5CuAKtwe7mGfmjzG1H1Pg96Y7u7bQdhBKydUfvc0e3ne8OfH3sBYiQ0ckXRuJnDgo4egj6XsFpQ0kgtG1I',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAoSXqwLej5Kg-0b4_eWwJKnKRxjfb4RSYLvrkJHzAQKPaf05JriIZQMB3WslSTNPeRuWjuSqyP0lKd3gy3HD3zf3uG0vrruiA--TBFz6XI_VUF2tA7bzpKi8OYquqAZuUlBXkJIOva8y68GS_3hfOOq0dj5--231CrpyLog4yKjN5vPvkeRDV2M2qSbwn8kbppZV9APYJBygL-2rjs0Q1HL1IJgpfhEkKCPR_u_l_w1xSpL4SbyUOvG7s8FKxRKSJNCox6Z6r4q0E',
+  'https://images.pexels.com/photos/2085739/pexels-photo-2085739.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
+  'https://images.pexels.com/photos/15347613/pexels-photo-15347613.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
+  'https://images.pexels.com/photos/13067379/pexels-photo-13067379.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
 ]
 
 const categoryNavItems = [
@@ -79,10 +79,10 @@ const categoryConfigs = {
     theme: 'dark',
     layout: 'film-grid',
     cards: [
-      { id: 1, title: 'Neon Echoes', genre: 'Drama', rating: '8.4 IMDb', director: 'Dir. Aris Thorne', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAb8Es7x6Y9mahFV8oTneGdy8ze6zpq-8rtCfh8cJWQPOq1opDL8GeHMgDZjm_8tT1KKMhkfu0EIuA9dA-AF8f04lTx04xL4jonI2tK7YmQ658pDgHmrjp4ayH1mBa5e09VI6bJOwbGIK-u22O6UFLe1-P9JD1uLomONGpqKfh3Dx9ywOnHUGgsSv5PbKQnenC9XgXkEyHwQdkBhlVhuoiWCu1x77PlQrNviMy_Vj3zM6SuMcAJ2fe0LXFdZgrgbcigtRDCh7tSuyo' },
-      { id: 2, title: 'Silent Grid', genre: 'Noir', rating: '9.1 IMDb', director: 'Dir. Elena Volkov', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAWghKhr1K_uI6hYmBKEzOQ8Mx337vKbTf0qPCXwSRbOXYTZomi_fPtSq5v1JI8a35xhonTQcB3zXCZxpaqksDpCbWrk_J40aN3zL2Q3xiZI4RX1vW6JG0P7mDSbsWcR0Nfh5BYiptMnnHuXlBm3rnYTEXwvywhKU0_Rlj003CR5viTghz_8nAbJ5hRYV79UaAs36UDZhbNaSOCnjQqQ4_A5bY6yQWYO__vtSBAJiyMjT7ZehjfvgokVHaVgDQqWm-hG0w2gHMxXoE' },
-      { id: 3, title: 'The Archive', genre: 'Classics', rating: 'R', director: 'Dir. Julian Mare', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB97HT6EJBJgetkvqFS9sgpLC1WbvYo46Rzm-ZDrDv3eDBzKK7isxklwqY0RFSHDemWJ6YcklNJ8ZsHsZiIzE63MWZNu_wABikCFuQ1fbFXhaKOEdr55d1JbGVoqJPQoTZzUgYxTrLzbJA4ezXvh-IRFXHoVgD6bgAPni9OQDdbsK2j3U_FdsYCqXZLKa4a1lZkRkoij-iZu2aByy0WKubnKhJSI1fm9Er5z8_NBHaCA6ppatx2hd8cKOhbhKrvF0datjz3Y5ylfCQ' },
-      { id: 4, title: 'Visionaries', genre: 'Documentary', rating: '94% RT', director: 'Dir. Sarah Chen', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAvF_YoEQeK5ua2N1rvA6dSOwFKV2ppBdjykgLOuPIgYuDjlh_SKg6nxx9fgjWhs-7l47DPn4P72P-2glY18tutNMCSv64R7vRLwjKhPXwhwCaMUwuztLPUzDV8ZSL93tYN3XvtxawHDseSbRE6aGWlGX3bdxqOYB3mkez9gcf6pkVBk7qyu3qsMg2VuVvBjYq4cmRuTIYGatsO4QVp05mpS2BUteNDSn301VFmNEedPA_YSlxYKxqwhFChDz_jsDXxUs9oHK62vAQ' },
+      { id: 1, title: 'Neon Echoes', genre: 'Drama', rating: '8.4 IMDb', director: 'Dir. Aris Thorne', image: 'https://images.pexels.com/photos/65128/pexels-photo-65128.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1800&dpr=2' },
+      { id: 2, title: 'Silent Grid', genre: 'Noir', rating: '9.1 IMDb', director: 'Dir. Elena Volkov', image: 'https://images.pexels.com/photos/416682/pexels-photo-416682.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1800&dpr=2' },
+      { id: 3, title: 'The Archive', genre: 'Classics', rating: 'R', director: 'Dir. Julian Mare', image: 'https://images.pexels.com/photos/3644048/pexels-photo-3644048.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1800&dpr=2' },
+      { id: 4, title: 'Visionaries', genre: 'Documentary', rating: '94% RT', director: 'Dir. Sarah Chen', image: 'https://images.pexels.com/photos/416831/pexels-photo-416831.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1800&dpr=2' },
     ]
   },
   comedy: {
@@ -92,7 +92,7 @@ const categoryConfigs = {
     theme: 'light',
     layout: 'masonry',
     cards: [
-      { id: 1, title: 'Laughter Therapy.', artist: 'Alex Rivera', quote: '"If life gives you lemons, just hope they\'re not thrown at you during a set."', featured: true, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFJ6gv9EAG0hZ9VT15yXXJdsksHVqi6ya4DoGlhcG5fBfoW9MHWoWpKIrpqNcCJYG4Hh6JjwUE9qOnyddriP450O6Hrdoi5mfeOW7FF9oV_0GDqt0gZsknoDCkzvqz1IQeifahlM6i8DYQpH1n7gIQD1eoNnxSmfsvhCz6Vb1zYEluDm2zg95M6CCKji0bjHlWmOyv4FuzlZAqUdEWUvwODieH-DjWJdCyUGqttRcFIe6Ol4-0ZkMJuc2IiehFexLWHrhJLAr1VZM' },
+      { id: 1, title: 'Laughter Therapy.', artist: 'Alex Rivera', quote: '"If life gives you lemons, just hope they\'re not thrown at you during a set."', featured: true, image: 'https://images.pexels.com/photos/4427157/pexels-photo-4427157.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2' },
       { id: 2, title: 'The Roast Master.', artist: 'Mila Kunis Jr.', note: 'Every Friday at The Cellar', accent: true },
     ]
   },
@@ -110,8 +110,8 @@ const categoryConfigs = {
     theme: 'light',
     layout: 'brutalist-grid',
     cards: [
-      { id: 1, title: 'Neural Mesh 2024', status: 'OPEN', desc: 'Building decentralized inference engines for large scale LLM deployment.', prize: '$150,000', icon: 'terminal', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80' },
-      { id: 2, title: 'Zero-Knowledge Summit', status: 'FEATURED', desc: 'Optimizing circuits for non-interactive proofs.', prize: '$300,000', icon: 'lock', image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80' },
+      { id: 1, title: 'Neural Mesh 2024', status: 'OPEN', desc: 'Building decentralized inference engines for large scale LLM deployment.', prize: '$150,000', icon: 'terminal', image: 'https://images.pexels.com/photos/340152/pexels-photo-340152.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2' },
+      { id: 2, title: 'Zero-Knowledge Summit', status: 'FEATURED', desc: 'Optimizing circuits for non-interactive proofs.', prize: '$300,000', icon: 'lock', image: 'https://images.pexels.com/photos/5380607/pexels-photo-5380607.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=2' },
     ]
   },
   'open-mic': {
@@ -121,10 +121,10 @@ const categoryConfigs = {
     theme: 'light',
     layout: 'polaroid-grid',
     cards: [
-      { id: 1, title: 'Lia Thorne', time: '8pm', genre: 'Acoustic', desc: 'Raw storytelling through a weathered Gibson.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJjARU0u-XYYa0kF8cgOFYOWYrvNid-_T--DKvSEoaQyCqoXchpqAzA837xGY1dRZPhY6ssHSqp7aIwEL5-cbUlLy3F3VRn5h4V_Mni_cA3uEyl8ltuYBSgbj7uswCZ626o7S_oW9y17znxnK2jaJxrMD-etVtKJkUJJ8GVQCKAueQ7ZQxE624WOVZRQNKi1wA-hrYF5DIwZlg1SxJJop60F9sJ8go2OQUBUVLnriUrhFtPzii7jsNSg7EfeV-sepD4x8giM3e_8k' },
-      { id: 2, title: 'Marcus V.', time: '9:15pm', genre: 'Slam Poetry', desc: 'Three-time regional champion exploring intersection of urban rhythm.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDsLf8fUhPcEWycW4uaA-T6eUKX47YxkIG6Xe2FZ8MKVQFc1s537Ccd6Cqf2KqLH8MgGDezCLc8F0iLSWNJQ2bI7T7T7JaMqwvhlOjYHgMOuZq8J8wnALTxb3KCZBafR-I4Jg9FqzKL-YOs8KHfFLHPE1Hdt4xEttc82ThWrI7YkFNSWFG-fzSJoZEJI4bpjpNH4uHLH3hjPiY-kpMuNzTKVhxBSVSSo49u-mxz6W3xeiKldTDsGAsD6MqOHLyKAclYEtJ7T28tAls' },
-      { id: 3, title: 'The Glitch', time: '10:30pm', genre: 'Experimental', desc: 'Found sounds and modular synthesis exploration.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbdn0ouRDOrYJtindMbf9nl4OrCLRaUmjIX4a7nH-04kLNwN1uBsqVarWZtfIbQXBkFzsL9KP8BVBWi1eMim6bMdVc4gP6OH0hzOT3uMjjh3boLdmT3xLwE21SZyIh3lCp0kGW5kEztKgV7Y0ox-mRsURcn361N4nq96Rh1AA5qQ6mXayV-GqCLAYskeys8zpI_4Yr728fmRgWiavGGCauVHerbj_cEH-IWox9ANbhyovoQLLVLqNz6-RyM61QWzP3CbHU5ZmAL9A' },
-      { id: 4, title: 'Jada Blue', time: '8:45pm', genre: 'Jazz Soul', desc: 'Velvet tones and deep improvisations reinterpreting jazz classics.', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCsEHa_lzhNhgmozpGHHHZ2f5me7Tjwa6Iv3YsKKohpC8w5pD04JsH7SChjrA_ZZlWiFZI0dEii2YlrVqCn9XDNNz0hNnGaEHjJy-ezi01ntIPbPdUKNadxF9pZcR2lNDGh3eg1yN2H0q8ruL7vhtSEi90fzd4l_8d9gQ1Dh9W6wv6N-9v3uefOAn-1meqtsTEub82TB4UwHf7oa1JpuZEg04hrsSoQhHwaOTy-hlWFo3trp6ap1KxHWFlxxSYk-xZ-WDpy29cWbV8' },
+      { id: 1, title: 'Lia Thorne', time: '8pm', genre: 'Acoustic', desc: 'Raw storytelling through a weathered Gibson.', image: 'https://images.pexels.com/photos/5610237/pexels-photo-5610237.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1200&dpr=2' },
+      { id: 2, title: 'Marcus V.', time: '9:15pm', genre: 'Slam Poetry', desc: 'Three-time regional champion exploring intersection of urban rhythm.', image: 'https://images.pexels.com/photos/1840320/pexels-photo-1840320.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1200&dpr=2' },
+      { id: 3, title: 'The Glitch', time: '10:30pm', genre: 'Experimental', desc: 'Found sounds and modular synthesis exploration.', image: 'https://images.pexels.com/photos/1943411/pexels-photo-1943411.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1200&dpr=2' },
+      { id: 4, title: 'Jada Blue', time: '8:45pm', genre: 'Jazz Soul', desc: 'Velvet tones and deep improvisations reinterpreting jazz classics.', image: 'https://images.pexels.com/photos/7806499/pexels-photo-7806499.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1200&dpr=2' },
     ]
   },
   sports: {
@@ -134,8 +134,8 @@ const categoryConfigs = {
     theme: 'light',
     layout: 'sports-featured',
     cards: [
-      { id: 1, title: 'Aquatic Velocity Open', sport: 'Precision Water', time: '47.2s', bpm: '172', rank: '#1', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6AcD1S7JuZM1s9c7bwjBiCMDyQZ9kY6pGNX8F8WnzzJSdDZpwyFdt9Guuk6p5nQr7N9HZovE5fJovweq-7KCuqxLxQRHCnyMdI-G6wBUVlKSmE_uMcOHEapd4f_Rkms4hbl7npJPHJXQR1711N0P-fuYYI5JIwrksE5ER-N6Gaa1EUqnzOsPBEW8vP1AQxPLj2UX8qyevUlkipbZnlnJnRKgerT9gWcxokgkFOzwgGpRx0dicR31Jkbwq00COP_PFSwoaV-b0kYA' },
-      { id: 2, title: 'Grand Track Masters', sport: 'Kinetic Force', athlete: 'K. Thompson', time: '9.82s', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBivROCYab4q8BhJD6SOwx0NV_bY4qRtbMKvyjO_6uZS6TlGVhayI5xHu7ksGmAXvl3PAlu1MEObJ_eWV1MwawCbEJ45MMEVn9PDdjB57jHs_mWPEB0XZKdU59hZzqa6NuWHSq9Dl_hgttqVhXWes6TKx1DbM_dbdGx9aH12GDg7hfj5NLCN1NLoZBoS2gqpG9gJghl7o4wtjAVk4o6yex3vCHtkczeXb7cB4Ho1fXB56NA-0ogJIQR-o3kYrhrQaAxsXbECY3mlC0' },
+      { id: 1, title: 'Aquatic Velocity Open', sport: 'Precision Water', time: '47.2s', bpm: '172', rank: '#1', image: 'https://images.pexels.com/photos/9153468/pexels-photo-9153468.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&dpr=2' },
+      { id: 2, title: 'Grand Track Masters', sport: 'Kinetic Force', athlete: 'K. Thompson', time: '9.82s', image: 'https://images.pexels.com/photos/3361471/pexels-photo-3361471.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&dpr=2' },
     ]
   }
 }
@@ -368,7 +368,7 @@ const ConcertsLayout = ({ config }) => (
     <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden">
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-2/5 aspect-square overflow-hidden">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsQ66GPsa7v1hyGeWL1dxIfO4ZHTwgBCbSSGIvrVb9TMCuMsd5Tl1-EMPQCKYb_JqZwvMa4YzWuuWnsfH8pNyZthhLtT2yOdSBG7zEvPzePR2QHdOhfHHWVCugbRQrVe00UcVRY6RmV27GyBqmKQ9lMdNjkcUYmTnC6keSGs5_RztKPbKMXCIoRYtCHStvvdWR7kjM1IQlHPb5zWpmlgAmUza1fS3xSWv0e25ietMRWEYKuCkOYN0RS4Em0oZxYesvFh9cut-V2Rs" alt="Concert" className="w-full h-full object-cover" />
+          <img src="https://images.pexels.com/photos/2372945/pexels-photo-2372945.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1600&dpr=2" alt="Concert" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 p-8 md:p-12">
           <div className="flex items-center gap-4 mb-6"><span className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase">Live Performance</span><span className="text-secondary">May 24, 2024</span></div>
@@ -409,8 +409,8 @@ export default function CategoryListingPage() {
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-16 pb-24 flex gap-12">
-        <aside className="hidden lg:block w-60 shrink-0 sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-6 pb-24 flex gap-12">
+        <aside className="hidden lg:block w-60 shrink-0 sticky top-16 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
           <div className="space-y-10">
             <section>
               <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-on-surface-variant">Filter</h3>
@@ -434,7 +434,7 @@ export default function CategoryListingPage() {
           transition={{ duration: 0.4 }}
           className="flex-1 min-w-0"
         >
-          <nav className="mb-10 sticky top-20 z-20">
+          <nav className="mb-10 sticky top-16 z-20">
             <div className="no-scrollbar overflow-x-auto rounded-full bg-surface-container-low/80 backdrop-blur px-2 py-2 border border-outline-variant/20">
               <div className="flex items-center gap-2 min-w-max">
                 {categoryNavItems.map((item) => {
