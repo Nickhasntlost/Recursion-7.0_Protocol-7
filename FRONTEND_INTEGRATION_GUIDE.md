@@ -334,6 +334,36 @@ const AIChat = () => {
   const [conversationId, setConversationId] = useState(null);  // START AS NULL
   const [venueSuggestions, setVenueSuggestions] = useState([]);
 
+  // Load conversation history when component mounts (optional)
+  useEffect(() => {
+    const existingConvId = localStorage.getItem('current_conversation_id');
+    if (existingConvId) {
+      loadConversationHistory(existingConvId);
+    }
+  }, []);
+
+  const loadConversationHistory = async (convId) => {
+    try {
+      const response = await api.get(
+        `/ai-assistant/conversations/${convId}/history`
+      );
+
+      setConversationId(convId);
+      setMessages(response.data.messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      })));
+
+      if (response.data.extracted_data) {
+        // Display extracted data
+      }
+    } catch (error) {
+      console.error('Failed to load history:', error);
+      // Start new conversation
+      localStorage.removeItem('current_conversation_id');
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -349,6 +379,8 @@ const AIChat = () => {
       // Save conversation_id from FIRST response
       if (!conversationId && response.data.conversation_id) {
         setConversationId(response.data.conversation_id);
+        // Save to localStorage to resume later
+        localStorage.setItem('current_conversation_id', response.data.conversation_id);
       }
 
       // Add AI response to UI
@@ -368,8 +400,20 @@ const AIChat = () => {
     }
   };
 
+  const startNewConversation = () => {
+    setMessages([]);
+    setConversationId(null);
+    setVenueSuggestions([]);
+    localStorage.removeItem('current_conversation_id');
+  };
+
   return (
     <div className="chat-container">
+      <div className="chat-header">
+        <h2>AI Event Assistant</h2>
+        <button onClick={startNewConversation}>New Conversation</button>
+      </div>
+
       <div className="messages">
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
@@ -410,7 +454,88 @@ const AIChat = () => {
 
 ---
 
-### 4. Create Event from AI
+### 4. Get Conversation History
+
+**Endpoint:** `GET /ai-assistant/conversations/{conversation_id}/history`
+
+**Response:**
+```javascript
+{
+  "conversation_id": "69c1242122d3eca42d8905b0",
+  "status": "completed",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I want to organize a tech conference",
+      "timestamp": "2026-03-23T10:15:00"
+    },
+    {
+      "role": "assistant",
+      "content": "Great! What's the name of your event?",
+      "timestamp": "2026-03-23T10:15:05"
+    },
+    {
+      "role": "user",
+      "content": "TechCon 2026",
+      "timestamp": "2026-03-23T10:16:00"
+    }
+  ],
+  "extracted_data": {
+    "title": "TechCon 2026",
+    "category": "conference",
+    "capacity": 500,
+    ...
+  },
+  "created_event_id": "event_456",
+  "created_at": "2026-03-23T10:15:00",
+  "updated_at": "2026-03-23T10:20:00",
+  "completed_at": "2026-03-23T10:20:00"
+}
+```
+
+**Frontend Implementation:**
+```javascript
+const getConversationHistory = async (conversationId) => {
+  try {
+    const response = await api.get(
+      `/ai-assistant/conversations/${conversationId}/history`
+    );
+
+    // Display chat history
+    setMessages(response.data.messages);
+    setExtractedData(response.data.extracted_data);
+
+    return response.data;
+  } catch (error) {
+    console.error('Failed to load chat history:', error);
+  }
+};
+```
+
+---
+
+### 5. Get All Conversations
+
+**Endpoint:** `GET /ai-assistant/conversations`
+
+**Response:**
+```javascript
+[
+  {
+    "id": "69c1242122d3eca42d8905b0",
+    "status": "completed",
+    "message_count": 10,
+    "created_event_id": "event_456",
+    "extracted_data": { ... },
+    "created_at": "2026-03-23T10:15:00",
+    "completed_at": "2026-03-23T10:20:00"
+  }
+]
+```
+
+---
+
+### 6. Create Event from AI
 
 **Endpoint:** `POST /ai-assistant/{conversation_id}/create-event`
 
@@ -709,8 +834,18 @@ const verifyPayment = async (paymentData) => {
 ]
 ```
 
-#### Get Event by ID
+#### Get Event by ID or Slug
 **GET /events/{event_id}**
+
+Supports both MongoDB ObjectId and event slug:
+```javascript
+// By ID
+GET /events/69c1a12345678901234567890
+
+// By Slug (user-friendly URLs)
+GET /events/zomaland
+GET /events/rock-festival-2026
+```
 
 ---
 
@@ -923,6 +1058,9 @@ export default Login;
 
 ### AI Assistant
 - `POST /ai-assistant/chat` - Chat with AI
+- `GET /ai-assistant/conversations` - Get all conversations (metadata)
+- `GET /ai-assistant/conversations/{conversation_id}/history` - Get full chat history
+- `GET /ai-assistant/{conversation_id}/preview-event` - Preview event data
 - `POST /ai-assistant/{conversation_id}/create-event` - Create event from AI
 
 ### Payments

@@ -74,9 +74,14 @@ async def create_payment_order(
     if not ticket_tier:
         raise HTTPException(status_code=404, detail="Ticket tier not found")
 
-    # Check availability
-    if event.available_capacity < request.quantity:
+    # Check availability (calculate from total_capacity - total_sold - total_reserved)
+    available_capacity = event.total_capacity - event.total_sold - event.total_reserved
+    if available_capacity < request.quantity:
         raise HTTPException(status_code=400, detail="Not enough tickets available")
+
+    # Also check specific tier availability
+    if ticket_tier.available_quantity < request.quantity:
+        raise HTTPException(status_code=400, detail=f"Only {ticket_tier.available_quantity} tickets available in this tier")
 
     # Calculate total amount
     total_amount = ticket_tier.price * request.quantity
@@ -89,7 +94,7 @@ async def create_payment_order(
     for i in range(request.quantity):
         ticket = BookedTicket(
             tier_id=str(ticket_tier.tier_id),
-            tier_name=ticket_tier.name,
+            tier_name=ticket_tier.tier_name,
             price_paid=ticket_tier.price
         )
         tickets.append(ticket)
@@ -112,15 +117,22 @@ async def create_payment_order(
 
     await booking.insert()
 
-    # Temporarily reduce available capacity
-    event.available_capacity -= request.quantity
+    # Temporarily reserve tickets (lock them for 15 minutes)
+    event.total_reserved += request.quantity
+
+    # Reduce tier availability
+    for tier in event.ticket_tiers:
+        if str(tier.tier_id) == request.ticket_tier_id:
+            tier.available_quantity -= request.quantity
+            break
+
     await event.save()
 
     # Create Razorpay order
     try:
         razorpay_order = payment_service.create_order(
             amount=total_amount,
-            currency=ticket_tier.currency,
+            currency=event.currency,
             receipt=booking_number,
             notes={
                 "booking_id": str(booking.id),
@@ -138,7 +150,7 @@ async def create_payment_order(
             booking_id=str(booking.id),
             order_id=razorpay_order['id'],
             amount=total_amount,
-            currency=ticket_tier.currency,
+            currency=event.currency,
             razorpay_key_id=settings.RAZORPAY_KEY_ID,
             booking_number=booking_number,
             expires_at=booking.lock_expires_at
@@ -147,7 +159,14 @@ async def create_payment_order(
     except Exception as e:
         # Rollback: Delete booking and restore capacity
         await booking.delete()
-        event.available_capacity += request.quantity
+        event.total_reserved -= request.quantity
+
+        # Restore tier availability
+        for tier in event.ticket_tiers:
+            if str(tier.tier_id) == request.ticket_tier_id:
+                tier.available_quantity += request.quantity
+                break
+
         await event.save()
         raise HTTPException(status_code=500, detail=f"Payment order creation failed: {str(e)}")
 
@@ -197,7 +216,15 @@ async def verify_payment(
 
         # Restore capacity
         event = await Event.get(booking.event_id)
-        event.available_capacity += booking.total_tickets
+        event.total_reserved -= booking.total_tickets
+
+        # Restore tier availability
+        for ticket in booking.tickets:
+            for tier in event.ticket_tiers:
+                if str(tier.tier_id) == ticket.tier_id:
+                    tier.available_quantity += 1
+                    break
+
         await event.save()
 
         raise HTTPException(status_code=400, detail="Payment signature verification failed")
@@ -215,8 +242,8 @@ async def verify_payment(
 
     # Update event stats
     event = await Event.get(booking.event_id)
-    event.total_bookings += 1
-    event.total_revenue += booking.total_amount
+    event.total_sold += booking.total_tickets
+    event.total_reserved -= booking.total_tickets  # Move from reserved to sold
     await event.save()
 
     return VerifyPaymentResponse(
@@ -283,8 +310,8 @@ async def razorpay_webhook(
 
             # Update event stats
             event = await Event.get(booking.event_id)
-            event.total_bookings += 1
-            event.total_revenue += booking.total_amount
+            event.total_sold += booking.total_tickets
+            event.total_reserved -= booking.total_tickets  # Move from reserved to sold
             await event.save()
 
         elif event_type == "payment.failed":
@@ -295,7 +322,15 @@ async def razorpay_webhook(
 
             # Restore capacity
             event = await Event.get(booking.event_id)
-            event.available_capacity += booking.total_tickets
+            event.total_reserved -= booking.total_tickets
+
+            # Restore tier availability
+            for ticket in booking.tickets:
+                for tier in event.ticket_tiers:
+                    if str(tier.tier_id) == ticket.tier_id:
+                        tier.available_quantity += 1
+                        break
+
             await event.save()
 
         elif event_type == "refund.created":

@@ -198,9 +198,16 @@ async def get_events(
 
 @router.get("/{event_id}", response_model=EventResponse)
 async def get_event(event_id: str):
-    """Get event by ID"""
+    """Get event by ID or slug"""
 
-    event = await Event.get(event_id)
+    # Try to get by ID first (if it's a valid ObjectId)
+    try:
+        from bson import ObjectId
+        ObjectId(event_id)
+        event = await Event.get(event_id)
+    except:
+        # Not a valid ObjectId, try slug
+        event = await Event.find_one({"slug": event_id})
 
     if not event:
         raise HTTPException(

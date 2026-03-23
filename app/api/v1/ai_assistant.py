@@ -283,19 +283,25 @@ async def create_event_from_ai(
     slug = re.sub(r'[-\s]+', '-', slug)
 
     # Parse start/end datetime
-    start_dt = None
+    start_dt = datetime.utcnow()
     end_dt = None
+
     if data.start_datetime:
         try:
             start_dt = datetime.strptime(data.start_datetime, "%Y-%m-%d %H:%M:%S")
         except:
-            pass
+            start_dt = datetime.utcnow()
 
     if data.end_datetime:
         try:
             end_dt = datetime.strptime(data.end_datetime, "%Y-%m-%d %H:%M:%S")
         except:
             pass
+
+    # If end_dt not provided, default to 3 hours after start
+    if not end_dt:
+        from datetime import timedelta
+        end_dt = start_dt + timedelta(hours=3)
 
     # Map category to EventCategory enum
     category_mapping = {
@@ -316,25 +322,36 @@ async def create_event_from_ai(
     # Create ticket tiers
     ticket_tiers = []
     if data.ticket_tiers:
-        for tier_data in data.ticket_tiers:
+        for idx, tier_data in enumerate(data.ticket_tiers):
+            tier_price = float(tier_data.get("price", 299))
             ticket_tiers.append(TicketTier(
-                name=tier_data.get("name", "Standard"),
-                price=float(tier_data.get("price", 0)),
-                quantity=data.capacity,
-                currency=tier_data.get("currency", "INR")
+                tier_id=f"tier_{idx + 1}",
+                tier_name=tier_data.get("name", "Standard"),
+                price=tier_price,
+                current_price=tier_price,
+                total_quantity=data.capacity,
+                available_quantity=data.capacity,
+                description=tier_data.get("description")
             ))
     else:
         # Default ticket tier
         ticket_tiers.append(TicketTier(
-            name="Standard",
+            tier_id="tier_1",
+            tier_name="Standard",
             price=299.0,
-            quantity=data.capacity,
-            currency="INR"
+            current_price=299.0,
+            total_quantity=data.capacity,
+            available_quantity=data.capacity
         ))
 
     # Calculate min/max price
     min_price = min([t.price for t in ticket_tiers])
     max_price = max([t.price for t in ticket_tiers])
+
+    # Get currency from ticket tiers or default to INR
+    currency = "INR"
+    if data.ticket_tiers and len(data.ticket_tiers) > 0:
+        currency = data.ticket_tiers[0].get("currency", "INR")
 
     # Create event
     event = Event(
@@ -344,17 +361,19 @@ async def create_event_from_ai(
         organization_id=current_user.organization_id,
         venue_id=str(venue.id),
         category=category,
-        start_datetime=start_dt or datetime.utcnow(),
+        start_datetime=start_dt,
         end_datetime=end_dt,
         total_capacity=data.capacity,
-        available_capacity=data.capacity,
+        total_sold=0,
+        total_reserved=0,
         ticket_tiers=ticket_tiers,
         min_price=min_price,
         max_price=max_price,
+        currency=currency,
         tags=data.tags or [],
         status=EventStatus.DRAFT,
         created_via_ai=True,
-        ai_conversation_id=str(conversation.id),
+        ai_conversation_id=str(conversation.id)
     )
 
     await event.insert()
@@ -374,17 +393,19 @@ async def create_event_from_ai(
         "status": event.status,
         "ticket_tiers": [
             {
-                "tier_id": str(t.tier_id),
-                "name": t.name,
+                "tier_id": t.tier_id,
+                "name": t.tier_name,
                 "price": t.price,
-                "currency": t.currency,
-                "available": t.quantity
+                "current_price": t.current_price,
+                "currency": event.currency,
+                "total_quantity": t.total_quantity,
+                "available": t.available_quantity
             }
             for t in event.ticket_tiers
         ],
         "message": "Event created successfully! Proceed to payment to book tickets.",
         "next_action": "payment",  # Frontend should navigate to payment page
-        "payment_endpoint": f"/api/v1/payments/create-order",
+        "payment_endpoint": "/api/v1/payments/create-order",
         "conversation_id": str(conversation.id),
         "note": "AI-powered event creation using Groq ⚡"
     }
@@ -392,7 +413,7 @@ async def create_event_from_ai(
 
 @router.get("/conversations", response_model=List[dict])
 async def get_my_conversations(current_user: User = Depends(get_current_organizer)):
-    """Get user's AI conversations"""
+    """Get user's AI conversations (metadata only)"""
 
     conversations = await AIConversation.find({
         "user_id": str(current_user.id)
@@ -404,11 +425,48 @@ async def get_my_conversations(current_user: User = Depends(get_current_organize
             "status": conv.status,
             "message_count": len(conv.messages),
             "created_event_id": conv.created_event_id,
+            "extracted_data": conv.extracted_data.dict() if conv.extracted_data else None,
             "created_at": conv.created_at,
             "completed_at": conv.completed_at,
         }
         for conv in conversations
     ]
+
+
+@router.get("/conversations/{conversation_id}/history", response_model=dict)
+async def get_conversation_history(
+    conversation_id: str,
+    current_user: User = Depends(get_current_organizer)
+):
+    """Get full chat history for a specific AI conversation"""
+
+    # Validate ObjectId
+    try:
+        ObjectId(conversation_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid conversation_id format")
+
+    conversation = await AIConversation.get(conversation_id)
+    if not conversation or conversation.user_id != str(current_user.id):
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    return {
+        "conversation_id": str(conversation.id),
+        "status": conversation.status,
+        "messages": [
+            {
+                "role": msg.role.value,
+                "content": msg.content,
+                "timestamp": msg.timestamp
+            }
+            for msg in conversation.messages
+        ],
+        "extracted_data": conversation.extracted_data.dict() if conversation.extracted_data else None,
+        "created_event_id": conversation.created_event_id,
+        "created_at": conversation.created_at,
+        "updated_at": conversation.updated_at,
+        "completed_at": conversation.completed_at
+    }
 
 
 def check_if_complete(data: ExtractedEventData) -> bool:
