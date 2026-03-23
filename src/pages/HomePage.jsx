@@ -201,14 +201,6 @@ export default function HomePage() {
       {/* Hero Section */}
       <section ref={heroRef} className="px-4 md:px-8 mb-20 relative overflow-hidden">
         <div className="relative w-full h-[870px] rounded-xl bg-surface-container-low flex items-center justify-center text-center overflow-hidden">
-          {/* Hero Background Image */}
-          {dynamicHeroEvents[currentSlide]?.cover && (
-            <img
-              src={dynamicHeroEvents[currentSlide].cover}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-15 transition-all duration-700"
-            />
-          )}
           {/* Floating Elements */}
           {floatingElements.map((el, i) => (
             <motion.div
@@ -248,7 +240,7 @@ export default function HomePage() {
               <span className="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-bold tracking-widest uppercase mb-8">
                 {dynamicHeroEvents[currentSlide]?.tag}
               </span>
-              <h1 className="text-6xl md:text-[7.5rem] font-black tracking-tighter text-black leading-[0.9] mb-8 font-[family-name:var(--font-family-headline)] min-h-[1.2em] flex items-center justify-center">
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-black leading-[0.9] mb-8 font-[family-name:var(--font-family-headline)] min-h-[1.2em] flex items-center justify-center">
                 {displayedText}
                 <span className="inline-block w-2 md:w-[6px] h-[0.8em] bg-primary ml-2 animate-pulse align-middle" />
               </h1>

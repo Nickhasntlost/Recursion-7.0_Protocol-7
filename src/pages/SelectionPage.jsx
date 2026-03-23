@@ -46,19 +46,23 @@ const venueConfigs = {
     ],
   },
   concertHall: {
-    name: 'Concert Arena',
+    name: 'Concert Hall',
     icon: 'music_note',
-    stageLabel: 'Arena Stage',
-    sectionLabel: 'Center Pit',
+    stageLabel: 'Main Stage',
+    sectionLabel: 'Orchestra Front',
     seatPrice: 360,
     serviceFeePerSeat: 26,
     occupancy: { booked: 0.22, held: 0.1 },
     type: 'rows',
     sections: [
-      { title: 'Center Pit', rowPrefix: 'P', seatCounts: [16, 18, 20, 22], aisleAfter: [7, 14] },
-      { title: 'Left Floor', rowPrefix: 'L', seatCounts: [10, 12, 14], aisleAfter: [5] },
-      { title: 'Right Floor', rowPrefix: 'R', seatCounts: [10, 12, 14], aisleAfter: [5] },
-      { title: 'Rear Deck', rowPrefix: 'D', seatCounts: [14, 16, 18], aisleAfter: [6, 12] },
+      { title: 'Main Gallery', rowPrefix: 'MG', seatCounts: [22, 24, 26, 28], aisleAfter: [8, 16, 24] },
+      { title: 'Side Gallery Left', rowPrefix: 'SL', seatCounts: [10, 11, 12, 13], aisleAfter: [5] },
+      { title: 'Side Gallery Right', rowPrefix: 'SR', seatCounts: [10, 11, 12, 13], aisleAfter: [5] },
+      { title: 'Prime Side Left', rowPrefix: 'PL', seatCounts: [10, 11, 12], aisleAfter: [5] },
+      { title: 'Prime Side Right', rowPrefix: 'PR', seatCounts: [10, 11, 12], aisleAfter: [5] },
+      { title: 'Loft', rowPrefix: 'LF', seatCounts: [18, 20, 22, 24], aisleAfter: [8, 16] },
+      { title: 'Orchestra Front', rowPrefix: 'OF', seatCounts: [18, 20, 22], aisleAfter: [7, 14] },
+      { title: 'Orchestra Rear', rowPrefix: 'OR', seatCounts: [18, 20], aisleAfter: [7, 14] },
     ],
   },
   restaurant: {
@@ -792,10 +796,145 @@ function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
   const [hoveredSeat, setHoveredSeat] = useState(null)
 
   const sectionGeometry = {
-    'Center Pit': { centerX: 490, minY: 216, maxY: 390, minWidth: 306, maxWidth: 446, arcDepth: 22, label: { x: 444, y: 190 } },
-    'Left Floor': { centerX: 236, minY: 238, maxY: 392, minWidth: 146, maxWidth: 196, arcDepth: 14, label: { x: 170, y: 212 } },
-    'Right Floor': { centerX: 744, minY: 238, maxY: 392, minWidth: 146, maxWidth: 196, arcDepth: 14, label: { x: 674, y: 212 } },
-    'Rear Deck': { centerX: 490, minY: 454, maxY: 560, minWidth: 324, maxWidth: 494, arcDepth: 10, label: { x: 448, y: 428 } },
+    'Main Gallery': {
+      kind: 'center',
+      centerX: 490,
+      minY: 120,
+      maxY: 214,
+      minWidth: 372,
+      maxWidth: 486,
+      arcDepth: 8,
+      fill: '#F472B6',
+      stroke: '#BE185D',
+      label: { x: 440, y: 94 },
+    },
+    'Side Gallery Left': {
+      kind: 'side',
+      centerXStart: 236,
+      centerXEnd: 202,
+      minY: 136,
+      maxY: 286,
+      minWidth: 120,
+      maxWidth: 146,
+      arcDepth: 9,
+      slant: -14,
+      fill: '#FB923C',
+      stroke: '#C2410C',
+      label: { x: 148, y: 116 },
+    },
+    'Side Gallery Right': {
+      kind: 'side',
+      centerXStart: 744,
+      centerXEnd: 778,
+      minY: 136,
+      maxY: 286,
+      minWidth: 120,
+      maxWidth: 146,
+      arcDepth: 9,
+      slant: 14,
+      fill: '#FB923C',
+      stroke: '#C2410C',
+      label: { x: 738, y: 116 },
+    },
+    'Prime Side Left': {
+      kind: 'side',
+      centerXStart: 188,
+      centerXEnd: 176,
+      minY: 300,
+      maxY: 436,
+      minWidth: 112,
+      maxWidth: 134,
+      arcDepth: 8,
+      slant: -8,
+      fill: '#FACC15',
+      stroke: '#A16207',
+      label: { x: 116, y: 282 },
+    },
+    'Prime Side Right': {
+      kind: 'side',
+      centerXStart: 792,
+      centerXEnd: 804,
+      minY: 300,
+      maxY: 436,
+      minWidth: 112,
+      maxWidth: 134,
+      arcDepth: 8,
+      slant: 8,
+      fill: '#FACC15',
+      stroke: '#A16207',
+      label: { x: 740, y: 282 },
+    },
+    Loft: {
+      kind: 'center',
+      centerX: 490,
+      minY: 404,
+      maxY: 486,
+      minWidth: 322,
+      maxWidth: 458,
+      arcDepth: 14,
+      fill: '#C084FC',
+      stroke: '#7E22CE',
+      label: { x: 470, y: 378 },
+    },
+    'Orchestra Front': {
+      kind: 'center',
+      centerX: 490,
+      minY: 506,
+      maxY: 554,
+      minWidth: 302,
+      maxWidth: 436,
+      arcDepth: 11,
+      fill: '#3B82F6',
+      stroke: '#1D4ED8',
+      label: { x: 430, y: 488 },
+    },
+    'Orchestra Rear': {
+      kind: 'center',
+      centerX: 490,
+      minY: 562,
+      maxY: 602,
+      minWidth: 286,
+      maxWidth: 412,
+      arcDepth: 7,
+      fill: '#22C55E',
+      stroke: '#15803D',
+      label: { x: 436, y: 586 },
+    },
+  }
+
+  const sectionLegend = [
+    { key: 'Orchestra Front', color: '#3B82F6' },
+    { key: 'Main Gallery', color: '#F472B6' },
+    { key: 'Side Gallery Left', color: '#FB923C' },
+    { key: 'Prime Side Left', color: '#FACC15' },
+    { key: 'Loft', color: '#C084FC' },
+    { key: 'Orchestra Rear', color: '#22C55E' },
+  ]
+
+  const zonePolygon = (geometry) => {
+    if (geometry.kind === 'center') {
+      return [
+        geometry.centerX - geometry.minWidth / 2,
+        geometry.minY - 12,
+        geometry.centerX + geometry.minWidth / 2,
+        geometry.minY - 12,
+        geometry.centerX + geometry.maxWidth / 2,
+        geometry.maxY + 12,
+        geometry.centerX - geometry.maxWidth / 2,
+        geometry.maxY + 12,
+      ]
+    }
+
+    return [
+      geometry.centerXStart - geometry.minWidth / 2,
+      geometry.minY - 12,
+      geometry.centerXStart + geometry.minWidth / 2,
+      geometry.minY - 12,
+      geometry.centerXEnd + geometry.maxWidth / 2,
+      geometry.maxY + 12,
+      geometry.centerXEnd - geometry.maxWidth / 2,
+      geometry.maxY + 12,
+    ]
   }
 
   const seats = useMemo(() => {
@@ -806,18 +945,38 @@ function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
       return section.rows.flatMap((row, rowIdx) => {
         const rowProgress = section.rows.length === 1 ? 0.5 : rowIdx / (section.rows.length - 1)
         const rowWidth = geometry.minWidth + (geometry.maxWidth - geometry.minWidth) * rowProgress
-        const rowStart = geometry.centerX - rowWidth / 2
-        const rowEnd = geometry.centerX + rowWidth / 2
         const baseY = geometry.minY + (geometry.maxY - geometry.minY) * rowProgress
+
+        if (geometry.kind === 'center') {
+          const rowStart = geometry.centerX - rowWidth / 2
+          const rowEnd = geometry.centerX + rowWidth / 2
+
+          return row.seats.map((seat, seatIdx) => {
+            const seatProgress = row.seats.length === 1 ? 0.5 : seatIdx / (row.seats.length - 1)
+            const archFactor = 1 - Math.abs(seatProgress * 2 - 1)
+
+            return {
+              ...seat,
+              section: section.title,
+              x: rowStart + (rowEnd - rowStart) * seatProgress,
+              y: baseY - archFactor * geometry.arcDepth,
+            }
+          })
+        }
+
+        const rowCenter = geometry.centerXStart + (geometry.centerXEnd - geometry.centerXStart) * rowProgress
+        const rowStart = rowCenter - rowWidth / 2
+        const rowEnd = rowCenter + rowWidth / 2
 
         return row.seats.map((seat, seatIdx) => {
           const seatProgress = row.seats.length === 1 ? 0.5 : seatIdx / (row.seats.length - 1)
           const archFactor = 1 - Math.abs(seatProgress * 2 - 1)
+          const slantOffset = geometry.slant * (rowProgress - 0.5)
 
           return {
             ...seat,
             section: section.title,
-            x: rowStart + (rowEnd - rowStart) * seatProgress,
+            x: rowStart + (rowEnd - rowStart) * seatProgress + slantOffset,
             y: baseY - archFactor * geometry.arcDepth,
           }
         })
@@ -861,12 +1020,12 @@ function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
   return (
     <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-6 shadow-[0_18px_36px_rgba(15,23,42,0.06)]">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">2D Concert Arena Blueprint</p>
-        <p className="text-[10px] text-on-surface-variant">Arena Stage • Pan & Zoom Enabled</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">2D Concert Hall Blueprint</p>
+        <p className="text-[10px] text-on-surface-variant">Gallery-Zone Plan • Pan & Zoom Enabled</p>
       </div>
 
       <div className="mb-3 flex items-center justify-between rounded-lg border border-outline-variant/20 bg-surface px-3 py-2 text-xs text-on-surface-variant">
-        <span>Arena layout: Center Pit, Floors and Rear Deck</span>
+        <span>Hall layout: Main Gallery, Side Galleries, Prime Sides, Loft and Orchestra</span>
         <button
           onClick={() => {
             setScale(1)
@@ -894,17 +1053,52 @@ function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
         >
           <Layer>
             <Rect x={0} y={0} width={stageWidth} height={stageHeight} fill="#F8FAFC" />
+            <Line
+              points={[74, 72, 220, 72, 314, 34, 666, 34, 760, 72, 906, 72, 906, 588, 74, 588]}
+              closed
+              fill="#E5E7EB"
+              stroke="#6B7280"
+              strokeWidth={3}
+            />
+            <Line
+              points={[114, 106, 244, 106, 324, 72, 656, 72, 736, 106, 868, 106, 868, 552, 114, 552]}
+              closed
+              fill="#F3F4F6"
+              stroke="#9CA3AF"
+              strokeWidth={2}
+            />
 
-            <Rect x={292} y={68} width={396} height={78} cornerRadius={14} fill="#E5E7EB" stroke="#9CA3AF" strokeWidth={2} />
-            <Rect x={430} y={144} width={120} height={128} cornerRadius={10} fill="#D1D5DB" stroke="#9CA3AF" strokeWidth={1.5} opacity={0.9} />
-            <Text x={460} y={98} text="STAGE" fontSize={15} fontStyle="bold" fill="#374151" />
-            <Text x={450} y={190} text="CATWALK" fontSize={10} fontStyle="bold" fill="#4B5563" />
+            {Object.entries(sectionGeometry).map(([name, geometry]) => {
+              const points = zonePolygon(geometry)
+              return (
+                <Line
+                  key={`zone-${name}`}
+                  points={points}
+                  closed
+                  fill={geometry.fill}
+                  stroke={geometry.stroke}
+                  strokeWidth={1.5}
+                  opacity={0.2}
+                />
+              )
+            })}
 
-            <Line points={[336, 214, 336, 404]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
-            <Line points={[644, 214, 644, 404]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
-            <Line points={[140, 430, 840, 430]} stroke="#94A3B8" strokeWidth={1} dash={[8, 6]} opacity={0.8} />
-
-            <Rect x={198} y={444} width={584} height={128} cornerRadius={18} fill="#EEF2FF" stroke="#C7D2FE" strokeWidth={1.5} opacity={0.72} />
+            <Line
+              points={[334, 258, 646, 258, 688, 292, 676, 372, 304, 372, 292, 292]}
+              closed
+              fill="#F3F4F6"
+              stroke="#6B7280"
+              strokeWidth={3}
+            />
+            <Line
+              points={[352, 272, 628, 272, 660, 300, 650, 354, 330, 354, 320, 300]}
+              closed
+              fill="#E5E7EB"
+              stroke="#9CA3AF"
+              strokeWidth={1.5}
+            />
+            <Text x={446} y={304} text="STAGE" fontSize={62} fontStyle="bold" fill="#6B7280" />
+            <Text x={398} y={354} text="PERFORMERS FACE THIS WAY" fontSize={14} fontStyle="bold" fill="#6B7280" />
 
             {Object.entries(sectionGeometry).map(([name, geometry]) => (
               <Text
@@ -912,23 +1106,24 @@ function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
                 x={geometry.label.x}
                 y={geometry.label.y}
                 text={name.toUpperCase()}
-                fontSize={11}
+                fontSize={10}
                 fontStyle="bold"
-                fill="#64748B"
+                fill={geometry.stroke}
               />
             ))}
 
             {seats.map((seat) => {
               const isSelected = selectedSeatIds.includes(seat.id)
+              const sectionColor = sectionGeometry[seat.section]?.fill || '#16A34A'
               return (
                 <Circle
                   key={seat.id}
                   x={seat.x}
                   y={seat.y}
-                  radius={5.1}
-                  fill={seatFill(seat)}
+                  radius={4.8}
+                  fill={seat.status === 'avail' && !isSelected ? sectionColor : seatFill(seat)}
                   opacity={seat.status === 'avail' || isSelected ? 1 : 0.88}
-                  stroke={isSelected ? '#EAB308' : '#0F172A'}
+                  stroke={isSelected ? '#EAB308' : '#334155'}
                   strokeWidth={isSelected ? 2 : 1}
                   shadowColor="#334155"
                   shadowBlur={isSelected ? 7 : 2.5}
@@ -959,6 +1154,15 @@ function ConcertHall2DMap({ layout, toggleSeat, selectedSeatIds }) {
             )}
           </Layer>
         </Stage>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+        {sectionLegend.map((zone) => (
+          <div key={zone.key} className="flex items-center gap-2 rounded-md border border-outline-variant/20 bg-surface px-2.5 py-1.5">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: zone.color }} />
+            <span className="text-[10px] font-bold uppercase tracking-wide text-on-surface-variant">{zone.key}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
