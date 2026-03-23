@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+}
+
+@layer components {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .floating-element {
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+  }
+
+  .floating-element:hover {
+    transform: scale(1.05) translateY(-5px);
+  }
+
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: 200px repeat(14, 1fr);
+  }
+}
+
+@layer utilities {
+  .selection\:bg-secondary-container::selection {
+    background-color: #dfeb72;
+  }
+
+  .selection\:text-on-secondary-container::selection {
+    color: #616a00;
+  }
+}
