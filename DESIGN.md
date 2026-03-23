@@ -97,4 +97,67 @@ If a border is required for accessibility (e.g., input fields), use the `outline
 - **Don't** use pure black #000000 for body text; use `on-surface-variant` (#444748) for a softer, editorial tone.
 - **Don't** use standard "box-shadow" presets. Always customize for maximum diffusion.
 - **Don't** clutter the screen with icons. Use icons only when they provide a clear functional affordance or a specific brand "moment."
-- **Don't** use 1px dividers. If you need a break, use a `surface-dim` background change.```
+- **Don't** use 1px dividers. If you need a break, use a `surface-dim` background change.
+
+---
+
+## 7. Global Toggle Definition (Theme Toggle)
+
+The theme toggle is a global control for switching between `theme-light` and `theme-dark`. It must behave identically across all pages to preserve brand consistency.
+
+### Purpose
+- Provide immediate and predictable light/dark theme switching.
+- Preserve user preference between sessions.
+- Maintain high contrast and readability while preserving the editorial design language.
+
+### Placement
+- Fixed to the bottom-right corner of the viewport.
+- Desktop: `right: 24px`, `bottom: 24px`.
+- Mobile: `right: 16px`, `bottom: 16px`.
+- Z-index must be above page content and floating sections.
+
+### Visual Specification
+- Shape: Circular (`border-radius: 9999px`).
+- Size: `56px x 56px` desktop, `48px x 48px` mobile.
+- Background:
+	- Light mode: `surface-container-lowest`.
+	- Dark mode: `surface-container-high`.
+- Icon:
+	- Light mode active: `light_mode` icon.
+	- Dark mode active: `dark_mode` icon.
+- Shadow: Ambient only (`blur 24px-40px`, opacity `6%-10%`).
+
+### Interaction States
+- Default: 100% opacity.
+- Hover: subtle scale-up (`1.03`) and slightly stronger ambient shadow.
+- Press: scale-down (`0.97`) for tactile feedback.
+- Focus-visible: 2px ring using `secondary-container` for keyboard accessibility.
+
+### Motion
+- Toggle transition duration: `220ms-280ms`.
+- Timing: `ease-out`.
+- No bounce, no overshoot.
+- Theme switch should feel clean and immediate, not playful.
+
+### Behavior Rules
+- Toggle updates root theme class on the document (`theme-light` or `theme-dark`).
+- Persist selected theme in local storage key: `eventra-theme`.
+- If no preference is stored, use system preference (`prefers-color-scheme`).
+- Theme must apply globally to all routes and shared layouts.
+
+### Accessibility
+- Use a semantic button element.
+- Required `aria-label`:
+	- If currently light: `Switch to dark mode`.
+	- If currently dark: `Switch to light mode`.
+- Minimum touch target size: `44px x 44px`.
+- Contrast ratio must remain WCAG-compliant in both themes.
+
+### Do / Don't (Toggle)
+- **Do** keep iconography and placement identical on all pages.
+- **Do** preserve preference after reload and navigation.
+- **Do** ensure keyboard and screen-reader support.
+- **Don't** place per-page toggle variants.
+- **Don't** change toggle color logic outside global theme tokens.
+- **Don't** animate with flashy effects that break the premium editorial tone.
+```

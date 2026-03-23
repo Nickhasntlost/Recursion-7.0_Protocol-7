@@ -12,6 +12,16 @@ const avatarUrls = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAoSXqwLej5Kg-0b4_eWwJKnKRxjfb4RSYLvrkJHzAQKPaf05JriIZQMB3WslSTNPeRuWjuSqyP0lKd3gy3HD3zf3uG0vrruiA--TBFz6XI_VUF2tA7bzpKi8OYquqAZuUlBXkJIOva8y68GS_3hfOOq0dj5--231CrpyLog4yKjN5vPvkeRDV2M2qSbwn8kbppZV9APYJBygL-2rjs0Q1HL1IJgpfhEkKCPR_u_l_w1xSpL4SbyUOvG7s8FKxRKSJNCox6Z6r4q0E',
 ]
 
+const categoryNavItems = [
+  { slug: 'dining', label: 'Dining' },
+  { slug: 'open-mic', label: 'Open Mic' },
+  { slug: 'cinema', label: 'Cinema' },
+  { slug: 'concerts', label: 'Concerts' },
+  { slug: 'sports', label: 'Sports' },
+  { slug: 'hackathons', label: 'Hackathons' },
+  { slug: 'comedy', label: 'Comedy' },
+]
+
 // Category configs with all combined data
 const categoryConfigs = {
   dining: {
@@ -100,8 +110,8 @@ const categoryConfigs = {
     theme: 'light',
     layout: 'brutalist-grid',
     cards: [
-      { id: 1, title: 'Neural Mesh 2024', status: 'OPEN', desc: 'Building decentralized inference engines for large scale LLM deployment.', prize: '$150,000', icon: 'terminal', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7gmCS6LO7vHsuAgKX9jfDqDZ7qU7JrWlUSzv3UjOjeqM88FFzPPihGg1A0bdiZ0eWrtLVNmak6rB2Wt8qyXEIcmXTfDqDZ7qU7JrWlUSzv3UjOjeqM88FFzPPihGg1A0bd' },
-      { id: 2, title: 'Zero-Knowledge Summit', status: 'FEATURED', desc: 'Optimizing circuits for non-interactive proofs.', prize: '$300,000', icon: 'lock', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA1MdHxzfyFuvKqt6R8PfzDG11SNA8qbuxb3f3GVoCen6J9elJK_28lOWAxtAQJXw9emXbvg0ol_k5aoXxU4B52-OpP_JbioLYs5HTDQD0NhgXQMrrGTU5fH0BmvThuPDWS' },
+      { id: 1, title: 'Neural Mesh 2024', status: 'OPEN', desc: 'Building decentralized inference engines for large scale LLM deployment.', prize: '$150,000', icon: 'terminal', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80' },
+      { id: 2, title: 'Zero-Knowledge Summit', status: 'FEATURED', desc: 'Optimizing circuits for non-interactive proofs.', prize: '$300,000', icon: 'lock', image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80' },
     ]
   },
   'open-mic': {
@@ -154,12 +164,12 @@ const DetailedGridComponent = ({ config }) => (
                 </div>
               </div>
             </div>
-            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 ${card.available ? 'bg-secondary-container text-on-secondary-fixed' : 'bg-surface-container-high text-on-surface-variant'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${card.available ? 'bg-on-secondary-fixed animate-pulse' : 'bg-on-surface-variant/30'}`} />
-              {card.availableLabel}
-            </div>
           </div>
-          <h3 className="text-2xl font-black leading-tight mb-6 flex-grow text-black">{card.title}</h3>
+          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 ${card.available ? 'bg-secondary-container text-on-secondary-fixed' : 'bg-surface-container-high text-on-surface-variant'}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${card.available ? 'bg-on-secondary-fixed animate-pulse' : 'bg-on-surface-variant/30'}`} />
+            {card.availableLabel}
+          </div>
+          <h3 className="text-2xl font-black leading-tight mb-6 grow text-black">{card.title}</h3>
           <div className="space-y-3 mb-8">
             <div className="flex items-center gap-3 text-on-surface-variant">
               <span className="material-symbols-outlined text-lg">location_on</span>
@@ -203,14 +213,14 @@ const CinemaLayout = ({ config }) => (
           transition={{ delay: idx * 0.1 }}
           className="group relative flex flex-col cursor-pointer"
         >
-          <div className="aspect-[2/3] w-full overflow-hidden rounded-xl bg-zinc-900 relative">
+          <div className="aspect-2/3 w-full overflow-hidden rounded-xl bg-zinc-900 relative">
             <img src={card.image} alt={card.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8">
+            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8">
               <div className="flex items-center gap-2 mb-4">
                 <span className="px-3 py-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">{card.genre}</span>
-                <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">{card.rating}</span>
+                <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-[#f8fafc] text-[10px] font-black uppercase tracking-widest rounded-full">{card.rating}</span>
               </div>
-              <h3 className="text-3xl font-headline font-extrabold tracking-tighter mb-1 text-white">{card.title}</h3>
+              <h3 className="text-3xl font-headline font-extrabold tracking-tighter mb-1 text-[#f8fafc]">{card.title}</h3>
               <p className="text-sm text-zinc-300 font-medium">{card.director}</p>
             </div>
           </div>
@@ -226,7 +236,7 @@ const ComedyLayout = ({ config }) => (
       <motion.div key={card.id} initial={{ opacity: 0, x: idx % 2 ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.15 }}>
         {card.featured ? (
           <div className="bg-surface-container-lowest text-black rounded-xl overflow-hidden relative group">
-            <div className="h-[400px] w-full bg-surface-container-high overflow-hidden">
+            <div className="h-100 w-full bg-surface-container-high overflow-hidden">
               <img alt={card.title} src={card.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
             <div className="p-8 relative">
@@ -262,18 +272,18 @@ const HackathonsLayout = ({ config }) => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: idx * 0.15 }}
-          className="bg-surface-container-lowest text-black border-2 border-black flex flex-col hover:translate-x-1 hover:-translate-y-1 transition-transform bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+          className="bg-surface-container-lowest text-black border-2 border-black flex flex-col hover:translate-x-1 hover:-translate-y-1 transition-transform shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
         >
           <div className="h-48 bg-surface-container-low relative overflow-hidden">
             <img src={card.image} alt={card.title} className="w-full h-full object-cover grayscale contrast-125" />
             <div className="absolute top-4 left-4 bg-primary text-on-primary font-mono text-xs px-2 py-1">STATUS: {card.status}</div>
           </div>
-          <div className="p-6 flex-grow flex flex-col">
+          <div className="p-6 grow flex flex-col">
             <div className="flex justify-between items-start mb-4">
               <h3 className="font-headline text-2xl font-extrabold uppercase leading-tight">{card.title}</h3>
               <span className="material-symbols-outlined">{card.icon}</span>
             </div>
-            <p className="text-on-surface-variant font-mono text-sm mb-6 flex-grow">{card.desc}</p>
+            <p className="text-on-surface-variant font-mono text-sm mb-6 grow">{card.desc}</p>
             <div className="border-t-2 border-black pt-4">
               <div className="flex justify-between font-mono text-xs uppercase mb-2">
                 <span>Prize Pool</span>
@@ -374,6 +384,7 @@ const ConcertsLayout = ({ config }) => (
 export default function CategoryListingPage() {
   const { slug } = useParams()
   const config = categoryConfigs[slug] || categoryConfigs.dining
+  const activeSlug = slug in categoryConfigs ? slug : 'dining'
 
   const renderLayout = () => {
     switch (config.layout) {
@@ -397,16 +408,15 @@ export default function CategoryListingPage() {
   }
 
   return (
-    <div className={`min-h-screen ${config.theme === 'dark' ? 'bg-black text-white' : 'bg-surface text-black'}`}>
+    <div className="min-h-screen bg-surface text-on-surface">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-32 pb-24 flex gap-12">
-        {/* Left Sidebar Layout extracted from Stash */}
-        <aside className="hidden lg:block w-[240px] flex-shrink-0 sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+        <aside className="hidden lg:block w-60 shrink-0 sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
           <div className="space-y-10">
             <section>
               <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-on-surface-variant">Filter</h3>
               <div className="relative group">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-neutral-400">near_me</span>
-                <select className={`w-full pl-12 pr-4 py-3 border-none rounded-full text-sm font-bold appearance-none focus:ring-2 focus:ring-secondary-container transition-all cursor-pointer ${config.theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-surface-container-low text-black'}`}>
+                <select className="w-full pl-12 pr-4 py-3 border-none rounded-full text-sm font-bold appearance-none focus:ring-2 focus:ring-secondary-container transition-all cursor-pointer bg-surface-container-low text-on-surface">
                   <option>New York, NY</option>
                   <option>London, UK</option>
                   <option>Paris, FR</option>
@@ -418,40 +428,57 @@ export default function CategoryListingPage() {
           </div>
         </aside>
 
-        {/* Dynamic Category Main Layout */}
         <motion.main
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
           className="flex-1 min-w-0"
         >
+          <nav className="mb-10 sticky top-24 z-20">
+            <div className="no-scrollbar overflow-x-auto rounded-full bg-surface-container-low/80 backdrop-blur px-2 py-2 border border-outline-variant/20">
+              <div className="flex items-center gap-2 min-w-max">
+                {categoryNavItems.map((item) => {
+                  const isActive = item.slug === activeSlug
+                  return (
+                    <Link
+                      key={item.slug}
+                      to={`/category/${item.slug}`}
+                      className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wide transition-colors ${isActive ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'}`}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          </nav>
+
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
             <div className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-fixed rounded-full text-xs font-bold tracking-widest uppercase mb-4">{config.label}</div>
-            <h1 className={`text-6xl md:text-8xl font-headline font-black tracking-tighter mb-6`}>{config.title}</h1>
-            <p className={`text-xl md:text-2xl max-w-2xl font-light ${config.theme === 'dark' ? 'text-zinc-400' : 'text-on-surface-variant'}`}>{config.description}</p>
+            <h1 className="text-6xl md:text-8xl font-headline font-black tracking-tighter mb-6">{config.title}</h1>
+            <p className="text-xl md:text-2xl max-w-2xl font-light text-on-surface-variant">{config.description}</p>
           </motion.section>
 
           {renderLayout()}
 
-          {/* Pagination Component Extracted from Stash */}
           <div className="mt-20 flex items-center justify-center gap-4">
-            <button className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${config.theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white' : 'border-surface-container-high hover:bg-white text-neutral-400 hover:text-black hover:shadow-md'}`}>
-               <span className="material-symbols-outlined">chevron_left</span>
+            <button className="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center transition-all text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface">
+              <span className="material-symbols-outlined">chevron_left</span>
             </button>
             <div className="flex items-center gap-2">
-               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm ${config.theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>1</button>
-               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors ${config.theme === 'dark' ? 'hover:bg-zinc-900' : 'hover:bg-surface-container-low'}`}>2</button>
-               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors ${config.theme === 'dark' ? 'hover:bg-zinc-900' : 'hover:bg-surface-container-low'}`}>3</button>
-               <span className="px-2 opacity-30 tracking-widest font-black">...</span>
-               <button className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors ${config.theme === 'dark' ? 'hover:bg-zinc-900' : 'hover:bg-surface-container-low'}`}>12</button>
+              <button className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm bg-primary text-on-primary">1</button>
+              <button className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors hover:bg-surface-container-low">2</button>
+              <button className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors hover:bg-surface-container-low">3</button>
+              <span className="px-2 opacity-30 tracking-widest font-black">...</span>
+              <button className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-colors hover:bg-surface-container-low">12</button>
             </div>
-            <button className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${config.theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white' : 'border-surface-container-high hover:bg-white text-neutral-400 hover:text-black hover:shadow-md'}`}>
-               <span className="material-symbols-outlined">chevron_right</span>
+            <button className="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center transition-all text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface">
+              <span className="material-symbols-outlined">chevron_right</span>
             </button>
           </div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
-            <Link to="/" className="inline-block px-8 py-4 bg-primary text-white rounded-full font-bold hover:opacity-90 transition-opacity">
+            <Link to="/" className="inline-block px-8 py-4 bg-primary text-on-primary rounded-full font-bold hover:opacity-90 transition-opacity">
               &larr; Back to Home
             </Link>
           </motion.div>

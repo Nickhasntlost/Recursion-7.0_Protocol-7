@@ -51,10 +51,11 @@ export default function Layout() {
       <button
         type="button"
         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-pressed={theme === 'dark'}
         onClick={toggleTheme}
-        className="fixed right-6 bottom-6 z-[80] h-14 w-14 border border-outline-variant bg-surface-container-lowest text-on-surface rounded-none flex items-center justify-center shadow-[0_12px_30px_rgba(0,0,0,0.18)] transition-all hover:scale-105 active:scale-95"
+        className="fixed right-4 md:right-6 bottom-4 md:bottom-6 z-[90] h-12 w-12 md:h-14 md:w-14 border border-outline-variant/20 bg-surface-container-lowest text-on-surface rounded-full flex items-center justify-center shadow-[0_18px_40px_rgba(26,28,28,0.10)] transition-all duration-200 ease-out hover:scale-[1.03] hover:shadow-[0_24px_48px_rgba(26,28,28,0.14)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary-container focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
       >
-        <span className="material-symbols-outlined text-[30px]">
+        <span className="material-symbols-outlined text-[26px] md:text-[30px]">
           {theme === 'dark' ? 'light_mode' : 'dark_mode'}
         </span>
       </button>
