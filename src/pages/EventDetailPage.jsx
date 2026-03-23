@@ -13,7 +13,7 @@ const avatarUrls = [
 ]
 
 const reviewers = [
-  { name: 'Elena Vance', role: 'Architect, Oct 2023', stars: 5, review: '"The curation at Assemble is unmatched. It\'s not just a talk; it\'s a sensory dive into the future of our craft."', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCq4FIT0-UI8XQNhgjy3LKCCmzRKCwPK8TRPUGzEBvr-GEql3cD4rkoOKASJv8pY6MFxwrgCrtC_cKCsLZ0PrTnZamghQR2TVYwu2kT278A8UG67xTrI_GmV4t7OTHvazWcG_3BvHUKEZddFtKJtzjnSMYOHbN-hbFQivQzaJAuKdssGmOHrL-HJrp-Q-KmX7kC6prM0-5nvgqa7kdKm87YdEfqOG8DEzipwYEBvrOa0Tq_S-R02WIB20FWMrEHnegPsEHzaKlonv0' },
+  { name: 'Elena Vance', role: 'Architect, Oct 2023', stars: 5, review: '"The curation at Utsova is unmatched. It\'s not just a talk; it\'s a sensory dive into the future of our craft."', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCq4FIT0-UI8XQNhgjy3LKCCmzRKCwPK8TRPUGzEBvr-GEql3cD4rkoOKASJv8pY6MFxwrgCrtC_cKCsLZ0PrTnZamghQR2TVYwu2kT278A8UG67xTrI_GmV4t7OTHvazWcG_3BvHUKEZddFtKJtzjnSMYOHbN-hbFQivQzaJAuKdssGmOHrL-HJrp-Q-KmX7kC6prM0-5nvgqa7kdKm87YdEfqOG8DEzipwYEBvrOa0Tq_S-R02WIB20FWMrEHnegPsEHzaKlonv0' },
   { name: 'Marcus Thorne', role: 'Structural Engineer, Sep 2023', stars: 5, review: '"High density of information. The networking opportunities alone are worth the Professional ticket price."', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATRQlPTq5VbAbXvMUTka1EuXSlCNkmc64akX3IprKlYTJbZ_SL9bMazNXgoA1QpoKRyHldpu4oIcN_Av_ksfcsP-8f4W_ctSdXuqbXGxMckSH1rqKlnvDSWPe10gBP81vHTlyrvpsp8bV2BVwYEK1pjOsMg5OpYEaxN2x5lLZicE_FSVXp-UjteH73rhHAQMJltdL7ay87IZ9mf6TG3GxxY_8xDxCyPuwApM9WfQJ_d3M9_THHZimpFoRVDj9fOdbGVExr_fTuqek' },
   { name: 'Sasha Gray', role: 'Urban Designer, Nov 2023', stars: 4, review: '"Visually stunning venue. The Concrete Gallery is the perfect backdrop for these discussions."', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqRnIrw7KyYWYrE7k-nLNlrpxZKytwHFCR_tJSUTrdRJ-N_PjImDqFoj6vdliCw3lSg5uwt8kKtNfKY9I3OsR8TVDIIqTAlnbCt-OMMnBbYLONy1cICTIE5LQSaFiXZjd3tMhwTUslDigvb9Ipw1NOwGUg_OHsoDBQovzeAcomw3vaiRjXbb2WOM4kexUz9u2qBw9djBZ6NkUskQXNoLT8cl5zfqL_OMU_wSW5hy90yfks-JEbF8rs46ZFJ5kttO7Y43Kn7F6oLIE' },
 ]
@@ -36,7 +36,7 @@ export default function EventDetailPage() {
             Architecture &amp; Design
           </span>
           <h1 className="font-[family-name:var(--font-family-headline)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
-            Assemble. 2024
+            Utsova. 2024
           </h1>
           <div className="flex flex-wrap gap-8 mb-10">
             <div className="flex items-center gap-3">
@@ -124,7 +124,7 @@ export default function EventDetailPage() {
                 </li>
               ))}
             </ul>
-            <Link to="/event/assemble-2024/select"><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
+            <Link to="/event/Utsova-2024/select"><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
           </motion.div>
 
           {/* Professional - Featured */}
@@ -142,7 +142,7 @@ export default function EventDetailPage() {
                 </li>
               ))}
             </ul>
-            <Link to="/event/assemble-2024/select"><button className="w-full py-4 rounded-full bg-secondary-container text-on-secondary-fixed font-bold hover:brightness-110 transition-all">Select</button></Link>
+            <Link to="/event/Utsova-2024/select"><button className="w-full py-4 rounded-full bg-secondary-container text-on-secondary-fixed font-bold hover:brightness-110 transition-all">Select</button></Link>
           </motion.div>
 
           {/* Executive */}
@@ -159,7 +159,7 @@ export default function EventDetailPage() {
                 </li>
               ))}
             </ul>
-            <Link to="/event/assemble-2024/select"><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
+            <Link to="/event/Utsova-2024/select"><button className="w-full py-4 rounded-full border-2 border-primary font-bold hover:bg-primary hover:text-on-primary transition-all">Select</button></Link>
           </motion.div>
         </div>
       </motion.section>
@@ -197,7 +197,7 @@ export default function EventDetailPage() {
             <span className="font-bold text-sm">1 Adult</span>
             <span className="material-symbols-outlined text-primary text-sm cursor-pointer">expand_more</span>
           </div>
-          <Link to="/event/assemble-2024/select">
+          <Link to="/event/Utsova-2024/select">
             <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-3 hover:scale-[0.98] transition-all">
               Book Now
               <span className="material-symbols-outlined text-lg">arrow_forward</span>

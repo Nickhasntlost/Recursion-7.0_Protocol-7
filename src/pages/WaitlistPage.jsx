@@ -11,7 +11,7 @@ export default function WaitlistPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="font-[family-name:var(--font-family-headline)] text-4xl md:text-5xl font-extrabold tracking-tight text-primary">Assemble</h1>
+        <h1 className="font-[family-name:var(--font-family-headline)] text-4xl md:text-5xl font-extrabold tracking-tight text-primary">Utsova</h1>
         <p className="text-on-surface-variant font-medium">Digital Arts Summit 2024</p>
       </motion.header>
 

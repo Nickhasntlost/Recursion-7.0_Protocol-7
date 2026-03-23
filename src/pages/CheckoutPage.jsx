@@ -14,7 +14,7 @@ export default function CheckoutPage() {
         >
           <header className="space-y-2">
             <h1 className="text-5xl font-extrabold font-[family-name:var(--font-family-headline)] tracking-tight">Finalize Reservation</h1>
-            <p className="text-on-surface-variant text-lg">Enter your details to secure your presence at Assemble 2024.</p>
+            <p className="text-on-surface-variant text-lg">Enter your details to secure your presence at Utsova 2024.</p>
           </header>
 
           {/* Guest Details */}
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="space-y-1">
                   <span className="bg-secondary-container text-on-secondary-fixed text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Selected Event</span>
-                  <h3 className="text-xl font-bold font-[family-name:var(--font-family-headline)] leading-tight">Assemble: Visual Frontiers 2024</h3>
+                  <h3 className="text-xl font-bold font-[family-name:var(--font-family-headline)] leading-tight">Utsova: Visual Frontiers 2024</h3>
                   <p className="text-sm text-on-surface-variant">The Modern Wing • Oct 24, 19:30</p>
                 </div>
               </div>

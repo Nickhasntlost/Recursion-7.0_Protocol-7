@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 
 const floatingElements = [
   { icon: 'restaurant', label: 'Dining', link: '/category/dining', position: 'left-[3%] top-[18%]', rotate: '-12deg', delay: 0, bg: 'bg-white' },
@@ -91,9 +91,18 @@ export default function HomePage() {
     target: heroRef,
     offset: ['start start', 'end start']
   })
-
   const floatingY = useTransform(scrollYProgress, [0, 1], [0, 200])
   const floatingOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    window.dispatchEvent(new CustomEvent('hero-subnav-toggle', { detail: { visible: latest > 0.88 } }))
+  })
+
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent('hero-subnav-toggle', { detail: { visible: false } }))
+    }
+  }, [])
 
   return (
     <>
@@ -242,7 +251,7 @@ export default function HomePage() {
               <div className="w-3 h-3 rounded-full bg-[#27C93F]"></div>
             </div>
             <div className="bg-surface-container-low px-4 py-1.5 rounded-lg text-xs font-bold text-on-surface-variant/60 max-w-[240px] w-full">
-              app.assemble.tv
+              app.Utsova.tv
             </div>
           </div>
           {/* Timeline Header */}

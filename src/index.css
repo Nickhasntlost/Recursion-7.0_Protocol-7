@@ -73,6 +73,118 @@
   }
 }
 
+:root,
+.theme-light {
+  --color-surface: #f9f9f9;
+  --color-surface-dim: #dadada;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-low: #f3f3f3;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-variant: #e2e2e2;
+  --color-surface-tint: #5f5e5e;
+
+  --color-primary: #000000;
+  --color-primary-container: #1c1b1b;
+  --color-primary-fixed: #e5e2e1;
+  --color-primary-fixed-dim: #c8c6c5;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #858383;
+  --color-on-primary-fixed: #1c1b1b;
+  --color-on-primary-fixed-variant: #474646;
+  --color-inverse-primary: #c8c6c5;
+
+  --color-secondary: #5b6300;
+  --color-secondary-container: #dfeb72;
+  --color-secondary-fixed: #dfeb72;
+  --color-secondary-fixed-dim: #c3ce5a;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #616a00;
+  --color-on-secondary-fixed: #1a1d00;
+  --color-on-secondary-fixed-variant: #444b00;
+
+  --color-tertiary: #000000;
+  --color-tertiary-container: #1b1c1c;
+  --color-tertiary-fixed: #e3e2e2;
+  --color-tertiary-fixed-dim: #c7c6c6;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #848484;
+  --color-on-tertiary-fixed: #1b1c1c;
+  --color-on-tertiary-fixed-variant: #464747;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --color-background: #f9f9f9;
+  --color-on-background: #1a1c1c;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #444748;
+  --color-inverse-surface: #2f3131;
+  --color-inverse-on-surface: #f1f1f1;
+  --color-outline: #747878;
+  --color-outline-variant: #c4c7c7;
+}
+
+.theme-dark {
+  --color-surface: #070708;
+  --color-surface-dim: #0d0d10;
+  --color-surface-bright: #17181b;
+  --color-surface-container: #121316;
+  --color-surface-container-low: #181a1f;
+  --color-surface-container-high: #20232a;
+  --color-surface-container-highest: #2b3038;
+  --color-surface-container-lowest: #0f1013;
+  --color-surface-variant: #22262d;
+  --color-surface-tint: #c0c5ce;
+
+  --color-primary: #f5f7fa;
+  --color-primary-container: #e4e7ec;
+  --color-primary-fixed: #2a2e35;
+  --color-primary-fixed-dim: #23262d;
+  --color-on-primary: #090a0c;
+  --color-on-primary-container: #f2f4f7;
+  --color-on-primary-fixed: #eef1f5;
+  --color-on-primary-fixed-variant: #d8dde5;
+  --color-inverse-primary: #131417;
+
+  --color-secondary: #d8e86a;
+  --color-secondary-container: #d8e86a;
+  --color-secondary-fixed: #d8e86a;
+  --color-secondary-fixed-dim: #c8d85f;
+  --color-on-secondary: #0c0e07;
+  --color-on-secondary-container: #0c0e07;
+  --color-on-secondary-fixed: #0c0e07;
+  --color-on-secondary-fixed-variant: #0c0e07;
+
+  --color-tertiary: #f5f7fa;
+  --color-tertiary-container: #2a2e35;
+  --color-tertiary-fixed: #3a404a;
+  --color-tertiary-fixed-dim: #313641;
+  --color-on-tertiary: #090a0c;
+  --color-on-tertiary-container: #eef1f5;
+  --color-on-tertiary-fixed: #f5f7fa;
+  --color-on-tertiary-fixed-variant: #d8dde5;
+
+  --color-error: #ff8b82;
+  --color-error-container: #5f1110;
+  --color-on-error: #2b0202;
+  --color-on-error-container: #ffd2ce;
+
+  --color-background: #070708;
+  --color-on-background: #f1f3f6;
+  --color-on-surface: #f1f3f6;
+  --color-on-surface-variant: #a8adb8;
+  --color-inverse-surface: #f1f3f6;
+  --color-inverse-on-surface: #0b0c10;
+  --color-outline: #5b606a;
+  --color-outline-variant: #343840;
+  color-scheme: dark;
+}
+
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   vertical-align: middle;
@@ -81,8 +193,9 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f9f9f9;
-  color: #1a1c1c;
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3 {
@@ -109,3 +222,22 @@ h1, h2, h3 {
   display: grid;
   grid-template-columns: 200px repeat(14, 1fr);
 }
+
+/* Ensure older hardcoded utility classes stay consistent in dark mode. */
+.theme-dark [class~='bg-white'] { background-color: #161b25 !important; }
+.theme-dark [class~='bg-black'] { background-color: #f2f4f7 !important; }
+.theme-dark [class~='text-black'] { color: #eef1f5 !important; }
+.theme-dark [class~='text-white'] { color: #090b0f !important; }
+
+.theme-dark [class~='bg-white'] { background-color: #16181d !important; }
+.theme-dark [class~='bg-zinc-100'] { background-color: #1e2128 !important; }
+.theme-dark [class~='bg-zinc-200'] { background-color: #272b33 !important; }
+.theme-dark [class~='text-zinc-400'] { color: #9197a3 !important; }
+.theme-dark [class~='text-zinc-500'] { color: #a4aab6 !important; }
+.theme-dark [class~='text-zinc-600'] { color: #b3b8c1 !important; }
+.theme-dark [class~='border-zinc-100'] { border-color: #2a2f37 !important; }
+
+.theme-dark [class~='hover:bg-white']:hover { background-color: #20242b !important; }
+.theme-dark [class~='hover:bg-zinc-100']:hover { background-color: #2a2f38 !important; }
+.theme-dark [class~='hover:bg-zinc-200']:hover { background-color: #333842 !important; }
+.theme-dark [class~='hover:text-black']:hover { color: #ffffff !important; }

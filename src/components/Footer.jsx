@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 max-w-[1440px] mx-auto">
         <div className="md:col-span-1">
           <Link to="/" className="text-4xl font-black text-black mb-4 uppercase tracking-tighter block font-[family-name:var(--font-family-headline)]">
-            ASSEMBLE
+            Utsova
           </Link>
           <p className="text-xs tracking-widest uppercase text-zinc-400 leading-loose">
             The Digital Curator.<br />Every experience is a marquee occasion.
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-[1440px] mx-auto mt-20 pt-8 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-6">
-        <p className="text-xs tracking-widest uppercase text-zinc-400">© 2024 ASSEMBLE. THE DIGITAL CURATOR.</p>
+        <p className="text-xs tracking-widest uppercase text-zinc-400">© 2024 Utsova. THE DIGITAL CURATOR.</p>
         <div className="flex gap-8">
           <span className="material-symbols-outlined text-zinc-400 hover:text-black cursor-pointer">language</span>
           <span className="material-symbols-outlined text-zinc-400 hover:text-black cursor-pointer">nightlight</span>

@@ -20,7 +20,7 @@ export default function ConfirmationPage() {
           <span className="material-symbols-outlined text-on-secondary-container text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
         </motion.div>
         <h1 className="font-[family-name:var(--font-family-headline)] font-black text-6xl md:text-8xl tracking-tighter text-primary mb-4">You're In.</h1>
-        <p className="text-on-surface-variant text-lg max-w-md font-medium">Your entry to the Assemble collection is confirmed. We've sent a copy to your email.</p>
+        <p className="text-on-surface-variant text-lg max-w-md font-medium">Your entry to the Utsova collection is confirmed. We've sent a copy to your email.</p>
       </motion.div>
 
       {/* Ticket Card */}
