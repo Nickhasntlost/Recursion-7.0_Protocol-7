@@ -1,0 +1,63 @@
+import { Link, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
+
+export default function Navbar() {
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+
+  return (
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl"
+    >
+      <div className="flex justify-between items-center px-8 py-4 w-full max-w-[1440px] mx-auto">
+        <div className="flex items-center gap-12">
+          <Link to="/" className="text-2xl font-black tracking-tighter text-black uppercase font-[family-name:var(--font-family-headline)]">
+            assemble
+          </Link>
+          {isHome && (
+            <div className="hidden md:flex items-center bg-surface-container-low px-4 py-2 rounded-full w-[400px] border border-transparent focus-within:bg-surface-container-lowest focus-within:border-secondary-container transition-all">
+              <span className="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+              <input
+                className="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-on-surface-variant outline-none"
+                placeholder="Search experiences..."
+                type="text"
+              />
+              <div className="h-4 w-[1px] bg-outline-variant mx-3" />
+              <button className="flex items-center gap-1 text-xs font-bold text-primary whitespace-nowrap">
+                <span className="material-symbols-outlined text-sm">near_me</span>
+                Near Me
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-6 font-[family-name:var(--font-family-headline)] font-bold tracking-tight text-sm">
+            <Link to="/" className={`${isHome ? 'text-black border-b-2 border-black pb-1' : 'text-zinc-500 hover:text-black transition-colors'}`}>
+              London
+            </Link>
+            <Link to="/my-bookings" className="text-zinc-500 hover:text-black transition-colors">
+              My Bookings
+            </Link>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="p-2 hover:bg-zinc-100 rounded-full transition-all">
+              <span className="material-symbols-outlined">calendar_today</span>
+            </button>
+            <button className="p-2 hover:bg-zinc-100 rounded-full transition-all">
+              <span className="material-symbols-outlined">person</span>
+            </button>
+            <button className="hidden sm:block px-6 py-2.5 rounded-full text-sm font-bold bg-zinc-100 text-black hover:bg-zinc-200 transition-all">
+              Login
+            </button>
+            <button className="px-6 py-2.5 rounded-full text-sm font-bold bg-primary text-on-primary hover:scale-[0.98] transition-all">
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.nav>
+  )
+}
