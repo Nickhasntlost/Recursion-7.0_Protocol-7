@@ -116,6 +116,21 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [displayedText, setDisplayedText] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    if (typeof document === 'undefined') return false
+    return document.documentElement.classList.contains('theme-dark')
+  })
+
+  useEffect(() => {
+    const root = document.documentElement
+    const syncThemeState = () => setIsDarkTheme(root.classList.contains('theme-dark'))
+    syncThemeState()
+
+    const observer = new MutationObserver(syncThemeState)
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
+
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const currentTitle = heroEvents[currentSlide].title
@@ -178,7 +193,7 @@ export default function HomePage() {
             >
               <Link to={el.link}>
                 <motion.div
-                  className={`floating-element ${el.bg} p-6 rounded-2xl flex flex-col items-center gap-3 cursor-pointer`}
+                  className={`floating-element ${isDarkTheme ? 'bg-secondary-container text-on-secondary-fixed' : `${el.bg} text-black`} p-6 rounded-2xl flex flex-col items-center gap-3 cursor-pointer`}
                   style={{ rotate: el.rotate }}
                   whileHover={{ scale: 1.1, y: -5 }}
                   animate={{ y: [0, -20, 0] }}
@@ -188,7 +203,7 @@ export default function HomePage() {
                   }}
                 >
                   <span
-                    className={`material-symbols-outlined text-3xl ${el.filled ? 'text-on-secondary-container' : 'text-primary'}`}
+                    className={`material-symbols-outlined text-3xl ${isDarkTheme ? 'text-on-secondary-fixed' : el.filled ? 'text-on-secondary-container' : 'text-primary'}`}
                     style={el.filled ? { fontVariationSettings: "'FILL' 1" } : {}}
                   >
                     {el.icon}

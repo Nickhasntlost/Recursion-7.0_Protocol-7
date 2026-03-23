@@ -49,7 +49,7 @@ export default function Navbar() {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl"
     >
-      <div className="flex justify-between items-center px-8 py-4 w-full max-w-[1440px] mx-auto">
+      <div className="flex justify-between items-center px-8 py-3 w-full max-w-[1440px] mx-auto">
         <div className="flex items-center gap-4 w-full">
           <Link to="/" className="text-2xl font-black tracking-tighter text-black uppercase font-[family-name:var(--font-family-headline)]">
             Utsova

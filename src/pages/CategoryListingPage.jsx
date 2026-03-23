@@ -409,8 +409,8 @@ export default function CategoryListingPage() {
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-32 pb-24 flex gap-12">
-        <aside className="hidden lg:block w-60 shrink-0 sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-16 pb-24 flex gap-12">
+        <aside className="hidden lg:block w-60 shrink-0 sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
           <div className="space-y-10">
             <section>
               <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-on-surface-variant">Filter</h3>
@@ -434,7 +434,7 @@ export default function CategoryListingPage() {
           transition={{ duration: 0.4 }}
           className="flex-1 min-w-0"
         >
-          <nav className="mb-10 sticky top-24 z-20">
+          <nav className="mb-10 sticky top-20 z-20">
             <div className="no-scrollbar overflow-x-auto rounded-full bg-surface-container-low/80 backdrop-blur px-2 py-2 border border-outline-variant/20">
               <div className="flex items-center gap-2 min-w-max">
                 {categoryNavItems.map((item) => {
