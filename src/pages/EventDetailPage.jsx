@@ -56,18 +56,24 @@ export default function EventDetailPage() {
     )
   }
 
-  const categoryToVenue = (categoryValue) => {
-    const category = String(categoryValue || '').toLowerCase()
-    if (category.includes('sport')) return 'stadium'
-    if (category.includes('open') && category.includes('mic')) return 'openMic'
-    if (category.includes('concert') || category.includes('music')) return 'concertHall'
-    if (category.includes('cinema') || category.includes('movie') || category.includes('film')) return 'cinema'
-    if (category.includes('dining') || category.includes('food') || category.includes('restaurant')) return 'restaurant'
-    if (category.includes('hack') || category.includes('code')) return 'hackLab'
+  const inferSelectionVenue = (eventValue) => {
+    const category = String(eventValue?.category || '').toLowerCase()
+    const title = String(eventValue?.title || '').toLowerCase()
+    const description = String(eventValue?.description || '').toLowerCase()
+    const venueName = String(eventValue?.venue_name || '').toLowerCase()
+    const searchableText = `${category} ${title} ${description} ${venueName}`
+
+    if (searchableText.includes('sport') || searchableText.includes('match') || searchableText.includes('league') || searchableText.includes('stadium')) return 'stadium'
+    if (searchableText.includes('open mic') || searchableText.includes('open-mic') || searchableText.includes('poetry') || searchableText.includes('standup')) return 'openMic'
+    if (searchableText.includes('concert') || searchableText.includes('music') || searchableText.includes('dj') || searchableText.includes('gig')) return 'concertHall'
+    if (searchableText.includes('cinema') || searchableText.includes('movie') || searchableText.includes('film') || searchableText.includes('screening')) return 'cinema'
+    if (searchableText.includes('dining') || searchableText.includes('food') || searchableText.includes('restaurant') || searchableText.includes('canteen') || searchableText.includes('tasting') || searchableText.includes('chef')) return 'restaurant'
+    if (searchableText.includes('hack') || searchableText.includes('code') || searchableText.includes('developer') || searchableText.includes('tech')) return 'hackLab'
+
     return 'openMic'
   }
 
-  const selectionVenue = categoryToVenue(event.category)
+  const selectionVenue = inferSelectionVenue(event)
   const selectionPath = `/event/${event.id}/select?venue=${selectionVenue}`
 
   return (

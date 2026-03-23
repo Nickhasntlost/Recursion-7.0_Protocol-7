@@ -14,6 +14,46 @@ const avatarUrls = [
   'https://images.pexels.com/photos/13067379/pexels-photo-13067379.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=2',
 ]
 
+const topIndiaCities = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai']
+const additionalIndiaCities = ['Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Chandigarh', 'Kochi', 'Goa', 'Indore', 'Bhopal', 'Surat', 'Nagpur']
+
+const cityAliases = {
+  mumbai: ['mumbai'],
+  delhi: ['delhi', 'new delhi', 'ncr', 'gurgaon', 'gurugram', 'noida'],
+  bengaluru: ['bengaluru', 'bangalore'],
+  hyderabad: ['hyderabad'],
+  chennai: ['chennai', 'madras'],
+  pune: ['pune'],
+  kolkata: ['kolkata', 'calcutta'],
+  ahmedabad: ['ahmedabad'],
+  jaipur: ['jaipur'],
+  lucknow: ['lucknow'],
+  chandigarh: ['chandigarh'],
+  kochi: ['kochi', 'cochin'],
+  goa: ['goa', 'panaji'],
+  indore: ['indore'],
+  bhopal: ['bhopal'],
+  surat: ['surat'],
+  nagpur: ['nagpur'],
+}
+
+function normalizeCity(value) {
+  return String(value || '').trim().toLowerCase()
+}
+
+function eventMatchesCity(event, selectedCity) {
+  const normalizedSelected = normalizeCity(selectedCity)
+  if (!normalizedSelected || normalizedSelected === 'all') return true
+
+  const aliases = cityAliases[normalizedSelected] || [normalizedSelected]
+  const searchableText = [event?.venue_name, event?.location, event?.city, event?.address]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+
+  return aliases.some((alias) => searchableText.includes(alias))
+}
+
 const categoryNavItems = [
   { slug: 'dining', label: 'Dining' },
   { slug: 'open-mic', label: 'Open Mic' },
@@ -135,10 +175,7 @@ const categoryConfigs = {
     label: 'Live Updates',
     theme: 'light',
     layout: 'sports-featured',
-    cards: [
-      { id: 1, title: 'Aquatic Velocity Open', sport: 'Precision Water', time: '47.2s', bpm: '172', rank: '#1', image: 'https://images.pexels.com/photos/9153468/pexels-photo-9153468.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&dpr=2' },
-      { id: 2, title: 'Grand Track Masters', sport: 'Kinetic Force', athlete: 'K. Thompson', time: '9.82s', image: 'https://images.pexels.com/photos/3361471/pexels-photo-3361471.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&dpr=2' },
-    ]
+    cards: []
   }
 }
 
@@ -347,49 +384,120 @@ const OpenMicLayout = ({ config }) => (
   </motion.div>
 )
 
-const SportsLayout = ({ config }) => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      {config.cards.map((card, idx) => (
-        <motion.div
-          key={card.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.15 }}
-          className="bg-surface-container-low rounded-xl overflow-hidden flex flex-col"
-        >
-          <div className="relative h-64 overflow-hidden">
-            <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
-            <div className="absolute top-4 right-4 bg-white/70 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-secondary"></span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-black">{card.sport}</span>
-            </div>
-          </div>
-          <div className="p-8 flex-1 flex flex-col justify-between">
-            <div>
-              <h3 className="text-3xl font-black font-headline tracking-tight text-primary mb-2">{card.title}</h3>
-            </div>
-            <div className="grid grid-cols-3 gap-4 mt-8">
-              {card.time && <div className="bg-white p-4 rounded-lg"><span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Time</span><span className="text-xl font-black font-headline text-black">{card.time}</span></div>}
-              {card.bpm && <div className="bg-white p-4 rounded-lg"><span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">BPM</span><span className="text-xl font-black font-headline text-black">{card.bpm}</span></div>}
-              {card.rank && <div className="bg-secondary-container p-4 rounded-lg"><span className="text-[10px] font-bold text-on-secondary-fixed-variant uppercase block mb-1">Rank</span><span className="text-xl font-black font-headline text-on-secondary-fixed">{card.rank}</span></div>}
-            </div>
-            {getCardEventLink(card) && (
-              <div className="mt-8">
-                <Link to={getCardEventLink(card)}>
-                  <button className="px-6 py-3 rounded-full bg-primary text-white font-bold text-sm flex items-center gap-2">
-                    Book Now
-                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                  </button>
-                </Link>
+const SportsLayout = ({ config }) => {
+  const [ticketCounts, setTicketCounts] = useState({})
+
+  if (!config.cards || config.cards.length === 0) {
+    return (
+      <div className="rounded-xl border border-outline-variant bg-surface-container-low px-6 py-10 text-center text-on-surface-variant">
+        No sports events available right now.
+      </div>
+    )
+  }
+
+  useEffect(() => {
+    setTicketCounts((prev) => {
+      const next = {}
+      config.cards.forEach((card) => {
+        const existing = Number(prev[card.id])
+        next[card.id] = Number.isFinite(existing) && existing >= 1 ? Math.min(8, existing) : 2
+      })
+      return next
+    })
+  }, [config.cards])
+
+  const updateCardTickets = (cardId, delta) => {
+    setTicketCounts((prev) => {
+      const current = prev[cardId] || 2
+      const nextValue = Math.min(8, Math.max(1, current + delta))
+      return { ...prev, [cardId]: nextValue }
+    })
+  }
+
+  const getCardTickets = (cardId) => ticketCounts[cardId] || 2
+
+  const getSportsSeatSelectionLink = (card) => {
+    const fallbackEventLink = card?.id ? `/event/${card.id}` : null
+    const eventLink = getCardEventLink(card) || fallbackEventLink
+    if (!eventLink) return null
+
+    const match = eventLink.match(/^\/event\/([^/?#]+)/)
+    if (!match) return eventLink
+
+    return `/event/${match[1]}/select?venue=stadium&tickets=${getCardTickets(card.id)}`
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {config.cards.map((card, idx) => {
+          const seatSelectionLink = getSportsSeatSelectionLink(card)
+          return (
+            <motion.div
+              key={card.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.15 }}
+              className="bg-surface-container-low rounded-xl overflow-hidden flex flex-col"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                <div className="absolute top-4 right-4 bg-white/70 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-secondary"></span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-black">{card.sport}</span>
+                </div>
               </div>
-            )}
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  </motion.div>
-)
+              <div className="p-8 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-3xl font-black font-headline tracking-tight text-primary mb-2">{card.title}</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mt-8">
+                  {card.time && <div className="bg-white p-4 rounded-lg"><span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Time</span><span className="text-xl font-black font-headline text-black">{card.time}</span></div>}
+                  {card.bpm && <div className="bg-white p-4 rounded-lg"><span className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">BPM</span><span className="text-xl font-black font-headline text-black">{card.bpm}</span></div>}
+                  {card.rank && <div className="bg-secondary-container p-4 rounded-lg"><span className="text-[10px] font-bold text-on-secondary-fixed-variant uppercase block mb-1">Rank</span><span className="text-xl font-black font-headline text-on-secondary-fixed">{card.rank}</span></div>}
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <div className="bg-white px-3 py-2 rounded-full flex items-center gap-3 border border-outline-variant/30">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase">Tickets</span>
+                    <button
+                      type="button"
+                      onClick={() => updateCardTickets(card.id, -1)}
+                      className="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest"
+                    >
+                      -
+                    </button>
+                    <span className="font-black w-5 text-center text-black">{getCardTickets(card.id)}</span>
+                    <button
+                      type="button"
+                      onClick={() => updateCardTickets(card.id, 1)}
+                      className="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {seatSelectionLink ? (
+                    <Link to={seatSelectionLink}>
+                      <button className="px-6 py-3 rounded-full bg-primary text-white font-bold text-sm flex items-center gap-2">
+                        Book Now
+                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                      </button>
+                    </Link>
+                  ) : (
+                    <button disabled className="px-6 py-3 rounded-full bg-surface-container-high text-on-surface-variant font-bold text-sm cursor-not-allowed">
+                      Book Now
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+    </motion.div>
+  )
+}
 
 const ConcertsLayout = ({ config }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="space-y-12">
@@ -434,7 +542,12 @@ export default function CategoryListingPage() {
   const baseConfig = categoryConfigs[activeSlug] || categoryConfigs.dining
   
   const [config, setConfig] = useState(baseConfig)
+  const [selectedCity, setSelectedCity] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    setSelectedCity('all')
+  }, [activeSlug])
 
   useEffect(() => {
     // Reset to base config when slug changes
@@ -468,6 +581,8 @@ export default function CategoryListingPage() {
         if (activeSlug === 'dining') {
            filteredEvents = allEvents.filter(e => e.tags && e.tags.includes('Dining'))
         }
+
+          filteredEvents = filteredEvents.filter((event) => eventMatchesCity(event, selectedCity))
 
         const dynamicCards = filteredEvents.map((event, index) => {
           const dateObj = new Date(event.start_datetime)
@@ -516,9 +631,7 @@ export default function CategoryListingPage() {
           }
         })
         
-        if (dynamicCards.length > 0) {
-          setConfig(prev => ({ ...prev, cards: dynamicCards }))
-        }
+        setConfig(prev => ({ ...prev, cards: dynamicCards }))
         
       } catch (err) {
         console.error('Failed to fetch category events:', err)
@@ -528,7 +641,7 @@ export default function CategoryListingPage() {
     }
     
     fetchEvents()
-  }, [activeSlug])
+  }, [activeSlug, selectedCity])
 
   // Relying on my semantic api mapping hook above
 
@@ -553,6 +666,10 @@ export default function CategoryListingPage() {
     }
   }
 
+  const dropdownCityValue = additionalIndiaCities.some((city) => normalizeCity(city) === normalizeCity(selectedCity))
+    ? selectedCity
+    : 'all'
+
   return (
     <div className="min-h-screen bg-surface text-on-surface">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-12 pt-6 pb-24 flex gap-12">
@@ -560,15 +677,37 @@ export default function CategoryListingPage() {
           <div className="space-y-10">
             <section>
               <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-on-surface-variant">Filter</h3>
-              <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-neutral-400">near_me</span>
-                <select className="w-full pl-12 pr-4 py-3 border-none rounded-full text-sm font-bold appearance-none focus:ring-2 focus:ring-secondary-container transition-all cursor-pointer bg-surface-container-low text-on-surface">
-                  <option>New York, NY</option>
-                  <option>London, UK</option>
-                  <option>Paris, FR</option>
-                  <option>Mumbai, IN</option>
-                  <option>Goa, IN</option>
-                </select>
+              <div className="space-y-3">
+                {topIndiaCities.map((city) => {
+                  const isActive = normalizeCity(selectedCity) === normalizeCity(city)
+                  return (
+                    <button
+                      key={city}
+                      onClick={() => setSelectedCity(city)}
+                      className={`w-full px-4 py-3 rounded-full text-left text-sm font-bold transition-all border flex items-center gap-3 ${isActive ? 'bg-secondary-container text-on-secondary-fixed border-secondary-container' : 'bg-surface-container-low text-on-surface border-outline-variant hover:bg-surface-container-high'}`}
+                    >
+                      <span className="material-symbols-outlined text-neutral-400">near_me</span>
+                      {city}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="mt-6">
+                <label className="text-[10px] font-black uppercase tracking-[0.18em] text-on-surface-variant block mb-3">Select City</label>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-neutral-400">location_city</span>
+                  <select
+                    value={dropdownCityValue}
+                    onChange={(event) => setSelectedCity(event.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-outline-variant rounded-full text-sm font-bold appearance-none focus:ring-2 focus:ring-secondary-container transition-all cursor-pointer bg-surface-container-low text-on-surface"
+                  >
+                    <option value="all">All Cities</option>
+                    {additionalIndiaCities.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </section>
           </div>

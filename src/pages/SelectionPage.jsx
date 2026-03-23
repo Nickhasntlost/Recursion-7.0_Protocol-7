@@ -1423,17 +1423,25 @@ export default function SelectionPage() {
   const location = useLocation()
   const search = new URLSearchParams(location.search)
 
+  const parseTicketCount = (value) => {
+    const parsed = Number.parseInt(String(value || ''), 10)
+    if (!Number.isFinite(parsed)) return 2
+    return Math.max(1, Math.min(8, parsed))
+  }
+
   const requestedVenue = detectVenueFromEvent(id, search.get('venue'))
+  const requestedTicketCount = parseTicketCount(search.get('tickets'))
   const [activeVenue, setActiveVenue] = useState(requestedVenue)
-  const [ticketCount, setTicketCount] = useState(2)
+  const [ticketCount, setTicketCount] = useState(requestedTicketCount)
   const [selectedSeatIds, setSelectedSeatIds] = useState([])
   const [selectedCompartment, setSelectedCompartment] = useState(requestedVenue === 'stadium' ? 'North Stand' : null)
 
   useEffect(() => {
     setActiveVenue(requestedVenue)
+    setTicketCount(requestedTicketCount)
     setSelectedSeatIds([])
     setSelectedCompartment(requestedVenue === 'stadium' ? 'North Stand' : null)
-  }, [requestedVenue])
+  }, [requestedVenue, requestedTicketCount])
 
   const venue = venueConfigs[activeVenue]
 
