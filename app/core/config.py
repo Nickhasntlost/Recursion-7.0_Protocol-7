@@ -19,19 +19,25 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    # CORS - parse comma-separated string into list
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
 
     # SMTP (Email) - Gmail FREE
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""  # Use App Password from Google Account
+    SMTP_FROM_NAME: str = "Event Booking System"
+    SMTP_FROM_EMAIL: str = ""
 
-    # Google Gemini API (FREE!)
-    GEMINI_API_KEY: str = ""  # Get from https://makersuite.google.com/app/apikey
-    GEMINI_MODEL: str = "gemini-pro"  # Free model
-    GEMINI_VISION_MODEL: str = "gemini-pro-vision"  # Free vision model
+    # Groq API (FREE & FASTEST!)
+    GROQ_API_KEY: str = ""  # Get from https://console.groq.com/keys
+    GROQ_TEXT_MODEL: str = "llama-3.3-70b-versatile"  # Fastest text model (500-1000+ tokens/sec)
+
+    # Razorpay Payment Gateway (TEST MODE)
+    RAZORPAY_KEY_ID: str = ""  # Test API Key ID
+    RAZORPAY_KEY_SECRET: str = ""  # Test API Key Secret
+    RAZORPAY_WEBHOOK_SECRET: str = ""  # Webhook secret for signature verification
 
     # File Upload
     UPLOAD_DIR: str = "temp_uploads"  # Temporary directory
@@ -40,6 +46,13 @@ class Settings(BaseSettings):
     # Optional services (all FREE)
     MQTT_BROKER_URL: str = "localhost"
     MQTT_BROKER_PORT: int = 1883
+    MQTT_USERNAME: str = ""
+    MQTT_PASSWORD: str = ""
+
+    @property
+    def allowed_origins_list(self) -> List[str]:
+        """Parse ALLOWED_ORIGINS string into list"""
+        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
 
     class Config:
         env_file = ".env"

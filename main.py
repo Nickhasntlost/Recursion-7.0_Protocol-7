@@ -12,6 +12,7 @@ from app.api.v1.volunteers import router as volunteers_router
 from app.api.v1.tasks import router as tasks_router
 from app.api.v1.chat import router as chat_router
 from app.api.v1.ai_assistant import router as ai_assistant_router
+from app.api.v1.payments import router as payments_router
 
 
 @asynccontextmanager
@@ -42,7 +43,8 @@ app = FastAPI(
     - 👥 Volunteer Management (Excel Upload)
     - ✅ Task Assignment & Tracking
     - 💬 Real-time Chat System
-    - 🤖 AI Chatbot for Event Creation
+    - 🤖 AI Chatbot for Event Creation (Groq - FASTEST!)
+    - 💳 Payment Integration (Razorpay Test Mode)
     """,
     lifespan=lifespan
 )
@@ -50,7 +52,7 @@ app = FastAPI(
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=settings.allowed_origins_list,  # Parse comma-separated string to list
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -71,7 +73,8 @@ async def root():
             "Volunteers",
             "Tasks",
             "Chat",
-            "AI Assistant"
+            "AI Assistant (Groq)",
+            "Payments (Razorpay Test Mode)"
         ]
     }
 
@@ -81,7 +84,8 @@ async def health_check():
     return {
         "status": "healthy",
         "database": "connected",
-        "phase": "Phase 1 - Organizer & Volunteer System"
+        "phase": "Phase 1 - Organizer & Volunteer System",
+        "ai": "Google Gemini (FREE)"
     }
 
 
@@ -93,6 +97,7 @@ app.include_router(volunteers_router, prefix="/api/v1")
 app.include_router(tasks_router, prefix="/api/v1")
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(ai_assistant_router, prefix="/api/v1")
+app.include_router(payments_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":

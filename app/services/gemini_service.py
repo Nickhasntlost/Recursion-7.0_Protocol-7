@@ -15,8 +15,8 @@ class GeminiService:
     """Service for interacting with Google Gemini AI"""
 
     def __init__(self):
+        # Gemini 2.x models are multimodal - they support both text and vision!
         self.model = genai.GenerativeModel(settings.GEMINI_MODEL)
-        self.vision_model = genai.GenerativeModel(settings.GEMINI_VISION_MODEL)
 
     async def generate_text(self, prompt: str, context: Optional[List[dict]] = None) -> str:
         """
@@ -76,8 +76,8 @@ class GeminiService:
             with open(image_path, 'rb') as img_file:
                 image_data = img_file.read()
 
-            # Analyze with Gemini Vision
-            response = self.vision_model.generate_content([
+            # Analyze with Gemini (multimodal - supports vision natively)
+            response = self.model.generate_content([
                 prompt,
                 {"mime_type": "image/jpeg", "data": base64.b64encode(image_data).decode()}
             ])

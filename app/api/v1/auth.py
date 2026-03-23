@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from app.schemas.user import UserCreate, UserLogin, TokenResponse, UserResponse
 from app.models.user import User
 from app.core.security import get_password_hash, verify_password, create_access_token, create_refresh_token
+from app.dependencies.auth import get_current_user
 from datetime import datetime
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -148,6 +149,3 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
         is_verified=current_user.is_verified,
         created_at=current_user.created_at
     )
-
-
-from app.dependencies.auth import get_current_user

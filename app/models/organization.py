@@ -1,5 +1,5 @@
 from beanie import Document, Indexed
-from pydantic import EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -75,6 +75,3 @@ class Organization(Document):
                 "owner_id": "user_id_here"
             }
         }
-
-
-from pydantic import BaseModel

@@ -36,36 +36,37 @@ class Amenity(BaseModel):
 
 
 class Venue(Document):
-    name: Indexed(str)
+    # Basic Info
+    name: Indexed(str)  # Index for name search
     organization_id: str  # Owner organization
 
-    # Location
+    # Location (INDEXED for fast AI venue suggestions)
     address: str
-    city: str
+    city: str  # Index in Settings
     state: Optional[str] = None
-    country: str
+    country: str  # Index in Settings
     postal_code: str
     coordinates: Optional[Coordinates] = None
 
-    # Venue Details
-    venue_type: VenueType
+    # Venue Details (INDEXED for AI filtering)
+    venue_type: VenueType  # Index in Settings
     description: Optional[str] = None
-    capacity: int
+    capacity: int  # Index in Settings
 
     # Seating
     sections: List[SeatSection] = []
     has_reserved_seating: bool = True
 
     # Media
-    images: List[str] = []  # Image URLs
+    images: List[str] = []  # Image URLs (returned in AI suggestions)
     model_3d_url: Optional[str] = None  # .glb file for AR
     floor_plan_url: Optional[str] = None
 
-    # Amenities
+    # Amenities (INDEXED for feature-based filtering)
     amenities: List[Amenity] = []
-    has_parking: bool = False
-    has_wifi: bool = False
-    has_accessibility: bool = False
+    has_parking: bool  # Index in Settings
+    has_wifi: bool  # Index in Settings
+    has_accessibility: bool  # Index in Settings
 
     # IoT Integration
     has_iot_sensors: bool = False
@@ -76,9 +77,9 @@ class Venue(Document):
     contact_phone: Optional[str] = None
     contact_email: Optional[str] = None
 
-    # Status
-    is_active: bool = True
-    is_verified: bool = False
+    # Status (INDEXED for active venue filtering)
+    is_active: bool  # Index in Settings
+    is_verified: bool  # Index in Settings
 
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -88,12 +89,22 @@ class Venue(Document):
         name = "venues"
         indexes = [
             "organization_id",
-            "city",
-            "venue_type",
-            "is_active",
+            "city",  # Location search
+            "country",  # Country filtering
+            "venue_type",  # Type filtering
+            "capacity",  # Capacity range queries
+            "is_active",  # Active venues only
+            "is_verified",  # Verified venues
+            "has_parking",  # Amenity filters
+            "has_wifi",
+            "has_accessibility",
+            # Compound indexes for AI queries
+            [("city", 1), ("capacity", 1), ("is_active", 1)],  # Location + capacity
+            [("venue_type", 1), ("city", 1), ("is_active", 1)],  # Type + location
         ]
 
     class Config:
+        protected_namespaces = ()  # Allow model_3d_url field
         json_schema_extra = {
             "example": {
                 "name": "Grand Arena",

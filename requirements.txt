@@ -12,15 +12,12 @@ beanie==1.24.0  # ODM for MongoDB with Pydantic
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
-bcrypt==4.1.2
+bcrypt==4.0.1  # Fixed version for passlib compatibility
 
 # Validation
 pydantic==2.5.3
 pydantic-settings==2.1.0
 email-validator==2.1.0
-
-# CORS
-python-cors==1.0.0
 
 # Utilities
 python-dateutil==2.8.2
@@ -36,16 +33,15 @@ pandas==2.1.4
 openpyxl==3.1.2  # Excel read/write support
 xlrd==2.0.1  # Legacy Excel support
 
-# AI Integration - GOOGLE GEMINI (FREE!)
-google-generativeai==0.3.2  # Google Gemini API
+# AI Integration - GROQ (FREE & FASTEST!)
+groq>=1.1.1  # Groq API - Fastest LLM inference with LPU (500-1000+ tokens/sec!)
+
+# Payment Gateway - RAZORPAY (Test Mode)
+razorpay==1.4.2  # Razorpay Python SDK for payment processing
 
 # File upload handling (temporary storage)
 aiofiles==23.2.1
 Pillow==10.2.0  # Image processing
-
-# Background tasks
-# celery==5.3.4  # Optional, not needed for Phase 1
-# redis==5.0.1   # Optional, not needed for Phase 1
 
 # IoT/MQTT integration (free)
 paho-mqtt==1.6.1
@@ -53,9 +49,5 @@ paho-mqtt==1.6.1
 # Logging
 loguru==0.7.2
 
-# Email (using Gmail SMTP - FREE)
-# aiosmtplib already covered by standard lib
-
-# Optional - for AI/ML features
-# numpy==1.26.3
-# scikit-learn==1.4.0
+# Note: CORS is built into FastAPI via fastapi.middleware.cors
+# No additional package needed!

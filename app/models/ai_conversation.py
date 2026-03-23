@@ -1,5 +1,5 @@
 from beanie import Document
-from pydantic import Field
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -40,7 +40,7 @@ class ExtractedEventData(BaseModel):
 
 class AIConversation(Document):
     # References
-    organization_id: str
+    organization_id: Optional[str] = None  # Optional - user might not have org yet
     user_id: str
 
     # Conversation
@@ -68,6 +68,3 @@ class AIConversation(Document):
             "user_id",
             "created_event_id",
         ]
-
-
-from pydantic import BaseModel

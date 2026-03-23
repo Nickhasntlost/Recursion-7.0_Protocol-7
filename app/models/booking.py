@@ -63,8 +63,13 @@ class Booking(Document):
 
     # Payment
     payment_status: PaymentStatus = PaymentStatus.PENDING
-    payment_method: Optional[str] = None  # "stripe", "paypal", "crypto"
+    payment_method: Optional[str] = None  # "razorpay", "stripe", "paypal", "crypto"
     payment_transaction_id: Optional[str] = None
+
+    # Razorpay specific fields
+    razorpay_order_id: Optional[str] = None  # Order ID from create_order
+    razorpay_payment_id: Optional[str] = None  # Payment ID after successful payment
+    razorpay_signature: Optional[str] = None  # Signature for verification
 
     # Booking Status
     status: BookingStatus = BookingStatus.PENDING

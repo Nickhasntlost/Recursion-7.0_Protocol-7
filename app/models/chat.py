@@ -57,7 +57,7 @@ class Message(Document):
 
     class Config:
         json_schema_extra = {
-            "example": {32
+            "example": {
                 "event_id": "event_id",
                 "organization_id": "org_id",
                 "sender_type": "organizer",
