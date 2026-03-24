@@ -1,0 +1,214 @@
+{
+  "venues": [
+    {
+      "venue_id": "venue_stadium",
+      "name": "Stadium",
+      "layout_type": "stadium",
+      "total_capacity": 334,
+      "sections": [
+        {
+          "section_name": "North Stand",
+          "total_seats": 76,
+          "base_price": 420
+        },
+        {
+          "section_name": "South Stand",
+          "total_seats": 76,
+          "base_price": 420
+        },
+        {
+          "section_name": "West Stand",
+          "total_seats": 68,
+          "base_price": 420
+        },
+        {
+          "section_name": "East Stand",
+          "total_seats": 68,
+          "base_price": 420
+        },
+        {
+          "section_name": "VIP Boxes",
+          "total_seats": 16,
+          "base_price": 840
+        }
+      ]
+    },
+    {
+      "venue_id": "venue_open_mic",
+      "name": "Open Mic Auditorium",
+      "layout_type": "theater",
+      "total_capacity": 168,
+      "sections": [
+        {
+          "section_name": "Front Orchestra",
+          "total_seats": 68,
+          "base_price": 250
+        },
+        {
+          "section_name": "Mid Orchestra",
+          "total_seats": 68,
+          "base_price": 200
+        },
+        {
+          "section_name": "Balcony",
+          "total_seats": 42,
+          "base_price": 150
+        }
+      ]
+    },
+    {
+      "venue_id": "venue_concert_hall",
+      "name": "Concert Hall",
+      "layout_type": "theater",
+      "total_capacity": 374,
+      "sections": [
+        {
+          "section_name": "Main Gallery",
+          "total_seats": 100,
+          "base_price": 360
+        },
+        {
+          "section_name": "Orchestra Front",
+          "total_seats": 60,
+          "base_price": 500
+        }
+      ]
+    },
+    {
+      "venue_id": "venue_restaurant",
+      "name": "Restaurant Floor",
+      "layout_type": "dinner",
+      "total_capacity": 28,
+      "sections": [
+        {
+          "section_name": "Dining Hall",
+          "total_seats": 28,
+          "base_price": 260
+        }
+      ]
+    },
+    {
+      "venue_id": "venue_hacklab",
+      "name": "Hackathon Arena",
+      "layout_type": "custom",
+      "total_capacity": 128,
+      "sections": [
+        {
+          "section_name": "Team Pods",
+          "total_seats": 128,
+          "base_price": 190
+        }
+      ]
+    },
+    {
+      "venue_id": "venue_cinema",
+      "name": "Cinema Hall",
+      "layout_type": "theater",
+      "total_capacity": 138,
+      "sections": [
+        {
+          "section_name": "Premium",
+          "total_seats": 58,
+          "base_price": 300
+        },
+        {
+          "section_name": "Standard",
+          "total_seats": 80,
+          "base_price": 200
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "title": "A Priori: The Chef's Secret Table Experience",
+      "slug": "a-priori-chefs-table",
+      "description": "An editorial selection of the city's most elusive culinary experiences.",
+      "category": "dining",
+      "start_datetime": "2024-11-24T19:30:00",
+      "end_datetime": "2024-11-24T22:00:00",
+      "total_capacity": 12,
+      "min_price": 245,
+      "max_price": 245,
+      "currency": "INR",
+      "venue_id": "venue_restaurant",
+      "is_featured": true,
+      "cover_image": "https://images.pexels.com/photos/2085739/pexels-photo-2085739.jpeg"
+    },
+    {
+      "title": "Neon Echoes",
+      "slug": "neon-echoes-cinema",
+      "description": "Neon Echoes - Drama. 8.4 Rating.",
+      "category": "cinema",
+      "start_datetime": "2024-12-01T20:00:00",
+      "end_datetime": "2024-12-01T22:30:00",
+      "total_capacity": 138,
+      "min_price": 300,
+      "max_price": 500,
+      "currency": "INR",
+      "venue_id": "venue_cinema",
+      "is_featured": true,
+      "cover_image": "https://images.pexels.com/photos/65128/pexels-photo-65128.jpeg"
+    },
+    {
+      "title": "Laughter Therapy - Alex Rivera",
+      "slug": "laughter-therapy-comedy",
+      "description": "A collection of the city's sharpest wits.",
+      "category": "comedy",
+      "start_datetime": "2024-12-05T19:00:00",
+      "end_datetime": "2024-12-05T21:00:00",
+      "total_capacity": 168,
+      "min_price": 250,
+      "max_price": 400,
+      "currency": "INR",
+      "venue_id": "venue_open_mic",
+      "is_featured": true,
+      "cover_image": "https://images.pexels.com/photos/4427157/pexels-photo-4427157.jpeg"
+    },
+    {
+      "title": "Neural Mesh 2024",
+      "slug": "neural-mesh-2024-hackathon",
+      "description": "Building decentralized inference engines for large scale LLM deployment.",
+      "category": "hackathons",
+      "start_datetime": "2024-12-10T09:00:00",
+      "end_datetime": "2024-12-12T18:00:00",
+      "total_capacity": 128,
+      "min_price": 190,
+      "max_price": 250,
+      "currency": "INR",
+      "venue_id": "venue_hacklab",
+      "is_featured": true,
+      "cover_image": "https://images.pexels.com/photos/340152/pexels-photo-340152.jpeg"
+    },
+    {
+      "title": "Lia Thorne Acoustic",
+      "slug": "lia-thorne-acoustic-open-mic",
+      "description": "Raw storytelling through a weathered Gibson.",
+      "category": "open-mic",
+      "start_datetime": "2024-12-15T20:00:00",
+      "end_datetime": "2024-12-15T22:00:00",
+      "total_capacity": 168,
+      "min_price": 250,
+      "max_price": 350,
+      "currency": "INR",
+      "venue_id": "venue_open_mic",
+      "is_featured": false,
+      "cover_image": "https://images.pexels.com/photos/5610237/pexels-photo-5610237.jpeg"
+    },
+    {
+      "title": "IPL 2026 Final - Mumbai vs Chennai",
+      "slug": "ipl-2026-stadium-match",
+      "description": "Experience the thrill of the IPL finals in our large stadium venue.",
+      "category": "sports",
+      "start_datetime": "2026-04-25T19:00:00",
+      "end_datetime": "2026-04-25T23:30:00",
+      "total_capacity": 334,
+      "min_price": 420,
+      "max_price": 840,
+      "currency": "INR",
+      "venue_id": "venue_stadium",
+      "is_featured": true,
+      "cover_image": "https://images.pexels.com/photos/3573024/pexels-photo-3573024.jpeg"
+    }
+  ]
+}

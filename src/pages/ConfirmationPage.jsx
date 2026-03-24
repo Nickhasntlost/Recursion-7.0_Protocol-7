@@ -1,7 +1,36 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useEffect } from 'react'
 
 export default function ConfirmationPage() {
+  const location = useLocation()
+
+  // Get booking data from navigation state
+  const bookingDetails = location.state || {
+    bookingId: 'ASM-9920-X2',
+    bookingNumber: 'UTS-' + Date.now(),
+    eventTitle: 'The Modernist Manifesto: Live Editorial',
+    venue: 'The Curated Pavilion, London',
+    date: 'Oct 24, 2024 • 7:00 PM',
+    seats: 'Row F, Seat 12 & 14',
+    total: 216.50,
+    eventImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLLz71GmEkkq9mnak3d6R3zd23xvs_J1G9yEovatIc0_WQAO8yoTD-6-0uTCYYU.WWEFZ5f24l_uXUWr5Ksr1-ErovYY1vAtFRlaeV7ECNXHqo5zj1s52qzfWt2jmCeTzc7sA-FKJQ-XAfejlED96HxFVxy2LKTFlRMoyG9xdBKU3RWC41R3AtkVMYPntpnujBYgDLJvHlzB8t2aJX5JLOvMjbkb-Cs-MWxwA2R1iNJBdlo_ajyCiO76LXeGkxeZeQHvsRhStuBdY'
+  }
+
+  useEffect(() => {
+    // Send confirmation analytics
+    if (window.gtag) {
+      window.gtag('event', 'purchase', {
+        transaction_id: bookingDetails.bookingId,
+        value: bookingDetails.total,
+        currency: 'INR',
+        items: [{
+          item_name: bookingDetails.eventTitle
+        }]
+      })
+    }
+  }, [])
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       {/* Success Identity */}
@@ -33,26 +62,26 @@ export default function ConfirmationPage() {
         <div className="h-48 w-full bg-surface-container-high relative">
           <img className="w-full h-full object-cover grayscale brightness-90" alt="Event space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLLz71GmEkkq9mnak3d6R3zd23xvs_J1G9yEovatIc0_WQAO8yoTD-6-0uTCYYU-WWEFZ5f24l_uXUWr5Ksr1-ErovYY1vAtFRlaeV7ECNXHqo5zj1s52qzfWt2jmCeTzc7sA-FKJQ-XAfejlED96HxFVxy2LKTFlRMoyG9xdBKU3RWC41R3AtkVMYPntpnujBYgDLJvHlzB8t2aJX5JLOvMjbkb-Cs-MWxwA2R1iNJBdlo_ajyCiO76LXeGkxeZeQHvsRhStuBdY" />
           <div className="absolute top-6 left-6">
-            <span className="bg-secondary-fixed text-on-secondary-fixed font-[family-name:var(--font-family-headline)] text-xs font-bold px-4 py-1.5 rounded-full tracking-widest uppercase">Confirmed</span>
+            <span className="bg-secondary-container text-on-secondary-fixed font-[family-name:var(--font-family-headline)] text-xs font-bold px-4 py-1.5 rounded-full tracking-widest uppercase">Confirmed</span>
           </div>
         </div>
         <div className="p-8">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-1">Booking ID</p>
-              <p className="font-[family-name:var(--font-family-headline)] font-bold text-sm">ASM-9920-X2</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-1">Booking Number</p>
+              <p className="font-[family-name:var(--font-family-headline)] font-bold text-sm">{bookingDetails.bookingNumber}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-1">Status</p>
-              <p className="font-[family-name:var(--font-family-headline)] font-bold text-sm">Valid</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-1">Amount Paid</p>
+              <p className="font-[family-name:var(--font-family-headline)] font-bold text-sm">₹{bookingDetails.total?.toFixed(2)}</p>
             </div>
           </div>
-          <h2 className="font-[family-name:var(--font-family-headline)] font-extrabold text-3xl text-primary mb-6 leading-tight">The Modernist Manifesto: Live Editorial</h2>
+          <h2 className="font-[family-name:var(--font-family-headline)] font-extrabold text-3xl text-primary mb-6 leading-tight">{bookingDetails.eventTitle}</h2>
           <div className="space-y-4 mb-8">
             {[
-              { icon: 'calendar_today', label: 'Date & Time', value: 'Oct 24, 2024 • 7:00 PM' },
-              { icon: 'location_on', label: 'Venue', value: 'The Curated Pavilion, London' },
-              { icon: 'event_seat', label: 'Seats', value: 'Row F, Seat 12 & 14' },
+              { icon: 'calendar_today', label: 'Date & Time', value: bookingDetails.date },
+              { icon: 'location_on', label: 'Venue', value: bookingDetails.venue },
+              { icon: 'event_seat', label: 'Seats', value: bookingDetails.seats },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center">
