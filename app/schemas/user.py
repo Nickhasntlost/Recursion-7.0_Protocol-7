@@ -13,6 +13,7 @@ class UserCreate(BaseModel):
     city: Optional[str] = None
     country: Optional[str] = None
     role: UserRole = UserRole.USER
+    organization_name: Optional[str] = None  # For organizers: auto-create organization on signup
 
 
 class UserLogin(BaseModel):
@@ -52,3 +53,4 @@ class TokenResponse(BaseModel):
     refresh_token: str
     token_type: str = "bearer"
     user: UserResponse
+    organization: Optional[dict] = None  # Populated if organizer signup auto-created org

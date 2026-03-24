@@ -13,18 +13,21 @@ from app.api.v1.tasks import router as tasks_router
 from app.api.v1.chat import router as chat_router
 from app.api.v1.ai_assistant import router as ai_assistant_router
 from app.api.v1.payments import router as payments_router
+from app.api.v1.bookings import router as bookings_router
+from app.api.v1.seats import router as seats_router
+from app.api.v1.automation import router as automation_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events"""
     # Startup
-    print("🚀 Starting Event Booking System API - Phase 1...")
+    print("Starting Event Booking System API...")
     await connect_to_mongo()
-    print("✅ All systems ready!")
+    print("All systems ready!")
     yield
     # Shutdown
-    print("⏹️  Shutting down...")
+    print("Shutting down...")
     await close_mongo_connection()
 
 
@@ -33,7 +36,7 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="""
-    Revolutionary Event Booking System with IoT Integration - Phase 1
+    Revolutionary Event Booking System with IoT Integration
 
     ## Features
     - 🔐 User Authentication & Authorization
@@ -45,6 +48,13 @@ app = FastAPI(
     - 💬 Real-time Chat System
     - 🤖 AI Chatbot for Event Creation (Groq - FASTEST!)
     - 💳 Payment Integration (Razorpay Test Mode)
+    - 🪑 Seat Layout & Selection (Stadium, Theater, Dinner, etc.)
+    - 📱 Real-time MQTT Updates (Mock Implementation)
+    - 🎫 User Booking System with QR Codes
+    - 💰 Transaction History & Booking Management
+    - 🔄 Seat Changes & Cancellations
+    - 📧 Email Confirmations for Bookings
+    - 🤖 AI-Powered Email Automation (Groq)
     """,
     lifespan=lifespan
 )
@@ -63,7 +73,7 @@ app.add_middleware(
 @app.get("/", tags=["Health"])
 async def root():
     return {
-        "message": "Event Booking System API - Phase 1",
+        "message": "Event Booking System API",
         "version": settings.APP_VERSION,
         "status": "healthy",
         "features": [
@@ -74,7 +84,12 @@ async def root():
             "Tasks",
             "Chat",
             "AI Assistant (Groq)",
-            "Payments (Razorpay Test Mode)"
+            "Payments (Razorpay Test Mode)",
+            "Seat Selection & Layouts",
+            "User Bookings",
+            "Transaction History",
+            "MQTT Real-time Updates (Mock)",
+            "AI Email Automation (Groq)"
         ]
     }
 
@@ -84,8 +99,10 @@ async def health_check():
     return {
         "status": "healthy",
         "database": "connected",
-        "phase": "Phase 1 - Organizer & Volunteer System",
-        "ai": "Google Gemini (FREE)"
+        "features": "Full Event Booking with Seat Selection",
+        "ai": "Groq (FASTEST)",
+        "payment": "Razorpay (Test Mode)",
+        "mqtt": "Mock Implementation"
     }
 
 
@@ -98,6 +115,9 @@ app.include_router(tasks_router, prefix="/api/v1")
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(ai_assistant_router, prefix="/api/v1")
 app.include_router(payments_router, prefix="/api/v1")
+app.include_router(bookings_router, prefix="/api/v1")
+app.include_router(seats_router, prefix="/api/v1")
+app.include_router(automation_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":

@@ -25,10 +25,12 @@ class Settings(BaseSettings):
     # SMTP (Email) - Gmail FREE
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
-    SMTP_USER: str = ""
-    SMTP_PASSWORD: str = ""  # Use App Password from Google Account
+    SMTP_EMAIL: str = ""  # Your Gmail address
+    SMTP_PASSWORD: str = ""  # Use App Password from Google Account (https://myaccount.google.com/apppasswords)
     SMTP_FROM_NAME: str = "Event Booking System"
-    SMTP_FROM_EMAIL: str = ""
+
+    # Frontend URL for email links
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # Groq API (FREE & FASTEST!)
     GROQ_API_KEY: str = ""  # Get from https://console.groq.com/keys
@@ -57,6 +59,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # Ignore extra fields in .env file
 
 
 settings = Settings()

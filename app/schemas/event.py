@@ -38,7 +38,7 @@ class EventResponse(BaseModel):
     title: str
     slug: str
     description: str
-    organization_id: str
+    organization_id: Optional[str] = None  # None for platform events
     venue_id: str
     category: EventCategory
     tags: List[str]
@@ -47,6 +47,7 @@ class EventResponse(BaseModel):
     ticket_tiers: List[TicketTier]
     total_capacity: int
     total_sold: int
+    total_reserved: int = 0
     min_price: float
     max_price: float
     currency: str
@@ -54,5 +55,6 @@ class EventResponse(BaseModel):
     performers: List[str]
     status: EventStatus
     is_featured: bool
+    is_platform_event: bool = False
     view_count: int
     created_at: datetime

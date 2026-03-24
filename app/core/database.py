@@ -25,6 +25,8 @@ async def connect_to_mongo():
     from app.models.task import Task
     from app.models.chat import Message
     from app.models.ai_conversation import AIConversation
+    from app.models.seat_layout import SeatLayout
+    from app.models.automation import EmailCampaign
 
     await init_beanie(
         database=db.client[settings.DATABASE_NAME],
@@ -38,13 +40,15 @@ async def connect_to_mongo():
             Task,
             Message,
             AIConversation,
+            SeatLayout,
+            EmailCampaign,
         ]
     )
-    print("✅ Connected to MongoDB and initialized Beanie")
+    print("[OK] Connected to MongoDB and initialized Beanie")
 
 
 async def close_mongo_connection():
     """Close MongoDB connection"""
     if db.client:
         db.client.close()
-        print("❌ Closed MongoDB connection")
+        print("[X] Closed MongoDB connection")

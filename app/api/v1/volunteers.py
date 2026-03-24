@@ -153,17 +153,32 @@ async def upload_volunteers_excel(
                 if "skills" in df.columns and pd.notna(row.get("skills")):
                     skills = [s.strip() for s in str(row["skills"]).split(",")]
 
+                # Convert phone numbers to strings (Excel reads them as integers)
+                phone = None
+                if pd.notna(row.get("phone")):
+                    phone = str(row["phone"]).strip()
+                    # Add + prefix if not present and starts with digit
+                    if phone and phone[0].isdigit():
+                        phone = "+" + phone
+
+                emergency_phone = None
+                if pd.notna(row.get("emergency_contact_phone")):
+                    emergency_phone = str(row["emergency_contact_phone"]).strip()
+                    # Add + prefix if not present and starts with digit
+                    if emergency_phone and emergency_phone[0].isdigit():
+                        emergency_phone = "+" + emergency_phone
+
                 volunteer = Volunteer(
                     event_id=event_id,
                     organization_id=event.organization_id,
                     name=row["name"],
                     email=row["email"],
-                    phone=row.get("phone") if pd.notna(row.get("phone")) else None,
+                    phone=phone,
                     role=row.get("role") if pd.notna(row.get("role")) else None,
                     skills=skills,
                     availability=row.get("availability") if pd.notna(row.get("availability")) else None,
                     emergency_contact_name=row.get("emergency_contact_name") if pd.notna(row.get("emergency_contact_name")) else None,
-                    emergency_contact_phone=row.get("emergency_contact_phone") if pd.notna(row.get("emergency_contact_phone")) else None,
+                    emergency_contact_phone=emergency_phone,
                     imported_via_excel=True,
                     excel_row_number=index + 2,
                 )

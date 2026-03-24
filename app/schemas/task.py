@@ -30,6 +30,7 @@ class TaskUpdate(BaseModel):
 class TaskResponse(BaseModel):
     id: str
     event_id: str
+    event_title: Optional[str] = None  # Populated for volunteer view
     title: str
     description: Optional[str]
     priority: TaskPriority

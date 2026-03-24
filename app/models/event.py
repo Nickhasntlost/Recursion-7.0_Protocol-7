@@ -51,8 +51,9 @@ class Event(Document):
     description: str
 
     # Organization & Venue
-    organization_id: str
+    organization_id: Optional[str] = None  # None for platform-created events
     venue_id: str
+    is_platform_event: bool = False  # Created by platform, not organization
 
     # Category
     category: EventCategory

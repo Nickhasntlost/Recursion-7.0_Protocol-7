@@ -1,8 +1,8 @@
 name,email,phone,role,skills,availability,emergency_contact_name,emergency_contact_phone
-Rahul Sharma,rahul.sharma@gmail.com,+919876543210,Registration Coordinator,Customer Service, Communication,Full day,Priya Sharma,+919876543211
-Priya Patel,priya.patel@yahoo.com,+919823456789,Security Lead,Security, First Aid, Crowd Management,Morning shift,Amit Patel,+919823456790
-Amit Kumar,amit.kumar@outlook.com,+919765432108,Tech Support,IT Support, Audio Visual, Photography,Full day,Sunita Kumar,+919765432109
-Neha Singh,neha.singh@gmail.com,+919654321098,Food & Beverage,Hospitality, Catering, Customer Service,Afternoon shift,Rajesh Singh,+919654321099
-Arjun Reddy,arjun.reddy@gmail.com,+919543210987,Stage Manager,Event Management, Sound, Lighting,Full day,Lakshmi Reddy,+919543210988
-Kavya Iyer,kavya.iyer@hotmail.com,+919432109876,Volunteer Coordinator,Leadership, Team Management, Planning,Morning shift,Venkat Iyer,+919432109877
-Rohan Desai,rohan.desai@gmail.com,+919321098765,Parking Management,Traffic Control, Security, Communication,Evening shift,Meera Desai,+919321098766
+Rahul Sharma,rahul.sharma@gmail.com,919876543210,Registration Coordinator,"Customer Service, Communication",Full day,Priya Sharma,919876543211
+Priya Patel,priya.patel@yahoo.com,919823456789,Security Lead,"Security, First Aid, Crowd Management",Morning shift,Amit Patel,919823456790
+Amit Kumar,amit.kumar@outlook.com,919765432108,Tech Support,"IT Support, Audio Visual, Photography",Full day,Sunita Kumar,919765432109
+Neha Singh,neha.singh@gmail.com,919654321098,Food & Beverage,"Hospitality, Catering, Customer Service",Afternoon shift,Rajesh Singh,919654321099
+Arjun Reddy,arjun.reddy@gmail.com,919543210987,Stage Manager,"Event Management, Sound, Lighting",Full day,Lakshmi Reddy,919543210988
+Kavya Iyer,kavya.iyer@hotmail.com,919432109876,Volunteer Coordinator,"Leadership, Team Management, Planning",Morning shift,Venkat Iyer,919432109877
+Rohan Desai,rohan.desai@gmail.com,919321098765,Parking Management,"Traffic Control, Security, Communication",Evening shift,Meera Desai,919321098766

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from app.schemas.user import UserCreate, UserLogin, TokenResponse, UserResponse
-from app.models.user import User
+from app.models.user import User, UserRole
+from app.models.organization import Organization
 from app.core.security import get_password_hash, verify_password, create_access_token, create_refresh_token
 from app.dependencies.auth import get_current_user
 from datetime import datetime
@@ -43,6 +44,37 @@ async def signup(user_data: UserCreate):
 
     await new_user.insert()
 
+    # If user signed up as organizer, auto-create organization
+    if user_data.role == UserRole.ORGANIZER:
+        # Generate organization name
+        org_name = user_data.organization_name or f"{user_data.full_name}'s Organization"
+
+        # Check if organization name already exists
+        org_name_exists = await Organization.find_one({"name": org_name})
+        if org_name_exists:
+            org_name = f"{org_name} ({user_data.username})"
+
+        # Create organization
+        organization = Organization(
+            name=org_name,
+            email=user_data.email,
+            phone=user_data.phone,
+            city=user_data.city or "Not specified",
+            country=user_data.country or "Not specified",
+            address="",
+            postal_code="",
+            description=f"Organization managed by {user_data.full_name}",
+            owner_id=str(new_user.id),
+            admin_ids=[str(new_user.id)]
+        )
+
+        await organization.insert()
+
+        # Link user to organization
+        new_user.organization_id = str(organization.id)
+        new_user.role = UserRole.ORGANIZER
+        await new_user.save()
+
     # Generate tokens
     access_token = create_access_token(data={"sub": str(new_user.id)})
     refresh_token = create_refresh_token(data={"sub": str(new_user.id)})
@@ -69,10 +101,26 @@ async def signup(user_data: UserCreate):
         created_at=new_user.created_at
     )
 
+    # Include organization details in response if organizer
+    org_response = None
+    if user_data.role == UserRole.ORGANIZER and new_user.organization_id:
+        org = await Organization.get(new_user.organization_id)
+        if org:
+            org_response = {
+                "id": str(org.id),
+                "name": org.name,
+                "email": org.email,
+                "phone": org.phone,
+                "city": org.city,
+                "country": org.country,
+                "is_verified": org.is_verified
+            }
+
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=user_response
+        user=user_response,
+        organization=org_response
     )
 
 
@@ -122,10 +170,26 @@ async def login(credentials: UserLogin):
         created_at=user.created_at
     )
 
+    # Include organization details in response if organizer
+    org_response = None
+    if user.role == UserRole.ORGANIZER and user.organization_id:
+        org = await Organization.get(user.organization_id)
+        if org:
+            org_response = {
+                "id": str(org.id),
+                "name": org.name,
+                "email": org.email,
+                "phone": org.phone,
+                "city": org.city,
+                "country": org.country,
+                "is_verified": org.is_verified
+            }
+
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=user_response
+        user=user_response,
+        organization=org_response
     )
 
 
