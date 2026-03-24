@@ -123,7 +123,7 @@ const venueOptions = [
   { key: 'concertHall', label: 'Concerts' },
   { key: 'cinema', label: 'Cinema' },
   { key: 'restaurant', label: 'Dining' },
-  { key: 'hackLab', label: 'Hackathons' },
+  { key: 'hackLab', label: 'Competition' },
 ]
 
 function seededRatio(seedText) {
@@ -1419,6 +1419,7 @@ function HackLab2DMap({ layout, toggleSeat, seatButtonClass }) {
 }
 
 export default function SelectionPage() {
+  const HOLD_DURATION_SECONDS = 10 * 60
   const { id } = useParams()
   const location = useLocation()
   const search = new URLSearchParams(location.search)
@@ -1434,14 +1435,41 @@ export default function SelectionPage() {
   const [activeVenue, setActiveVenue] = useState(requestedVenue)
   const [ticketCount, setTicketCount] = useState(requestedTicketCount)
   const [selectedSeatIds, setSelectedSeatIds] = useState([])
+  const [seatHoldStartedAt, setSeatHoldStartedAt] = useState(null)
+  const [selectionSecondsLeft, setSelectionSecondsLeft] = useState(HOLD_DURATION_SECONDS)
   const [selectedCompartment, setSelectedCompartment] = useState(requestedVenue === 'stadium' ? 'North Stand' : null)
 
   useEffect(() => {
     setActiveVenue(requestedVenue)
     setTicketCount(requestedTicketCount)
     setSelectedSeatIds([])
+    setSeatHoldStartedAt(null)
+    setSelectionSecondsLeft(HOLD_DURATION_SECONDS)
     setSelectedCompartment(requestedVenue === 'stadium' ? 'North Stand' : null)
   }, [requestedVenue, requestedTicketCount])
+
+  useEffect(() => {
+    if (selectedSeatIds.length > 0 && !seatHoldStartedAt) {
+      setSeatHoldStartedAt(Date.now())
+      setSelectionSecondsLeft(HOLD_DURATION_SECONDS)
+      return
+    }
+
+    if (selectedSeatIds.length === 0 && seatHoldStartedAt) {
+      setSeatHoldStartedAt(null)
+      setSelectionSecondsLeft(HOLD_DURATION_SECONDS)
+    }
+  }, [selectedSeatIds.length, seatHoldStartedAt])
+
+  useEffect(() => {
+    if (!seatHoldStartedAt || selectionSecondsLeft <= 0) return
+
+    const timer = setInterval(() => {
+      setSelectionSecondsLeft((prev) => Math.max(prev - 1, 0))
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [seatHoldStartedAt, selectionSecondsLeft])
 
   const venue = venueConfigs[activeVenue]
 
@@ -1457,6 +1485,11 @@ export default function SelectionPage() {
   const serviceFee = selectedSeats.length * venue.serviceFeePerSeat
   const total = subtotal + serviceFee
   const canContinue = selectedSeats.length > 0
+  const selectionFormattedTime = useMemo(() => {
+    const mins = Math.floor(selectionSecondsLeft / 60)
+    const secs = selectionSecondsLeft % 60
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }, [selectionSecondsLeft])
 
   const onVenueChange = (nextVenue) => {
     setActiveVenue(nextVenue)
@@ -1549,7 +1582,7 @@ export default function SelectionPage() {
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <div className="bg-error-container text-on-error-container px-5 py-3 rounded-full flex items-center gap-2 font-bold">
             <span className="material-symbols-outlined text-xl">timer</span>
-            <span>Seats held for 09:54</span>
+            <span>{selectedSeats.length > 0 ? `Seats held for ${selectionFormattedTime}` : 'Select a seat to start hold timer'}</span>
           </div>
           <div className="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-3">
             <span className="text-sm text-on-surface-variant">Tickets</span>
@@ -1727,6 +1760,7 @@ export default function SelectionPage() {
                 subtotal,
                 serviceFee,
                 total,
+                holdStartedAt: seatHoldStartedAt,
               }}
             >
               <motion.button

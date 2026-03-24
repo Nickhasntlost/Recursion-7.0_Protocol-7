@@ -1,14 +1,54 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { paymentService } from '../services/payment'
 import { authService } from '../services/auth'
 import { toast } from 'react-toastify'
 
 export default function CheckoutPage() {
+  const HOLD_DURATION_SECONDS = 10 * 60
   const navigate = useNavigate()
   const location = useLocation()
   const user = authService.getCurrentUser()
+
+  // Timer logic
+  const holdStartedAt = useMemo(() => {
+    const candidate = Number(location.state?.holdStartedAt)
+    return Number.isFinite(candidate) && candidate > 0 ? candidate : null
+  }, [location.state])
+
+  const initialSecondsLeft = useMemo(() => {
+    if (!holdStartedAt) return HOLD_DURATION_SECONDS
+    const elapsedSeconds = Math.floor((Date.now() - holdStartedAt) / 1000)
+    return Math.max(HOLD_DURATION_SECONDS - elapsedSeconds, 0)
+  }, [holdStartedAt])
+
+  const [secondsLeft, setSecondsLeft] = useState(initialSecondsLeft)
+
+  useEffect(() => {
+    setSecondsLeft(initialSecondsLeft)
+  }, [initialSecondsLeft])
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return
+
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => Math.max(prev - 1, 0))
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [secondsLeft])
+
+  const formattedTime = useMemo(() => {
+    const mins = Math.floor(secondsLeft / 60)
+    const secs = secondsLeft % 60
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }, [secondsLeft])
+
+  const progressPercent = useMemo(
+    () => (secondsLeft / HOLD_DURATION_SECONDS) * 100,
+    [secondsLeft]
+  )
 
   // Get booking data from navigation state or use defaults
   const bookingData = location.state || {
@@ -301,10 +341,10 @@ export default function CheckoutPage() {
                   <span className="material-symbols-outlined animate-pulse">hourglass_top</span>
                   <span className="font-bold tracking-tight">Seats held for</span>
                 </div>
-                <span className="text-3xl font-black font-[family-name:var(--font-family-headline)] tracking-tighter">04:23</span>
+                <span className="text-3xl font-black font-[family-name:var(--font-family-headline)] tracking-tighter">{formattedTime}</span>
               </div>
               <div className="absolute bottom-0 left-0 h-1.5 bg-error/30 w-full">
-                <div className="h-full bg-error w-2/3 transition-all" />
+                <div className="h-full bg-error transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
               </div>
             </div>
 
