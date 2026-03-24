@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile - Assemble</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E2F16D",
+                        "on-primary": "#000000",
+                        "background": "#0c0a09", // stone-950
+                        "surface": "#1c1917",    // stone-900
+                        "surface-variant": "#292524", // stone-800
+                        "on-surface": "#fafaf9",      // stone-50
+                        "on-surface-variant": "#a8a29e", // stone-400
+                        "outline": "#44403c",         // stone-700
+                        "error": "#ef4444",
+                        "error-container": "#450a0a"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0c0a09;
+            font-family: 'Inter', sans-serif;
+        }
+        .editorial-shadow {
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased mb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-100" data-icon="menu">menu</span>
+<h1 class="font-plus-jakarta text-2xl tracking-tighter font-bold text-stone-100">CURATED</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-stone-800 overflow-hidden border border-stone-700">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMF67ag3QRXDfdGa1FY7SOW-Q1X3AzIsU0IKGyD9YILKk54lnkgiNU1_vHHF2RM5wPkyLr5_MpWWNXkJjxO6OvMYf318RDd6qiisVHgHq1kt85zXL7pKli1MRNAoq5I5ET2-9O2egwCHxbvmtMDtzg86k4yAIIIX_zUKITz3-5TJva49NejfkYHVxCtsdOTaK4lEHzDqZ8K99reYvPjtmCxTdoNmOrvawbgff4UMfaqKoeHb8T0oyyTbKD6Y4kWUmeXcOtfCivz8k"/>
+</div>
+</header>
+<main class="mt-24 px-6 max-w-md mx-auto">
+<!-- Hero Profile Section -->
+<section class="flex flex-col items-center text-center mb-10">
+<div class="relative mb-6">
+<div class="w-32 h-32 rounded-xl overflow-hidden editorial-shadow border-4 border-stone-800">
+<img alt="Julian Casablancas" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR0p9dNNJgOfCTbE4UgToUX4t6HSO49eiTHn5w76GDAM0izfMxm3AscdY6SR8Dn_Tdog8tonNsqYSgiKekGwu2XqGrS20339swcpBRgFnlgnpg7Pk1aDHwGuzx3_s2ZJHgrQmia-BsMKvRnwM8GwHJrSNc9jOETcXPQ3kgXl-sIRGTE33OkHGk5b2KqrjFYPJ3TADuL9FYEV4Sad8X-SKqdEp3BB03q_OM2BEFMh-EQrKXLMuNMtpYT2CzfAsSDdadOiuK4FSu0PQ"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">
+                    PRO
+                </div>
+</div>
+<h2 class="font-headline text-3xl font-extrabold tracking-tighter text-stone-50 mb-1">Julian Casablancas</h2>
+<p class="font-body text-stone-400 text-sm">julian@assemble.io</p>
+</section>
+<!-- Stats Bento Grid -->
+<section class="grid grid-cols-2 gap-4 mb-10">
+<div class="col-span-1 bg-surface p-6 rounded-lg flex flex-col justify-between aspect-square border border-stone-800">
+<span class="material-symbols-outlined text-primary mb-4" data-icon="event_upcoming">event_upcoming</span>
+<div>
+<p class="text-3xl font-headline font-bold text-stone-50">12</p>
+<p class="font-body text-xs text-stone-400 uppercase tracking-widest">Events</p>
+</div>
+</div>
+<div class="col-span-1 flex flex-col gap-4">
+<div class="bg-primary p-4 rounded-lg flex-1 flex flex-col justify-center">
+<p class="text-xl font-headline font-bold text-on-primary">4</p>
+<p class="font-body text-[10px] text-on-primary uppercase tracking-widest font-semibold">Tasks</p>
+</div>
+<div class="bg-stone-800 text-stone-50 p-4 rounded-lg flex-1 flex flex-col justify-center border border-stone-700">
+<p class="font-headline font-bold text-sm tracking-tight leading-none">Premium Member</p>
+<p class="font-body text-[10px] text-stone-400 mt-1 uppercase tracking-widest">Since 2024</p>
+</div>
+</div>
+</section>
+<!-- Account Settings -->
+<section class="mb-10">
+<h3 class="font-headline text-xs font-extrabold tracking-widest text-stone-400 uppercase mb-4 px-2">Account Settings</h3>
+<div class="bg-surface rounded-xl overflow-hidden editorial-shadow border border-stone-800">
+<button class="w-full flex items-center justify-between p-5 hover:bg-stone-800 transition-colors group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary transition-colors" data-icon="person_outline">person_outline</span>
+<span class="font-body text-sm font-medium text-stone-200">Personal Info</span>
+</div>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-5 border-t border-stone-800 hover:bg-stone-800 transition-colors group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary transition-colors" data-icon="credit_card">credit_card</span>
+<span class="font-body text-sm font-medium text-stone-200">Payment Methods</span>
+</div>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-5 border-t border-stone-800 hover:bg-stone-800 transition-colors group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="font-body text-sm font-medium text-stone-200">Notification Preferences</span>
+</div>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- App Preferences -->
+<section class="mb-10">
+<h3 class="font-headline text-xs font-extrabold tracking-widest text-stone-400 uppercase mb-4 px-2">App Preferences</h3>
+<div class="bg-surface rounded-xl overflow-hidden editorial-shadow border border-stone-800">
+<button class="w-full flex items-center justify-between p-5 hover:bg-stone-800 transition-colors group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary transition-colors" data-icon="translate">translate</span>
+<span class="font-body text-sm font-medium text-stone-200">Language</span>
+</div>
+<span class="font-body text-xs text-primary font-bold uppercase tracking-widest">English</span>
+</button>
+<div class="w-full flex items-center justify-between p-5 border-t border-stone-800">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500" data-icon="dark_mode">dark_mode</span>
+<span class="font-body text-sm font-medium text-stone-200">Dark Mode</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative p-1 flex items-center justify-end">
+<div class="w-4 h-4 bg-on-primary rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Support -->
+<section class="mb-12">
+<h3 class="font-headline text-xs font-extrabold tracking-widest text-stone-400 uppercase mb-4 px-2">Support</h3>
+<div class="bg-surface rounded-xl overflow-hidden editorial-shadow border border-stone-800">
+<button class="w-full flex items-center justify-between p-5 hover:bg-stone-800 transition-colors group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary transition-colors" data-icon="help_center">help_center</span>
+<span class="font-body text-sm font-medium text-stone-200">Help Center</span>
+</div>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-5 border-t border-stone-800 hover:bg-stone-800 transition-colors group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary transition-colors" data-icon="mail">mail</span>
+<span class="font-body text-sm font-medium text-stone-200">Contact Us</span>
+</div>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Log Out -->
+<div class="mb-20 px-4">
+<button class="w-full py-5 rounded-xl text-error font-headline font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-3 bg-error-container/20 border border-error/20 hover:bg-error-container/40 transition-colors">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Log Out
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-8 pt-4 bg-stone-950/80 backdrop-blur-2xl z-50 rounded-t-[3rem] shadow-[0_-8px_40px_rgba(0,0,0,0.5)] border-t border-stone-800">
+<a class="flex flex-col items-center justify-center text-stone-500 px-6 py-2 transition-colors hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="explore">explore</span>
+<span class="font-inter text-[10px] uppercase tracking-widest font-semibold">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 px-6 py-2 transition-colors hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="event_upcoming">event_upcoming</span>
+<span class="font-inter text-[10px] uppercase tracking-widest font-semibold">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 px-6 py-2 transition-colors hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="assignment">assignment</span>
+<span class="font-inter text-[10px] uppercase tracking-widest font-semibold">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-primary bg-primary rounded-full px-6 py-2 scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-inter text-[10px] uppercase tracking-widest font-semibold">Profile</span>
+</a>
+</nav>
+</body></html>

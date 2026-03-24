@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#464747",
+              "on-primary-fixed": "#1c1b1b",
+              "tertiary-container": "#1b1c1c",
+              "secondary-container": "#E2F16D",
+              "background": "#0c0a09",
+              "tertiary": "#000000",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#262626",
+              "on-primary-container": "#858383",
+              "on-background": "#fafaf9",
+              "error": "#ba1a1a",
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#f1f1f1",
+              "on-primary": "#000000",
+              "error-container": "#ffdad6",
+              "surface-container-highest": "#404040",
+              "tertiary-fixed-dim": "#c7c6c6",
+              "surface-container": "#171717",
+              "on-secondary-container": "#000000",
+              "surface": "#0c0a09",
+              "on-tertiary-container": "#848484",
+              "surface-container-low": "#1c1917",
+              "on-error": "#ffffff",
+              "surface-container-lowest": "#000000",
+              "primary-fixed": "#e5e2e1",
+              "tertiary-fixed": "#e3e2e2",
+              "on-secondary-fixed": "#1a1d00",
+              "primary-container": "#E2F16D",
+              "on-surface": "#fafaf9",
+              "on-surface-variant": "#a8a29e",
+              "surface-dim": "#1c1917",
+              "primary-fixed-dim": "#c8c6c5",
+              "on-secondary": "#000000",
+              "surface-variant": "#262626",
+              "outline-variant": "#444748",
+              "on-secondary-fixed-variant": "#444b00",
+              "inverse-on-surface": "#1a1c1c",
+              "surface-bright": "#1c1917",
+              "on-tertiary-fixed": "#1b1c1c",
+              "secondary-fixed": "#E2F16D",
+              "on-primary-fixed-variant": "#474646",
+              "surface-tint": "#E2F16D",
+              "secondary-fixed-dim": "#c3ce5a",
+              "inverse-primary": "#000000",
+              "outline": "#78716c",
+              "primary": "#E2F16D",
+              "secondary": "#E2F16D"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a09;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="text-on-surface antialiased pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-stone-900 transition-colors">
+<span class="material-symbols-outlined text-stone-100">arrow_back</span>
+</button>
+<h1 class="text-xl font-extrabold tracking-tighter text-stone-100">Become a Volunteer</h1>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-stone-800 overflow-hidden ring-1 ring-stone-700">
+<img alt="User profile photo avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpDxK_np4OoE1lnknPT3URb9FOdc2QzZ2SaDwnHOnvnqwq18Xcp0p7yE9sipWHpx5Seg3g7jOROYDg44U1ZQT9QLg-x5c33_kciH08MHhtLbZrz9Meo6Eeh4U1GX6CqM4KNeTmws1Etx9B7gFeHSBLnTHmcwey9emJ4z9xgOiCbBPVKIO71IFwoO4abM65lJCBvb_h4_U14AXGmNy-_FGGW3Hh6ND9BBhHcQhj3MttVEDSnDdWJ-gdjkcR77CkpW7H4gJVWnnTqbI"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Onboarding Section -->
+<section class="mb-12">
+<div class="mb-8">
+<h2 class="text-4xl font-extrabold tracking-tight text-stone-50 mb-2">Join the Collective</h2>
+<p class="text-stone-400 leading-relaxed">Fill in your details to start supporting our curated experiences.</p>
+</div>
+<form class="space-y-4">
+<div class="space-y-1">
+<label class="px-4 text-[10px] font-bold uppercase tracking-widest text-stone-500">Full Name</label>
+<input class="w-full bg-stone-900 border-none rounded-full px-6 py-4 focus:ring-2 focus:ring-[#E2F16D] transition-all text-stone-100 placeholder:text-stone-600" placeholder="Julian Casablancas" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="px-4 text-[10px] font-bold uppercase tracking-widest text-stone-500">Email Address</label>
+<input class="w-full bg-stone-900 border-none rounded-full px-6 py-4 focus:ring-2 focus:ring-[#E2F16D] transition-all text-stone-100 placeholder:text-stone-600" placeholder="julian@assemble.io" type="email"/>
+</div>
+<div class="space-y-1">
+<label class="px-4 text-[10px] font-bold uppercase tracking-widest text-stone-500">Phone Number</label>
+<input class="w-full bg-stone-900 border-none rounded-full px-6 py-4 focus:ring-2 focus:ring-[#E2F16D] transition-all text-stone-100 placeholder:text-stone-600" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</form>
+</section>
+<!-- Event Selection List -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold tracking-tight text-stone-50">Available Opportunities</h2>
+<span class="px-4 py-1.5 bg-[#E2F16D] text-black text-xs font-bold rounded-full uppercase tracking-tighter">48 Spots Left</span>
+</div>
+<div class="space-y-6">
+<!-- Card 1: Selected State -->
+<div class="group relative bg-[#E2F16D] p-6 rounded-xl flex items-start gap-6 transition-all duration-300">
+<div class="w-24 h-32 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+<img alt="Minimalist modernist architecture building" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrV3VQ2N1kPGsahAG9LOfDAzQ3-eu8W7Eh-9twvAs6BUVFwWaystadgnjnOi2jhvI79LhexUE0y0NcsIgEc08Nfun5oVZx5eBuIwsyJhMe4Zkg08_a_MvcBgZygEMiC-8u69L_k8xBKm1dA4w7f8B8mg_AtoY8BD9t8jf3CA-l4zPENcsxhzwxSevcabXtTP7fszBobJYoRTpRLPZ-Cvu16LRo0FRpuO7Nv1AWWXUeN4n9h_SbGwldqlatSO-OFaeBaAPwu9_tG5c"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold tracking-tight text-black">Modernist Gala</h3>
+<button class="w-12 h-12 rounded-full bg-black flex items-center justify-center text-[#E2F16D]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+</div>
+<p class="text-black/70 text-sm mb-4 line-clamp-2">Assist with guest check-in and lounge coordination at the High Museum.</p>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-black/60">
+<span class="material-symbols-outlined text-sm">group</span>
+<span class="text-xs font-bold">12 spots left</span>
+</div>
+<div class="flex items-center gap-1.5 text-black/60">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-bold">6 PM - 11 PM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Unselected State -->
+<div class="group relative bg-stone-900 p-6 rounded-xl flex items-start gap-6 hover:bg-stone-800 transition-all duration-300">
+<div class="w-24 h-32 rounded-lg overflow-hidden flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="Jazz musician performing in a dimly lit club" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDwoCcmo6pQ0N5OnyzbRmp5-OgdExBeHFfNKSi0JyMef-aRAV8v2voiPo4Wh2qI9qfwbgVQjgyk2-PAnFmxphH8HN8Qyrtvv1K8HlMqIjDWD9RDc-MPfzfQIevRL_Nv2WGn4dzAB8VzFVEXuMVV-seUm-bkUEph07J19Z4Ac6oSjnQd8UMPEbxp3-dD-flFd0uC_k3S4hNh3vmWGlClvpV6aG0nxzNnGsUKsoTpcvul8uniejjcE1IaLA8RnDX4GsvjrMjVSANZOI"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold tracking-tight text-stone-100">Jazz Night</h3>
+<button class="w-12 h-12 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:bg-[#E2F16D] hover:text-black transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<p class="text-stone-400 text-sm mb-4 line-clamp-2">Support stage management and artist hospitality at the Blue Note Lounge.</p>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-stone-500">
+<span class="material-symbols-outlined text-sm">group</span>
+<span class="text-xs font-semibold">4 spots left</span>
+</div>
+<div class="flex items-center gap-1.5 text-stone-500">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-semibold">8 PM - 1 AM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative bg-stone-900 p-6 rounded-xl flex items-start gap-6 hover:bg-stone-800 transition-all duration-300">
+<div class="w-24 h-32 rounded-lg overflow-hidden flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="Artist studio with canvas and paint splashes" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA17TodqApBBS-9yOFIK67tBQP2dEc44GLyNKAlEEuvcZ_Ehw4tlfGBKfOwhtgr4pAcf1Hnp_LrK_-ZwOzUsxl-5NDNecMyEx0kf6IRH-5sp0xhF7PVa2KhPw1Vq7Gzh853u3fOAQVtstBkQU9YLTbF2hJqTnX8lyNJQjdc9QFII4Ar4dxlXNqAU2m9XNMvpPB9Cf-YxM8F2a4hGFKZ8Ew4cJjR2THE0K8NX40UFSUJActVecOKCCap-bHTjIIzV4de_RREGbfQa3E"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold tracking-tight text-stone-100">Gallery Opening</h3>
+<button class="w-12 h-12 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:bg-[#E2F16D] hover:text-black transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<p class="text-stone-400 text-sm mb-4 line-clamp-2">Provide information to visitors about the featured abstract collection.</p>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-stone-500">
+<span class="material-symbols-outlined text-sm">group</span>
+<span class="text-xs font-semibold">8 spots left</span>
+</div>
+<div class="flex items-center gap-1.5 text-stone-500">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-semibold">5 PM - 9 PM</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action -->
+<div class="fixed bottom-0 left-0 w-full p-6 z-50 bg-gradient-to-t from-stone-950 via-stone-950/80 to-transparent">
+<div class="max-w-2xl mx-auto flex justify-center">
+<button class="group w-full max-w-md bg-[#E2F16D] text-black rounded-full py-5 px-8 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.4)] hover:scale-[1.02] active:scale-95 transition-all">
+<span class="font-bold text-lg tracking-tight">Confirm Selection</span>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-black/60">1 Event</span>
+<span class="material-symbols-outlined font-bold">arrow_forward</span>
+</div>
+</button>
+</div>
+</div>
+</body></html>

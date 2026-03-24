@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Assemble - High-End Event Editorial</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#464747",
+              "on-primary-fixed": "#1c1b1b",
+              "tertiary-container": "#1b1c1c",
+              "secondary-container": "#E2F16D",
+              "background": "#0c0a09", /* stone-950 */
+              "tertiary": "#000000",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#262626", /* neutral-800 approx */
+              "on-primary-container": "#858383",
+              "on-background": "#fafaf9", /* stone-50 */
+              "error": "#ba1a1a",
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#f1f1f1",
+              "on-primary": "#000000",
+              "error-container": "#ffdad6",
+              "surface-container-highest": "#404040",
+              "tertiary-fixed-dim": "#c7c6c6",
+              "surface-container": "#171717", /* neutral-900 */
+              "on-secondary-container": "#000000",
+              "surface": "#0c0a09", /* stone-950 */
+              "on-tertiary-container": "#848484",
+              "surface-container-low": "#171717", /* neutral-900 */
+              "on-error": "#ffffff",
+              "surface-container-lowest": "#0a0a0a",
+              "primary-fixed": "#e5e2e1",
+              "tertiary-fixed": "#e3e2e2",
+              "on-secondary-fixed": "#1a1d00",
+              "primary-container": "#E2F16D",
+              "on-surface": "#fafaf9",
+              "on-surface-variant": "#d6d3d1", /* stone-300 */
+              "surface-dim": "#171717",
+              "primary-fixed-dim": "#c8c6c5",
+              "on-secondary": "#000000",
+              "surface-variant": "#262626",
+              "outline-variant": "#444748",
+              "on-secondary-fixed-variant": "#444b00",
+              "inverse-on-surface": "#1a1c1c",
+              "surface-bright": "#1c1917",
+              "on-tertiary-fixed": "#1b1c1c",
+              "secondary-fixed": "#E2F16D",
+              "on-primary-fixed-variant": "#474646",
+              "surface-tint": "#E2F16D",
+              "secondary-fixed-dim": "#c3ce5a",
+              "inverse-primary": "#000000",
+              "outline": "#525252",
+              "primary": "#E2F16D",
+              "secondary": "#E2F16D"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-neutral-800 overflow-hidden border border-white/10">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Close up of a professional male user profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRON0Rb4_RalG7FxqftLsNkeBCa3U4X4uohJaps92B2NbsSPmqYsWf9tch2iPCK2oV5oZ6jvOanq93sQWYFRV3m7ig3HLa07C7DtnwFcnLMjrDGHQXedOsZC-INIkrPUvTte6U4HfudWBHvbMgGDatkuYx2BB5L2n_3GPuOZ1upNsCQfTmPj7YfGOYH2RCnSYoP0DGQ078h_K1_CHuEUE9Xo2CzTdm2xxMTIysryNvi4EkKOOVXBcLhHEPGc7Q1nHeP4_WVXASSIk"/>
+</div>
+</div>
+<h1 class="text-xl font-extrabold tracking-tighter text-white font-headline">Assemble</h1>
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined text-white">search</span>
+</button>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined text-white" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-32">
+<!-- Hero: Featured Event -->
+<section class="px-6 mb-12">
+<div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-neutral-900 border border-white/5">
+<img alt="The Great Revival" class="w-full h-full object-cover" data-alt="Dramatic interior of a modern cathedral with light beams" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsQ6ZQuOZ_zDh3oqHgMgJnim06LmxQie-j4GAX2SheujYlaPuSKaDsrKxkn4L3V4vnfn-EYrbcKSwM7NEdoAHXoB8Ac4d-rXHLsMOo-tEhoPhMrisgES-sTokBK3Lti8by82dviXCqZEiBHs3vdzTqMo-CREm8rbWRdPu7fK5GOzn2oE9w3mNa-q9sFhXnZWuwwtqJu99nUNxmH-ENiaMdAKZ9h87n90RM47Np9OP0Yb7UPKwBLTT_fOJdLXrybiGmvGYYHLdyZ-M"/>
+<!-- Overlay content -->
+<div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent flex flex-col justify-end p-8">
+<div class="mb-4">
+<span class="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase font-label inline-block mb-3">
+                            Featured Experience
+                        </span>
+<h2 class="text-4xl font-extrabold text-white font-headline leading-tight tracking-tighter mb-2">
+                            The Great Revival
+                        </h2>
+<p class="text-stone-300 text-sm font-medium mb-6">
+                            Nov 24 • Grand Cathedral Hall, London
+                        </p>
+</div>
+<button class="bg-secondary-container text-on-secondary-container py-4 px-8 rounded-full font-bold flex items-center justify-between group active:scale-95 duration-300">
+<span>Book Experience</span>
+<span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Categories: Horizontal Scroll -->
+<section class="mb-12">
+<div class="flex overflow-x-auto hide-scrollbar px-6 gap-3">
+<button class="whitespace-nowrap flex items-center gap-2 bg-secondary-container text-on-secondary-container px-6 py-3 rounded-full font-medium active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span>All</span>
+</button>
+<button class="whitespace-nowrap flex items-center gap-2 bg-neutral-900 border border-white/10 text-stone-300 px-6 py-3 rounded-full font-medium active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+<span>Dining</span>
+</button>
+<button class="whitespace-nowrap flex items-center gap-2 bg-neutral-900 border border-white/10 text-stone-300 px-6 py-3 rounded-full font-medium active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+<span>Open Mic</span>
+</button>
+<button class="whitespace-nowrap flex items-center gap-2 bg-neutral-900 border border-white/10 text-stone-300 px-6 py-3 rounded-full font-medium active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[20px]">movie</span>
+<span>Cinema</span>
+</button>
+<button class="whitespace-nowrap flex items-center gap-2 bg-neutral-900 border border-white/10 text-stone-300 px-6 py-3 rounded-full font-medium active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+<span>Exhibits</span>
+</button>
+</div>
+</section>
+<!-- Timeline: Compact Experience Timeline -->
+<section class="px-6 mb-12">
+<h3 class="text-2xl font-extrabold font-headline mb-6 tracking-tight text-white">Your Weekend</h3>
+<div class="space-y-6">
+<!-- Timeline Row 1 -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container">
+                            24
+                        </div>
+<div class="w-0.5 h-full bg-neutral-800 mt-2"></div>
+</div>
+<div class="flex-1 pb-8">
+<div class="bg-neutral-900 p-5 rounded-lg border-l-4 border-secondary-container border-y border-r border-white/5">
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary-container font-label mb-1 block">Concert</span>
+<h4 class="font-bold text-lg leading-tight mb-1 text-white">Synthetica: Live Modular</h4>
+<p class="text-stone-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span> 19:00 — 22:30
+                            </p>
+</div>
+</div>
+</div>
+<!-- Timeline Row 2 -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-neutral-800 border border-white/10 flex items-center justify-center font-bold text-stone-300">
+                            25
+                        </div>
+<div class="w-0.5 h-full bg-neutral-800 mt-2"></div>
+</div>
+<div class="flex-1 pb-4">
+<div class="bg-neutral-900 p-5 rounded-lg border-l-4 border-white border-y border-r border-white/5">
+<span class="text-[10px] uppercase font-bold tracking-widest text-stone-400 font-label mb-1 block">Dining</span>
+<h4 class="font-bold text-lg leading-tight mb-1 text-white">Noir Supper Club</h4>
+<p class="text-stone-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span> 20:30 — 23:00
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trending Horizontally -->
+<section class="mb-12">
+<div class="px-6 mb-6 flex justify-between items-end">
+<h3 class="text-2xl font-extrabold font-headline tracking-tight text-white">Trending Now</h3>
+<a class="text-sm font-bold text-secondary-container uppercase tracking-widest font-label" href="#">View All</a>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar px-6 gap-6">
+<!-- Trending Card 1 -->
+<div class="min-w-[280px] group">
+<div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden mb-4 bg-neutral-900 border border-white/5">
+<img alt="Obsidian Jazz" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Moody blue lighting in a high-end jazz club" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALFDQrr_SJ61ppmyX1QGK5X_rp_UfVp2kWt4v7juKFGlRw3VAZW9ZPmym190UNlrF48gW6FA-wp0zO2YfZfHOXkg7DRwSO-8JAZeCLUk2V_TyscR4dWs8DCH3iKykk-toUrqgEOYp4UgyWlb9n4dkNJRQu0LbmuHA8o12QfuegpmGbRGp64uphzyJFODOE1tTschV9cYiV8wdP2E7uwwv6nr5sl8yTLlqpggmYaZy1Aoz_yy4chRgGHDA0LZb4TVCMHWPu_GHHIPo"/>
+<div class="absolute top-4 right-4">
+<span class="bg-white text-black px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight">
+                                Filling Fast
+                            </span>
+</div>
+</div>
+<h4 class="font-bold text-xl font-headline tracking-tight mb-1 text-white">Obsidian Jazz Lounge</h4>
+<p class="text-stone-400 text-sm font-medium mb-1">Soho, London</p>
+<p class="text-stone-500 text-xs">Dec 01 • Available</p>
+</div>
+<!-- Trending Card 2 -->
+<div class="min-w-[280px] group">
+<div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden mb-4 bg-neutral-900 border border-white/5">
+<img alt="Synthetica" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Digital art projection on a large gallery wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3v0cImDRI3aIX1FNA_mf2HR56zmCMi-Gl6yAinC1iRqcwBxZhiTOIWPCeDmfpD7-JYoo9qZP2gXTj5Vi8Jm2bEvafiXP9IboRc5DMYXSbpNj_ZPNrvq-vEkneJEr72oH-FC9bsjn7W4jxQQSnFqUx1rRSxj82KQp_h_22RYlMfbT-0IZOHh5yIb4NmGOEI1ZY8gdce8ipYOFS30WCR3bcg13cILZ1i_q88a_VmNZr23iSEkCA7puGq8Xn4MO1XjWFSqmmj8qqfqY"/>
+<div class="absolute top-4 right-4">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight">
+                                New Release
+                            </span>
+</div>
+</div>
+<h4 class="font-bold text-xl font-headline tracking-tight mb-1 text-white">Synthetica Visuals</h4>
+<p class="text-stone-400 text-sm font-medium mb-1">The Vinyl Factory</p>
+<p class="text-stone-500 text-xs">Nov 28 • Available</p>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="px-6 pb-12 pt-8 border-t border-neutral-800">
+<h1 class="text-2xl font-extrabold tracking-tighter text-white font-headline mb-4">Assemble</h1>
+<div class="grid grid-cols-2 gap-8 mb-8">
+<div class="flex flex-col gap-2">
+<a class="text-sm font-medium text-stone-400 hover:text-white" href="#">About Curations</a>
+<a class="text-sm font-medium text-stone-400 hover:text-white" href="#">Member Benefits</a>
+<a class="text-sm font-medium text-stone-400 hover:text-white" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-2">
+<a class="text-sm font-medium text-stone-400 hover:text-white" href="#">Terms</a>
+<a class="text-sm font-medium text-stone-400 hover:text-white" href="#">Privacy Policy</a>
+<a class="text-sm font-medium text-stone-400 hover:text-white" href="#">Contact</a>
+</div>
+</div>
+<p class="text-xs text-stone-500 font-medium tracking-wide">© 2024 ASSEMBLE. ALL RIGHTS RESERVED.</p>
+</footer>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-8 pb-8 pt-4 bg-stone-950/90 backdrop-blur-2xl z-50 rounded-t-[3rem] border-t border-white/5 shadow-[0_-8px_32px_rgba(0,0,0,0.4)]">
+<!-- Explore (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full w-12 h-12 active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+</a>
+<!-- Events -->
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-secondary-container transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-wide uppercase mt-1">Events</span>
+</a>
+<!-- Tasks -->
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-secondary-container transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-wide uppercase mt-1">Tasks</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-secondary-container transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="person">person</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

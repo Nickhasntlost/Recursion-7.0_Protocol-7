@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Assemble Admin Command Center</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#464747",
+              "on-primary-fixed": "#1c1b1b",
+              "tertiary-container": "#1b1c1c",
+              "secondary-container": "#E2F16D",
+              "background": "#0c0a09", // stone-950
+              "tertiary": "#000000",
+              "on-error-container": "#ffdad6",
+              "surface-container-high": "#1c1917", // stone-900ish
+              "on-primary-container": "#1c1b1b",
+              "on-background": "#f5f5f4", // stone-100
+              "error": "#ffb4ab",
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#f1f1f1",
+              "on-primary": "#000000",
+              "error-container": "#93000a",
+              "surface-container-highest": "#292524",
+              "tertiary-fixed-dim": "#c7c6c6",
+              "surface-container": "#1c1917", // stone-900
+              "on-secondary-container": "#1a1d00",
+              "surface": "#0c0a09",
+              "on-tertiary-container": "#848484",
+              "surface-container-low": "#171717",
+              "on-error": "#690005",
+              "surface-container-lowest": "#0c0a09",
+              "primary-fixed": "#e5e2e1",
+              "tertiary-fixed": "#e3e2e2",
+              "on-secondary-fixed": "#1a1d00",
+              "primary-container": "#E2F16D",
+              "on-surface": "#f5f5f4",
+              "on-surface-variant": "#a8a29e", // stone-400
+              "surface-dim": "#1c1917",
+              "primary-fixed-dim": "#c8c6c5",
+              "on-secondary": "#000000",
+              "surface-variant": "#444748",
+              "outline-variant": "#444748",
+              "on-secondary-fixed-variant": "#444b00",
+              "inverse-on-surface": "#1a1c1c",
+              "surface-bright": "#292524",
+              "on-tertiary-fixed": "#1b1c1c",
+              "secondary-fixed": "#E2F16D",
+              "on-primary-fixed-variant": "#474646",
+              "surface-tint": "#E2F16D",
+              "secondary-fixed-dim": "#c3ce5a",
+              "inverse-primary": "#000000",
+              "outline": "#78716c",
+              "primary": "#E2F16D",
+              "secondary": "#E2F16D"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a09;
+            color: #f5f5f4;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-secondary-container/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-stone-800 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile photo avatar thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT89ZsPVe9V8-SOHAMqMdx5Jhmja98pj9o-H4RIRONK8gqUoZqidXHDv-r1rG0AH3HkBXsbEL-7swZ91Ne7G8q5c3rDdjBb_LXVmMeDGhbwkmns3ZGtsngLm0QzaeXZm58S-as7GnMiWR3dz891JCl_o55V8TEyon4evOeKpQrTAmtm9LzsS9mBowMpAfjy0ZqfC2l-I-ezNuGxoLZ420nxoRmcNyuP1bb8kTWsV7yAItGrdRpG2dMcemWdONLR33ZhKNuIwqTktM"/>
+</div>
+<h1 class="text-xl font-extrabold tracking-tighter text-white font-['Plus_Jakarta_Sans']">Assemble</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-stone-400 hover:text-white transition-colors p-2 bg-stone-900 rounded-full">
+            search
+        </button>
+<button class="material-symbols-outlined text-white hover:opacity-80 transition-opacity p-2 relative">
+            notifications
+            <span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border-2 border-stone-950"></span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto space-y-8">
+<!-- Header Section -->
+<section class="space-y-1">
+<p class="text-sm font-medium uppercase tracking-[0.2em] text-secondary">Control Center</p>
+<h2 class="text-4xl font-extrabold tracking-tight text-white">Admin Dashboard</h2>
+</section>
+<!-- Stats Grid (2x2) -->
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-stone-900 p-6 rounded-lg shadow-sm flex flex-col justify-between h-40 group hover:bg-secondary transition-all duration-300">
+<span class="material-symbols-outlined text-secondary text-3xl group-hover:text-black transition-colors">event_available</span>
+<div>
+<p class="text-3xl font-bold text-white group-hover:text-black">24</p>
+<p class="text-xs font-medium uppercase tracking-wider text-stone-400 group-hover:text-black/70">Active Events</p>
+</div>
+</div>
+<div class="bg-stone-900 p-6 rounded-lg shadow-sm flex flex-col justify-between h-40 group hover:bg-secondary transition-all duration-300">
+<span class="material-symbols-outlined text-secondary text-3xl group-hover:text-black transition-colors">groups</span>
+<div>
+<p class="text-3xl font-bold text-white group-hover:text-black">142</p>
+<p class="text-xs font-medium uppercase tracking-wider text-stone-400 group-hover:text-black/70">Volunteers</p>
+</div>
+</div>
+<div class="bg-stone-900 p-6 rounded-lg shadow-sm flex flex-col justify-between h-40 group hover:bg-secondary transition-all duration-300">
+<span class="material-symbols-outlined text-secondary text-3xl group-hover:text-black transition-colors">pending_actions</span>
+<div>
+<p class="text-3xl font-bold text-white group-hover:text-black">08</p>
+<p class="text-xs font-medium uppercase tracking-wider text-stone-400 group-hover:text-black/70">Pending Tasks</p>
+</div>
+</div>
+<div class="bg-stone-900 p-6 rounded-lg shadow-sm flex flex-col justify-between h-40 group hover:bg-secondary transition-all duration-300">
+<span class="material-symbols-outlined text-secondary text-3xl group-hover:text-black transition-colors">confirmation_number</span>
+<div>
+<p class="text-3xl font-bold text-white group-hover:text-black">3.2k</p>
+<p class="text-xs font-medium uppercase tracking-wider text-stone-400 group-hover:text-black/70">Live Tickets</p>
+</div>
+</div>
+</section>
+<!-- Layout Split: Chart & Feed -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Ticket Sales Line Chart (Visual Representation) -->
+<div class="lg:col-span-2 bg-stone-900 rounded-xl p-8 space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="text-xl font-bold text-white">Attendee Entry</h3>
+<p class="text-sm text-stone-400">Live flow tracking across all gates</p>
+</div>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 text-xs font-bold px-3 py-1 bg-secondary text-black rounded-full">LIVE</span>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-1 relative overflow-hidden group">
+<!-- Simplified Visual Line Chart using CSS height/skew or simple bars for representation -->
+<div class="w-full h-full absolute flex items-end gap-1 px-2">
+<div class="flex-1 bg-white/10 h-[20%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[35%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[25%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[70%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[85%] rounded-t-sm"></div>
+<div class="flex-1 bg-secondary h-[95%] rounded-t-sm shadow-[0_0_20px_rgba(226,241,109,0.3)]"></div>
+<div class="flex-1 bg-white/10 h-[65%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[30%] rounded-t-sm"></div>
+<div class="flex-1 bg-white/10 h-[55%] rounded-t-sm"></div>
+</div>
+<!-- Axis labels -->
+<div class="absolute bottom-0 w-full flex justify-between text-[10px] uppercase tracking-tighter text-stone-500 pt-2 border-t border-stone-800">
+<span>08:00 AM</span>
+<span>12:00 PM</span>
+<span>04:00 PM</span>
+<span>08:00 PM</span>
+</div>
+</div>
+</div>
+<!-- Live Feed -->
+<div class="bg-stone-900 rounded-xl p-6 flex flex-col h-[400px]">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-bold flex items-center gap-2 uppercase text-xs tracking-widest text-white">
+<span class="w-2 h-2 bg-error rounded-full animate-pulse"></span>
+                    Live Feed
+                </h3>
+<button class="text-xs font-bold underline text-stone-400">Clear</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-4 hide-scrollbar">
+<!-- Feed Item -->
+<div class="flex gap-4 p-3 bg-stone-800 rounded-lg">
+<span class="material-symbols-outlined text-secondary">person_check</span>
+<div>
+<p class="text-sm font-bold text-white">Volunteer Checked In</p>
+<p class="text-xs text-stone-400">Sarah Miller @ Main Gate</p>
+<p class="text-[10px] text-stone-500 mt-1">2 mins ago</p>
+</div>
+</div>
+<!-- Feed Item Urgent -->
+<div class="flex gap-4 p-3 bg-red-950/30 rounded-lg border border-red-500/20">
+<span class="material-symbols-outlined text-red-400">warning</span>
+<div>
+<p class="text-sm font-bold text-red-200">Urgent Support at Gate B</p>
+<p class="text-xs text-red-300/80">Scanner malfunction reported</p>
+<p class="text-[10px] text-red-400/60 mt-1">5 mins ago</p>
+</div>
+</div>
+<!-- Feed Item -->
+<div class="flex gap-4 p-3 bg-stone-800 rounded-lg">
+<span class="material-symbols-outlined text-secondary">schedule</span>
+<div>
+<p class="text-sm font-bold text-white">Event Start - 5 mins</p>
+<p class="text-xs text-stone-400">Keynote: Future of Design</p>
+<p class="text-[10px] text-stone-500 mt-1">8 mins ago</p>
+</div>
+</div>
+<div class="flex gap-4 p-3 bg-stone-800 rounded-lg">
+<span class="material-symbols-outlined text-secondary">confirmation_number</span>
+<div>
+<p class="text-sm font-bold text-white">Sold Out</p>
+<p class="text-xs text-stone-400">VIP passes for Day 2</p>
+<p class="text-[10px] text-stone-500 mt-1">12 mins ago</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Task List -->
+<section class="space-y-6">
+<div class="flex justify-between items-center">
+<h3 class="text-2xl font-extrabold tracking-tight text-white">Assigned Tasks</h3>
+<button class="text-sm font-bold text-secondary flex items-center gap-1">
+                Manage All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="bg-stone-900 rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-stone-800 text-[10px] uppercase tracking-widest text-stone-500">
+<th class="px-8 py-4 font-bold">Task Detail</th>
+<th class="px-8 py-4 font-bold">Assigned To</th>
+<th class="px-8 py-4 font-bold text-center">Live Status</th>
+<th class="px-8 py-4 font-bold text-right">Time Remaining</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-stone-800/50">
+<tr class="hover:bg-stone-800 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-sm">desk</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Check-in Desk A</p>
+<p class="text-xs text-stone-400">Terminal 2 Lobby</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Volunteer avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB32ergO3QUsUlEGJKR8K7ChbE03t3Df_uPhQpvVMTx4j3SLqJHIQ7Gd7UpV3amRjph_0pdlPwjB0--g8w6XuanF9YBoYYgRd488alhrhh6Y7eFyl-rtiSphXau4T6-HXo76P33DALrTHQJK7ZMCa4M35hsmqVewEi6ODYv9lZb6RyU9Z3qSHAa5tEz_mI7SOw_OPy8bszZtH-bNu1t5zInPNMFTtGG6OnyZ5zPgYQ61Tw4XaPnMBqmMGpvI7EXDU8PrRGz2JcesaE"/>
+<span class="text-sm text-stone-200">Elena Rodriguez</span>
+</div>
+</td>
+<td class="px-8 py-6 text-center">
+<span class="inline-block px-3 py-1 bg-stone-800 rounded-full text-[10px] font-bold text-stone-400">IN PROGRESS</span>
+</td>
+<td class="px-8 py-6 text-right">
+<p class="text-sm font-mono font-bold text-secondary">00:42:15</p>
+</td>
+</tr>
+<tr class="hover:bg-stone-800 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-sm">layers</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Stage Setup</p>
+<p class="text-xs text-stone-400">Main Ballroom</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Volunteer avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWO_r6j9zO_r08ahApF5p6ZHmJWl6t7Rncon4kwTfcxAMh42E2U4a98oAwFXBkFF3FTdPnEpKfSx6gaJssqymT7bfh8lgKSujqATQaNgKoJWgpRVbVMGXgppL0kQU1hOboyfqA0dcTMDppLZv7bJd8evlQ2gTo6d5v8S2wwRK-YNrshKDt0zMuK7sW4cYVu9dlHsEVOH12SHyJsRCe6WG_bHc-OaznjABH4Ve23fZ1iDdGUsbpf6kIp2aKV1HrIOgOmA3ne3rJS3g"/>
+<span class="text-sm text-stone-200">Marcus Chen</span>
+</div>
+</td>
+<td class="px-8 py-6 text-center">
+<span class="inline-block px-3 py-1 bg-secondary rounded-full text-[10px] font-bold text-black">COMPLETED</span>
+</td>
+<td class="px-8 py-6 text-right">
+<p class="text-sm font-mono font-bold text-stone-500">--:--:--</p>
+</td>
+</tr>
+<tr class="hover:bg-stone-800 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-sm">restaurant</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Catering Logistics</p>
+<p class="text-xs text-stone-400">Staff Lounge</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Volunteer avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDee1I_6doE4mj4mUzRoEYrRkAozZEX8A9vJkhqmu0D8jKCpvZL4p8Mu6mvAyHzsfuPlWo2Q0DndEhMTHdUGEABIatfCSEucJryshZ-6zLGj_dvd9y0-eWo_WNNX63HBCOzZwqitt5UJqNf4of3qChM7hWFMH5SiinXimwPrA1QSaggUu7Fpk2Se-76KJupI7Wnd-Yz2UwlZhY0ABcbHzpZ2FKda_8oS7qDAmXDPkX1QH2ANRV_VYYo_Qr9UA9QuyRvPSDczolzPDk"/>
+<span class="text-sm text-stone-200">Liam O'Connor</span>
+</div>
+</td>
+<td class="px-8 py-6 text-center">
+<span class="inline-block px-3 py-1 bg-stone-800 rounded-full text-[10px] font-bold text-stone-400">IN PROGRESS</span>
+</td>
+<td class="px-8 py-6 text-right">
+<p class="text-sm font-mono font-bold text-secondary">01:12:08</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-8 pb-8 pt-4 bg-stone-950/90 backdrop-blur-2xl z-50 rounded-t-[3rem] shadow-[0_-8px_32px_rgba(0,0,0,0.5)]">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary text-black rounded-full w-12 h-12 scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="hidden">Explore</span>
+</a>
+<!-- Events -->
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-wide uppercase mt-1">Events</span>
+</a>
+<!-- Tasks -->
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-wide uppercase mt-1">Tasks</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] text-[10px] font-medium tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
