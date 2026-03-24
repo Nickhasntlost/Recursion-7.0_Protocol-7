@@ -13,9 +13,13 @@ from app.api.v1.tasks import router as tasks_router
 from app.api.v1.chat import router as chat_router
 from app.api.v1.ai_assistant import router as ai_assistant_router
 from app.api.v1.payments import router as payments_router
+<<<<<<< Updated upstream
 from app.api.v1.bookings import router as bookings_router
 from app.api.v1.seats import router as seats_router
 from app.api.v1.automation import router as automation_router
+=======
+from app.api.v1.live_feed import router as live_feed_router
+>>>>>>> Stashed changes
 
 
 @asynccontextmanager
@@ -115,9 +119,13 @@ app.include_router(tasks_router, prefix="/api/v1")
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(ai_assistant_router, prefix="/api/v1")
 app.include_router(payments_router, prefix="/api/v1")
+<<<<<<< Updated upstream
 app.include_router(bookings_router, prefix="/api/v1")
 app.include_router(seats_router, prefix="/api/v1")
 app.include_router(automation_router, prefix="/api/v1")
+=======
+app.include_router(live_feed_router, prefix="/api/v1")
+>>>>>>> Stashed changes
 
 
 if __name__ == "__main__":
