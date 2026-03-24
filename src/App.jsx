@@ -26,6 +26,8 @@ import EditEvent from './pages/dashboard/EditEvent'
 import StatsEvent from './pages/dashboard/StatsEvent'
 import LiveFeed from './pages/dashboard/LiveFeed'
 import Analytics from './pages/dashboard/Analytics'
+import Attendees from './pages/dashboard/Attendees'
+import Marketing from './pages/dashboard/Marketing'
 import AutomationPage from './pages/dashboard/AutomationPage'
 import VolunteersManagement from './pages/dashboard/VolunteersManagement'
 
@@ -107,10 +109,10 @@ function App() {
               <Route path="events/:eventId/live-feed" element={<LiveFeed />} />
               <Route path="automation" element={<AutomationPage />} />
               <Route path="analytics" element={<Analytics />} />
-              <Route path="attendees" element={<Analytics />} />
+              <Route path="attendees" element={<Attendees />} />
               <Route path="volunteers" element={<VolunteersManagement />} />
               <Route path="bookings" element={<Analytics />} />
-              <Route path="marketing" element={<Analytics />} />
+              <Route path="marketing" element={<Marketing />} />
               <Route path="settings" element={<Analytics />} />
             </Route>
           </Routes>

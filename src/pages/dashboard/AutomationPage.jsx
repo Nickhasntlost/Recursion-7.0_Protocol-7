@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
+import api from '../../services/api'
+import { aiAssistantService } from '../../services/aiAssistant'
 
 const nodeTemplates = [
   { id: 'mail', label: 'Email', icon: 'mail', color: 'bg-secondary-container', textColor: 'text-[#1A1D00]' },
@@ -14,6 +16,13 @@ const nodeTemplates = [
   { id: 'notifications', label: 'Slack', icon: 'notifications', color: 'bg-cyan-600', textColor: 'text-white' },
 ]
 
+const DEFAULT_TELEGRAM_CHAT_ID = '8775934169'
+const DEFAULT_TELEGRAM_BOT_TOKEN = String(import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '').trim()
+const DEFAULT_TEST_EMAIL = 'dongardivedeepak17@gmail.com'
+const GOOGLE_API_KEY = String(import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyDbT8BlGEVVLT7f3L8-CiQ3cTkWxqqRJsw').trim()
+const GOOGLE_CLIENT_ID = String(import.meta.env.VITE_GOOGLE_CLIENT_ID || '1026870439773-nq24b4laar8jgopeibhctptff7gf4ni3.apps.googleusercontent.com').trim()
+const GMAIL_SEND_SCOPE = 'https://www.googleapis.com/auth/gmail.send'
+
 export default function AutomationPage() {
   const canvasRef = useRef(null)
   const [nodes, setNodes] = useState([])
@@ -24,18 +33,46 @@ export default function AutomationPage() {
   const [zoom, setZoom] = useState(100)
   const [expandedSidebar, setExpandedSidebar] = useState(false)
   const [showDeployModal, setShowDeployModal] = useState(false)
-  const [telegramBotToken, setTelegramBotToken] = useState(() => localStorage.getItem('utsova-telegram-token') || '')
-  const [telegramChatId, setTelegramChatId] = useState(() => localStorage.getItem('utsova-telegram-chat-id') || '')
+  const [deployMode, setDeployMode] = useState('telegram')
+  const [telegramBotToken, setTelegramBotToken] = useState(() => {
+    return localStorage.getItem('utsova-telegram-token') || DEFAULT_TELEGRAM_BOT_TOKEN
+  })
+  const [telegramChatId, setTelegramChatId] = useState(() => {
+    return localStorage.getItem('utsova-telegram-chat-id') || DEFAULT_TELEGRAM_CHAT_ID
+  })
   const [telegramMessage, setTelegramMessage] = useState('Hello from Utsova automation flow!')
   const [recentChatIds, setRecentChatIds] = useState([])
+  const [emailRecipient, setEmailRecipient] = useState(() => localStorage.getItem('utsova-email-recipient') || DEFAULT_TEST_EMAIL)
+  const [emailPurpose, setEmailPurpose] = useState('')
+  const [emailSubject, setEmailSubject] = useState('')
+  const [emailBody, setEmailBody] = useState('')
+  const [resolvedEmailRecipients, setResolvedEmailRecipients] = useState([])
+  const [isGeneratingEmail, setIsGeneratingEmail] = useState(false)
   const [isFetchingChats, setIsFetchingChats] = useState(false)
   const [isDeploying, setIsDeploying] = useState(false)
   const sidebarHoverRef = useRef(null)
   const hoverTimeoutRef = useRef(null)
 
   const hasTelegramNode = nodes.some((node) => node.type === 'telegram')
+  const hasMailNode = nodes.some((node) => node.type === 'mail')
   const hasLlmNode = nodes.some((node) => node.type === 'auto_awesome')
   const hasTelegramAndLlm = hasTelegramNode && hasLlmNode
+  const hasMailAndLlm = hasMailNode && hasLlmNode
+
+  const hasConnectionBetweenTypes = (firstType, secondType) => {
+    return connections.some((connection) => {
+      const fromNode = nodes.find((node) => node.id === connection.from)
+      const toNode = nodes.find((node) => node.id === connection.to)
+      if (!fromNode || !toNode) return false
+
+      return (
+        (fromNode.type === firstType && toNode.type === secondType) ||
+        (fromNode.type === secondType && toNode.type === firstType)
+      )
+    })
+  }
+
+  const hasMailLlmConnection = hasConnectionBetweenTypes('mail', 'auto_awesome')
 
   const normalizeChatId = (value) => {
     const raw = String(value || '').trim()
@@ -63,6 +100,10 @@ export default function AutomationPage() {
     const text = String(description || '').toLowerCase()
     const label = chatId ? ` for ${chatId}` : ''
 
+    if (text.includes('unauthorized') || text.includes('invalid token') || text.includes('bot token')) {
+      return 'Telegram bot token is invalid or expired. Generate a new token from @BotFather, update it here, and retry.'
+    }
+
     if (text.includes('chat not found')) {
       return `Chat not found${label}. Use a valid numeric chat ID (recommended via Fetch Recent Chats after sending /start to your bot), or for public channels use @channelusername.`
     }
@@ -76,6 +117,29 @@ export default function AutomationPage() {
     }
 
     return description || 'Telegram request failed'
+  }
+
+  const isTelegramUnauthorizedError = (description) => {
+    const text = String(description || '').toLowerCase()
+    return text.includes('unauthorized') || text.includes('invalid token') || text.includes('bot token')
+  }
+
+  const clearStoredTelegramToken = () => {
+    localStorage.removeItem('utsova-telegram-token')
+    setTelegramBotToken(DEFAULT_TELEGRAM_BOT_TOKEN)
+  }
+
+  const ensureTelegramBotAuthorized = async (token) => {
+    const response = await fetch(`https://api.telegram.org/bot${token}/getMe`)
+    const data = await response.json()
+
+    if (!response.ok || !data?.ok) {
+      const description = data?.description || 'Telegram authorization failed'
+      if (isTelegramUnauthorizedError(description)) {
+        clearStoredTelegramToken()
+      }
+      throw new Error(mapTelegramErrorMessage(description))
+    }
   }
 
   const extractChatIdsFromUpdates = (updates) => {
@@ -138,15 +202,291 @@ export default function AutomationPage() {
     }
   }
 
+  const buildFallbackEmailDraft = (purposeText) => {
+    const cleanPurpose = String(purposeText || 'general update').trim()
+    return {
+      subject: `Update regarding ${cleanPurpose}`,
+      body: `Hello,\n\nI hope you are doing well. This is a quick update regarding ${cleanPurpose}.\n\nHere are the key points:\n- Objective: ${cleanPurpose}\n- Next step: Please review and reply with your availability/feedback.\n\nThank you,\nUtsova Automation`,
+    }
+  }
+
+  const pickRandom = (items) => items[Math.floor(Math.random() * items.length)]
+
+  const buildRandomSubject = (purposeText) => {
+    const raw = String(purposeText || '').trim()
+    const fallbackTopic = 'your upcoming event'
+    const stopwords = new Set(['the', 'and', 'with', 'from', 'that', 'this', 'have', 'your', 'about', 'into', 'will'])
+    const tokens = raw
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((word) => word.length > 3 && !stopwords.has(word))
+
+    const topic = tokens.slice(0, 3).join(' ') || raw || fallbackTopic
+    const templates = [
+      `Important update: ${topic}`,
+      `Action required regarding ${topic}`,
+      `Latest announcement for ${topic}`,
+      `Please review: ${topic}`,
+      `New details about ${topic}`,
+    ]
+
+    return pickRandom(templates)
+  }
+
+  const normalizeEmail = (value) => String(value || '').trim().toLowerCase()
+
+  const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(value))
+
+  const extractEmailsFromRecords = (records) => {
+    if (!Array.isArray(records)) return []
+
+    const emails = records
+      .flatMap((entry) => [
+        entry?.email,
+        entry?.user_email,
+        entry?.attendee_email,
+        entry?.contact_email,
+        entry?.user?.email,
+        entry?.attendee?.email,
+        entry?.customer?.email,
+      ])
+      .map(normalizeEmail)
+      .filter((email) => isValidEmail(email))
+
+    return Array.from(new Set(emails))
+  }
+
+  const asArrayFromResponse = (data) => {
+    if (Array.isArray(data)) return data
+    if (Array.isArray(data?.items)) return data.items
+    if (Array.isArray(data?.results)) return data.results
+    if (Array.isArray(data?.data)) return data.data
+    if (Array.isArray(data?.bookings)) return data.bookings
+    if (Array.isArray(data?.attendees)) return data.attendees
+    return []
+  }
+
+  const fetchRegisteredEmails = async () => {
+    const endpoints = [
+      '/bookings',
+      '/bookings/all',
+      '/dashboard/bookings',
+      '/attendees',
+      '/events/bookings',
+    ]
+
+    for (let index = 0; index < endpoints.length; index += 1) {
+      try {
+        const response = await api.get(endpoints[index])
+        const list = asArrayFromResponse(response.data)
+        const emails = extractEmailsFromRecords(list)
+        if (emails.length > 0) {
+          return emails
+        }
+      } catch {
+        // Try next endpoint.
+      }
+    }
+
+    return []
+  }
+
+  const parseAIDraft = (rawText, purposeText) => {
+    const fallback = buildFallbackEmailDraft(purposeText)
+    const text = String(rawText || '').trim()
+    if (!text) return fallback
+
+    const tryParseDraftJson = (source) => {
+      const candidate = String(source || '').trim()
+      if (!candidate) return null
+
+      // Try direct JSON first.
+      try {
+        const parsed = JSON.parse(candidate)
+        if (parsed?.subject && parsed?.body) {
+          return {
+            subject: String(parsed.subject).trim(),
+            body: String(parsed.body).trim(),
+          }
+        }
+      } catch {
+        // Ignore and try extracting object from surrounding text.
+      }
+
+      const firstBrace = candidate.indexOf('{')
+      const lastBrace = candidate.lastIndexOf('}')
+      if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+        return null
+      }
+
+      const objectText = candidate.slice(firstBrace, lastBrace + 1)
+      try {
+        const parsed = JSON.parse(objectText)
+        if (parsed?.subject && parsed?.body) {
+          return {
+            subject: String(parsed.subject).trim(),
+            body: String(parsed.body).trim(),
+          }
+        }
+      } catch {
+        return null
+      }
+
+      return null
+    }
+
+    // Prefer JSON from fenced code block when present.
+    const fencedJson = text.match(/```(?:json)?\s*([\s\S]*?)```/i)?.[1]
+    const parsedFromFence = tryParseDraftJson(fencedJson)
+    if (parsedFromFence) return parsedFromFence
+
+    const parsedFromText = tryParseDraftJson(text)
+    if (parsedFromText) return parsedFromText
+
+    const withoutCodeBlocks = text.replace(/```[\s\S]*?```/g, '').trim()
+    const withoutChecklist = withoutCodeBlocks.split(/\n\s*\*\*Still need:\*\*|\n\s*Still need:/i)[0].trim()
+    const withoutLeadIn = withoutChecklist
+      .replace(/^(?:i['’]?m\s+so\s+sorry[\s\S]*?email:\s*)/i, '')
+      .replace(/^(?:here['’]?s\s+a\s+draft[\s\S]*?email:\s*)/i, '')
+      .trim()
+
+    const subjectMatch = withoutLeadIn.match(/subject\s*[:\-]\s*(.+)/i)
+    const bodyMatch = withoutLeadIn.match(/body\s*[:\-]\s*([\s\S]+)/i)
+    const bodyFromDear = withoutLeadIn.match(/(Dear[\s\S]*)/i)?.[1]?.trim()
+
+    return {
+      subject: subjectMatch?.[1]?.trim() || fallback.subject,
+      body: bodyMatch?.[1]?.trim() || bodyFromDear || withoutLeadIn || fallback.body,
+    }
+  }
+
+  const generateEmailDraft = async (purposeText) => {
+    const prompt = [
+      'Draft a professional email for this purpose:',
+      purposeText,
+      'Return ONLY valid JSON with keys "subject" and "body".',
+      'Do not include markdown, code fences, commentary, checklist, or extra text.',
+      'Keep it concise and actionable.'
+    ].join('\n')
+
+    try {
+      const response = await aiAssistantService.chat(prompt)
+      const aiText = response?.assistant_message || response?.message || response?.reply || ''
+      return parseAIDraft(aiText, purposeText)
+    } catch {
+      return buildFallbackEmailDraft(purposeText)
+    }
+  }
+
+  const sendEmailViaApi = async ({ to, recipients, subject, body, purpose }) => {
+    const recipientList = Array.isArray(recipients) && recipients.length > 0
+      ? recipients.map(normalizeEmail).filter((email) => isValidEmail(email))
+      : [normalizeEmail(to)].filter((email) => isValidEmail(email))
+
+    if (recipientList.length === 0) {
+      throw new Error('No valid recipients available for email broadcast.')
+    }
+
+    if (!GOOGLE_API_KEY || !GOOGLE_CLIENT_ID) {
+      throw new Error('Google email API credentials are missing. Set VITE_GOOGLE_API_KEY and VITE_GOOGLE_CLIENT_ID.')
+    }
+
+    const loadGoogleIdentityScript = async () => {
+      if (window.google?.accounts?.oauth2) return
+
+      await new Promise((resolve, reject) => {
+        const existing = document.getElementById('google-identity-script')
+        if (existing) {
+          existing.addEventListener('load', resolve, { once: true })
+          existing.addEventListener('error', () => reject(new Error('Failed to load Google Identity script')), { once: true })
+          return
+        }
+
+        const script = document.createElement('script')
+        script.id = 'google-identity-script'
+        script.src = 'https://accounts.google.com/gsi/client'
+        script.async = true
+        script.defer = true
+        script.onload = resolve
+        script.onerror = () => reject(new Error('Failed to load Google Identity script'))
+        document.head.appendChild(script)
+      })
+    }
+
+    const requestAccessToken = async () => {
+      await loadGoogleIdentityScript()
+
+      return new Promise((resolve, reject) => {
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: GMAIL_SEND_SCOPE,
+          callback: (response) => {
+            if (response?.error || !response?.access_token) {
+              reject(new Error(response?.error_description || response?.error || 'Google OAuth failed'))
+              return
+            }
+            resolve(response.access_token)
+          },
+        })
+
+        tokenClient.requestAccessToken({ prompt: '' })
+      })
+    }
+
+    const encodeBase64Url = (value) => {
+      return btoa(unescape(encodeURIComponent(value))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+    }
+
+    const buildRawEmail = (recipient) => {
+      return [
+        `To: ${recipient}`,
+        `Subject: ${subject}`,
+        'Content-Type: text/plain; charset="UTF-8"',
+        '',
+        body,
+        '',
+        `Purpose: ${purpose}`,
+      ].join('\r\n')
+    }
+
+    const accessToken = await requestAccessToken()
+
+    for (let index = 0; index < recipientList.length; index += 1) {
+      const recipient = recipientList[index]
+      const raw = encodeBase64Url(buildRawEmail(recipient))
+
+      const response = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/send?key=${GOOGLE_API_KEY}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ raw }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        const message = data?.error?.message || 'Unknown Gmail API error'
+        throw new Error(`Gmail API request failed (${response.status}): ${message}`)
+      }
+    }
+
+    return { sent: recipientList.length }
+  }
+
   const fetchRecentTelegramChats = async () => {
-    if (!telegramBotToken.trim()) {
+    const token = telegramBotToken.trim()
+
+    if (!token) {
       toast.error('Enter Telegram bot token first.')
       return
     }
 
     setIsFetchingChats(true)
     try {
-      const ids = await fetchDiscoveredChatIds(telegramBotToken.trim())
+      await ensureTelegramBotAuthorized(token)
+      const ids = await fetchDiscoveredChatIds(token)
 
       setRecentChatIds(ids)
       if (ids.length > 0) {
@@ -156,6 +496,9 @@ export default function AutomationPage() {
         toast.info('No chats found yet. Send a message to your bot first, then retry.')
       }
     } catch (error) {
+      if (isTelegramUnauthorizedError(error?.message)) {
+        clearStoredTelegramToken()
+      }
       toast.error(mapTelegramErrorMessage(error?.message || 'Failed to fetch recent chats'))
     } finally {
       setIsFetchingChats(false)
@@ -173,11 +516,7 @@ export default function AutomationPage() {
       return
     }
 
-    const chatIds = parseChatIds(telegramChatId)
-    if (chatIds.length === 0) {
-      toast.error('Enter at least one Telegram chat ID.')
-      return
-    }
+    const chatIds = Array.from(new Set([DEFAULT_TELEGRAM_CHAT_ID, ...parseChatIds(telegramChatId)]))
 
     if (!telegramMessage.trim()) {
       toast.error('Enter a message to send.')
@@ -188,6 +527,8 @@ export default function AutomationPage() {
     try {
       const token = telegramBotToken.trim()
       const message = telegramMessage.trim()
+
+      await ensureTelegramBotAuthorized(token)
 
       localStorage.setItem('utsova-telegram-token', token)
       localStorage.setItem('utsova-telegram-chat-id', telegramChatId.trim())
@@ -248,10 +589,115 @@ export default function AutomationPage() {
         setShowDeployModal(false)
       }
     } catch (error) {
+      if (isTelegramUnauthorizedError(error?.message)) {
+        clearStoredTelegramToken()
+      }
       toast.error(mapTelegramErrorMessage(error?.message || 'Failed to send Telegram message'))
     } finally {
       setIsDeploying(false)
     }
+  }
+
+  const handleGenerateEmailDraft = async () => {
+    if (!emailPurpose.trim()) {
+      toast.error('Enter the purpose of the email first.')
+      return
+    }
+
+    setIsGeneratingEmail(true)
+    try {
+      const draft = await generateEmailDraft(emailPurpose.trim())
+      setEmailSubject(draft.subject)
+      setEmailBody(draft.body)
+      toast.success('Email draft generated.')
+    } catch {
+      toast.error('Unable to generate email draft right now.')
+    } finally {
+      setIsGeneratingEmail(false)
+    }
+  }
+
+  const handleDeployEmailFlow = async () => {
+    if (!hasMailAndLlm) {
+      toast.error('Add both Email and LLM nodes before deploying.')
+      return
+    }
+
+    if (!hasMailLlmConnection) {
+      toast.error('Connect Email node with LLM node before deploying.')
+      return
+    }
+
+    if (!emailRecipient.trim()) {
+      toast.error('Enter recipient email.')
+      return
+    }
+
+    if (!emailPurpose.trim()) {
+      toast.error('Enter the purpose of the email.')
+      return
+    }
+
+    setIsDeploying(true)
+    try {
+      localStorage.setItem('utsova-email-recipient', emailRecipient.trim())
+
+      let subject = emailSubject.trim()
+      let body = emailBody.trim()
+      let recipients = []
+
+      const fetchedRegistrantEmails = await fetchRegisteredEmails()
+      if (fetchedRegistrantEmails.length > 0) {
+        recipients = fetchedRegistrantEmails
+      }
+
+      if (isValidEmail(emailRecipient.trim())) {
+        recipients = Array.from(new Set([normalizeEmail(emailRecipient.trim()), ...recipients]))
+      }
+
+      if (recipients.length === 0) {
+        throw new Error('No registered user emails found. Please connect bookings/attendees email API and retry.')
+      }
+
+      setResolvedEmailRecipients(recipients)
+
+      if (!subject || !body) {
+        const draft = await generateEmailDraft(emailPurpose.trim())
+        subject = draft.subject || ''
+        body = draft.body
+        setEmailSubject(subject)
+        setEmailBody(body)
+      }
+
+      subject = buildRandomSubject(`${emailPurpose.trim()} ${subject}`)
+      setEmailSubject(subject)
+
+      await sendEmailViaApi({
+        to: emailRecipient.trim(),
+        recipients,
+        subject,
+        body,
+        purpose: emailPurpose.trim(),
+      })
+      toast.success(`Email broadcast sent to ${recipients.length} recipient(s).`)
+
+      setShowDeployModal(false)
+    } catch (error) {
+      toast.error(error?.message || 'Failed to deploy email automation')
+    } finally {
+      setIsDeploying(false)
+    }
+  }
+
+  const handleOpenDeployModal = () => {
+    if (hasMailAndLlm) {
+      setDeployMode('email')
+      setShowDeployModal(true)
+      return
+    }
+
+    setDeployMode('telegram')
+    setShowDeployModal(true)
   }
 
   // Handle drag start from sidebar
@@ -763,7 +1209,7 @@ export default function AutomationPage() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => setShowDeployModal(true)}
+          onClick={handleOpenDeployModal}
           className="px-6 py-3 bg-secondary-container text-on-secondary-fixed rounded-full font-bold text-sm hover:opacity-90 transition-all"
         >
           Deploy
@@ -787,68 +1233,147 @@ export default function AutomationPage() {
               exit={{ opacity: 0, y: 30, scale: 0.96 }}
               className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-xl rounded-2xl border border-zinc-700 bg-zinc-950 p-6 text-on-surface"
             >
-              <h3 className="text-lg font-black mb-2">Deploy Telegram Automation</h3>
+              <h3 className="text-lg font-black mb-2">{deployMode === 'email' ? 'Deploy Email Automation' : 'Deploy Telegram Automation'}</h3>
               <p className="text-sm text-zinc-400 mb-6">
-                Add Telegram and LLM nodes, then send a test message directly to Telegram.
+                {deployMode === 'email'
+                  ? 'Add Email and LLM nodes, define purpose, generate draft, and send to recipient.'
+                  : 'Add Telegram and LLM nodes, then send a test message directly to Telegram.'}
               </p>
 
               <div className="grid grid-cols-1 gap-4 mb-5">
-                <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
-                  <span>Telegram node</span>
-                  <span className={hasTelegramNode ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasTelegramNode ? 'Ready' : 'Missing'}</span>
-                </div>
+                {deployMode === 'email' ? (
+                  <>
+                    <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
+                      <span>Email node</span>
+                      <span className={hasMailNode ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasMailNode ? 'Ready' : 'Missing'}</span>
+                    </div>
+                    <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
+                      <span>Email ↔ LLM connection</span>
+                      <span className={hasMailLlmConnection ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasMailLlmConnection ? 'Ready' : 'Missing'}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
+                    <span>Telegram node</span>
+                    <span className={hasTelegramNode ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasTelegramNode ? 'Ready' : 'Missing'}</span>
+                  </div>
+                )}
                 <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
                   <span>LLM node</span>
                   <span className={hasLlmNode ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasLlmNode ? 'Ready' : 'Missing'}</span>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Telegram Bot Token</label>
-                  <input
-                    value={telegramBotToken}
-                    onChange={(event) => setTelegramBotToken(event.target.value)}
-                    placeholder="123456789:ABC..."
-                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
-                    disabled={isDeploying}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Telegram Chat ID</label>
-                  <input
-                    value={telegramChatId}
-                    onChange={(event) => setTelegramChatId(event.target.value)}
-                    placeholder="e.g. 123456789, -100987654321 or one per line"
-                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
-                    disabled={isDeploying}
-                  />
-                  <div className="mt-2 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={fetchRecentTelegramChats}
-                      className="px-3 py-1.5 rounded-full text-xs font-bold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-50"
-                      disabled={isDeploying || isFetchingChats}
-                    >
-                      {isFetchingChats ? 'Fetching...' : 'Fetch Recent Chats'}
-                    </button>
-                    {recentChatIds.length > 0 && (
-                      <span className="text-[11px] text-zinc-400">Found: {recentChatIds.length}</span>
+              {deployMode === 'email' ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Recipient Email</label>
+                    <input
+                      value={emailRecipient}
+                      onChange={(event) => setEmailRecipient(event.target.value)}
+                      placeholder="user@example.com"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
+                      disabled={isDeploying}
+                    />
+                    <p className="mt-2 text-[11px] text-zinc-500">Broadcast targets registered users from API. Gmail OAuth popup will request send permission.</p>
+                    {resolvedEmailRecipients.length > 0 && (
+                      <p className="mt-1 text-[11px] text-zinc-400">Last recipient set size: {resolvedEmailRecipients.length}</p>
                     )}
                   </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Purpose Of Email</label>
+                    <textarea
+                      value={emailPurpose}
+                      onChange={(event) => setEmailPurpose(event.target.value)}
+                      rows={3}
+                      placeholder="Example: Invite attendees for the Summer Gala with CTA to confirm by Friday"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container resize-none"
+                      disabled={isDeploying}
+                    />
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleGenerateEmailDraft}
+                        className="px-3 py-1.5 rounded-full text-xs font-bold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-50"
+                        disabled={isDeploying || isGeneratingEmail}
+                      >
+                        {isGeneratingEmail ? 'Drafting...' : 'Generate Draft'}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Subject</label>
+                    <input
+                      value={emailSubject}
+                      onChange={(event) => setEmailSubject(event.target.value)}
+                      placeholder="Email subject"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
+                      disabled={isDeploying}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Drafted Email Body</label>
+                    <textarea
+                      value={emailBody}
+                      onChange={(event) => setEmailBody(event.target.value)}
+                      rows={6}
+                      placeholder="Generated email content will appear here"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container resize-none"
+                      disabled={isDeploying}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Text Message</label>
-                  <textarea
-                    value={telegramMessage}
-                    onChange={(event) => setTelegramMessage(event.target.value)}
-                    rows={4}
-                    placeholder="Type the test message"
-                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container resize-none"
-                    disabled={isDeploying}
-                  />
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Telegram Bot Token</label>
+                    <input
+                      value={telegramBotToken}
+                      onChange={(event) => setTelegramBotToken(event.target.value)}
+                      placeholder="123456789:ABC..."
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
+                      disabled={isDeploying}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Telegram Chat ID</label>
+                    <input
+                      value={telegramChatId}
+                      onChange={(event) => setTelegramChatId(event.target.value)}
+                      placeholder="e.g. 123456789, -100987654321 or one per line"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
+                      disabled={isDeploying}
+                    />
+                    <p className="mt-2 text-[11px] text-zinc-500">
+                      Default user ID {DEFAULT_TELEGRAM_CHAT_ID} is always included during send.
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={fetchRecentTelegramChats}
+                        className="px-3 py-1.5 rounded-full text-xs font-bold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-50"
+                        disabled={isDeploying || isFetchingChats}
+                      >
+                        {isFetchingChats ? 'Fetching...' : 'Fetch Recent Chats'}
+                      </button>
+                      {recentChatIds.length > 0 && (
+                        <span className="text-[11px] text-zinc-400">Found: {recentChatIds.length}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Text Message</label>
+                    <textarea
+                      value={telegramMessage}
+                      onChange={(event) => setTelegramMessage(event.target.value)}
+                      rows={4}
+                      placeholder="Type the test message"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container resize-none"
+                      disabled={isDeploying}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="mt-6 flex justify-end gap-3">
                 <button
@@ -859,11 +1384,11 @@ export default function AutomationPage() {
                   Cancel
                 </button>
                 <button
-                  onClick={handleDeployTelegramFlow}
+                  onClick={deployMode === 'email' ? handleDeployEmailFlow : handleDeployTelegramFlow}
                   className="px-5 py-2 rounded-full text-sm font-bold bg-secondary-container text-on-secondary-fixed disabled:opacity-50"
-                  disabled={isDeploying || !hasTelegramAndLlm}
+                  disabled={isDeploying || (deployMode === 'email' ? !hasMailAndLlm : !hasTelegramAndLlm)}
                 >
-                  {isDeploying ? 'Sending...' : 'Deploy & Send'}
+                  {isDeploying ? (deployMode === 'email' ? 'Sending Email...' : 'Sending...') : 'Deploy & Send'}
                 </button>
               </div>
             </motion.div>
