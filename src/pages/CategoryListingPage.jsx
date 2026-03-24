@@ -175,7 +175,25 @@ const categoryConfigs = {
     label: 'Live Updates',
     theme: 'light',
     layout: 'sports-featured',
-    cards: []
+    cards: [
+      {
+        id: 1,
+        title: 'Aquatic Velocity Open',
+        sport: 'Precision Water',
+        time: '47.2s',
+        bpm: '172',
+        rank: '#1',
+        image: 'https://images.pexels.com/photos/9153468/pexels-photo-9153468.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&dpr=2'
+      },
+      {
+        id: 2,
+        title: 'Grand Track Masters',
+        sport: 'Kinetic Force',
+        athlete: 'K. Thompson',
+        time: '9.82s',
+        image: 'https://images.pexels.com/photos/3361471/pexels-photo-3361471.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&dpr=2'
+      },
+    ]
   }
 }
 
@@ -553,6 +571,13 @@ export default function CategoryListingPage() {
     // Reset to base config when slug changes
     setConfig(categoryConfigs[activeSlug] || categoryConfigs.dining)
     setIsLoading(true)
+
+    // Keep sports fully static from frontend mock data.
+    if (activeSlug === 'sports') {
+      setConfig(categoryConfigs.sports)
+      setIsLoading(false)
+      return
+    }
 
     const fetchEvents = async () => {
       try {

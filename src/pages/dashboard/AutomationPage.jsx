@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
 
 const nodeTemplates = [
   { id: 'mail', label: 'Email', icon: 'mail', color: 'bg-secondary-container', textColor: 'text-[#1A1D00]' },
   { id: 'chat', label: 'WhatsApp', icon: 'chat', color: 'bg-zinc-800', textColor: 'text-secondary-container' },
+  { id: 'telegram', label: 'Telegram', icon: 'send', color: 'bg-sky-600', textColor: 'text-white' },
   { id: 'auto_awesome', label: 'LLM (AI)', icon: 'auto_awesome', color: 'bg-blue-600', textColor: 'text-white' },
   { id: 'event', label: 'Event', icon: 'event', color: 'bg-purple-600', textColor: 'text-white' },
   { id: 'schedule', label: 'Delay', icon: 'schedule', color: 'bg-amber-600', textColor: 'text-white' },
@@ -21,8 +23,236 @@ export default function AutomationPage() {
   const [tempLine, setTempLine] = useState(null)
   const [zoom, setZoom] = useState(100)
   const [expandedSidebar, setExpandedSidebar] = useState(false)
+  const [showDeployModal, setShowDeployModal] = useState(false)
+  const [telegramBotToken, setTelegramBotToken] = useState(() => localStorage.getItem('utsova-telegram-token') || '')
+  const [telegramChatId, setTelegramChatId] = useState(() => localStorage.getItem('utsova-telegram-chat-id') || '')
+  const [telegramMessage, setTelegramMessage] = useState('Hello from Utsova automation flow!')
+  const [recentChatIds, setRecentChatIds] = useState([])
+  const [isFetchingChats, setIsFetchingChats] = useState(false)
+  const [isDeploying, setIsDeploying] = useState(false)
   const sidebarHoverRef = useRef(null)
   const hoverTimeoutRef = useRef(null)
+
+  const hasTelegramNode = nodes.some((node) => node.type === 'telegram')
+  const hasLlmNode = nodes.some((node) => node.type === 'auto_awesome')
+  const hasTelegramAndLlm = hasTelegramNode && hasLlmNode
+
+  const normalizeChatId = (value) => {
+    const raw = String(value || '').trim()
+    if (!raw) return ''
+
+    // Allow users to paste t.me links and convert them to @chatusername.
+    const linkMatch = raw.match(/(?:https?:\/\/)?t\.me\/([^/?#\s]+)/i)
+    if (linkMatch?.[1]) {
+      return `@${linkMatch[1].replace(/^@/, '')}`
+    }
+
+    return raw
+  }
+
+  const parseChatIds = (rawValue) => {
+    const raw = String(rawValue || '')
+    const extracted = raw.match(/-?\d{5,}|@[a-zA-Z0-9_]{5,}|(?:https?:\/\/)?t\.me\/[a-zA-Z0-9_]{5,}/g) || []
+
+    const tokens = extracted.length > 0 ? extracted : raw.split(/[\n,\s]+/)
+
+    return Array.from(new Set(tokens.map((item) => normalizeChatId(item)).filter(Boolean)))
+  }
+
+  const mapTelegramErrorMessage = (description, chatId) => {
+    const text = String(description || '').toLowerCase()
+    const label = chatId ? ` for ${chatId}` : ''
+
+    if (text.includes('chat not found')) {
+      return `Chat not found${label}. Use a valid numeric chat ID (recommended via Fetch Recent Chats after sending /start to your bot), or for public channels use @channelusername.`
+    }
+
+    if (text.includes('bot was blocked by the user')) {
+      return `Bot was blocked${label}. Unblock the bot and send /start, then try again.`
+    }
+
+    if (text.includes('not enough rights')) {
+      return `Bot lacks permission${label}. Add the bot to the chat/channel and grant posting rights.`
+    }
+
+    return description || 'Telegram request failed'
+  }
+
+  const extractChatIdsFromUpdates = (updates) => {
+    const ids = (updates || [])
+      .flatMap((update) => [
+        update?.message?.chat?.id,
+        update?.edited_message?.chat?.id,
+        update?.channel_post?.chat?.id,
+        update?.edited_channel_post?.chat?.id,
+        update?.my_chat_member?.chat?.id,
+        update?.chat_member?.chat?.id,
+        update?.chat_join_request?.chat?.id,
+        update?.callback_query?.message?.chat?.id,
+      ])
+      .filter(Boolean)
+      .map((id) => String(id))
+
+    return Array.from(new Set(ids))
+  }
+
+  const fetchDiscoveredChatIds = async (token) => {
+    const endpoint = new URL(`https://api.telegram.org/bot${token}/getUpdates`)
+    endpoint.searchParams.set('allowed_updates', JSON.stringify([
+      'message',
+      'edited_message',
+      'channel_post',
+      'edited_channel_post',
+      'my_chat_member',
+      'chat_member',
+      'chat_join_request',
+      'callback_query',
+    ]))
+
+    const response = await fetch(endpoint.toString())
+    const data = await response.json()
+
+    if (!response.ok || !data?.ok) {
+      throw new Error(data?.description || 'Failed to fetch Telegram chats')
+    }
+
+    return extractChatIdsFromUpdates(data.result || [])
+  }
+
+  const sendTelegramMessage = async (token, chatId, text) => {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+      }),
+    })
+
+    const data = await response.json()
+    if (!response.ok || !data?.ok) {
+      throw new Error(mapTelegramErrorMessage(data?.description, chatId))
+    }
+  }
+
+  const fetchRecentTelegramChats = async () => {
+    if (!telegramBotToken.trim()) {
+      toast.error('Enter Telegram bot token first.')
+      return
+    }
+
+    setIsFetchingChats(true)
+    try {
+      const ids = await fetchDiscoveredChatIds(telegramBotToken.trim())
+
+      setRecentChatIds(ids)
+      if (ids.length > 0) {
+        setTelegramChatId(ids.join(', '))
+        toast.success(`Loaded ${ids.length} chat ID(s).`)
+      } else {
+        toast.info('No chats found yet. Send a message to your bot first, then retry.')
+      }
+    } catch (error) {
+      toast.error(mapTelegramErrorMessage(error?.message || 'Failed to fetch recent chats'))
+    } finally {
+      setIsFetchingChats(false)
+    }
+  }
+
+  const handleDeployTelegramFlow = async () => {
+    if (!hasTelegramAndLlm) {
+      toast.error('Add both Telegram and LLM nodes before deploying.')
+      return
+    }
+
+    if (!telegramBotToken.trim()) {
+      toast.error('Enter Telegram bot token.')
+      return
+    }
+
+    const chatIds = parseChatIds(telegramChatId)
+    if (chatIds.length === 0) {
+      toast.error('Enter at least one Telegram chat ID.')
+      return
+    }
+
+    if (!telegramMessage.trim()) {
+      toast.error('Enter a message to send.')
+      return
+    }
+
+    setIsDeploying(true)
+    try {
+      const token = telegramBotToken.trim()
+      const message = telegramMessage.trim()
+
+      localStorage.setItem('utsova-telegram-token', token)
+      localStorage.setItem('utsova-telegram-chat-id', telegramChatId.trim())
+
+      let successCount = 0
+      const failedRecipients = []
+
+      for (let index = 0; index < chatIds.length; index += 1) {
+        const chatId = chatIds[index]
+
+        try {
+          await sendTelegramMessage(token, chatId, message)
+          successCount += 1
+        } catch (error) {
+          failedRecipients.push({
+            chatId,
+            reason: mapTelegramErrorMessage(error?.message, chatId),
+          })
+        }
+      }
+
+      // Fallback: if manual IDs failed (commonly due to wrong ID), retry with discovered chats.
+      if (successCount === 0 && failedRecipients.length > 0) {
+        const hasChatNotFound = failedRecipients.some((item) =>
+          String(item.reason || '').toLowerCase().includes('chat not found')
+        )
+
+        if (hasChatNotFound) {
+          const discoveredIds = await fetchDiscoveredChatIds(token)
+          const retryIds = discoveredIds.filter((id) => !chatIds.includes(id))
+
+          for (let index = 0; index < retryIds.length; index += 1) {
+            try {
+              await sendTelegramMessage(token, retryIds[index], message)
+              successCount += 1
+            } catch {
+              // Ignore secondary fallback failures and preserve original failure reason.
+            }
+          }
+
+          if (successCount > 0) {
+            toast.info('Manual chat ID failed, but message was sent using discovered recent chats.')
+          }
+        }
+      }
+
+      if (successCount === 0 && failedRecipients.length > 0) {
+        throw new Error(failedRecipients[0].reason)
+      }
+
+      if (failedRecipients.length > 0) {
+        toast.warn(`Sent to ${successCount} chat(s), failed for ${failedRecipients.length}.`)
+      } else {
+        toast.success(`Telegram message sent to ${successCount} chat(s).`)
+      }
+
+      if (successCount > 0) {
+        setShowDeployModal(false)
+      }
+    } catch (error) {
+      toast.error(mapTelegramErrorMessage(error?.message || 'Failed to send Telegram message'))
+    } finally {
+      setIsDeploying(false)
+    }
+  }
 
   // Handle drag start from sidebar
   const handleDragStart = (template) => {
@@ -533,11 +763,113 @@ export default function AutomationPage() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => setShowDeployModal(true)}
           className="px-6 py-3 bg-secondary-container text-on-secondary-fixed rounded-full font-bold text-sm hover:opacity-90 transition-all"
         >
           Deploy
         </motion.button>
       </motion.div>
+
+      <AnimatePresence>
+        {showDeployModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isDeploying && setShowDeployModal(false)}
+              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.96 }}
+              className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-xl rounded-2xl border border-zinc-700 bg-zinc-950 p-6 text-on-surface"
+            >
+              <h3 className="text-lg font-black mb-2">Deploy Telegram Automation</h3>
+              <p className="text-sm text-zinc-400 mb-6">
+                Add Telegram and LLM nodes, then send a test message directly to Telegram.
+              </p>
+
+              <div className="grid grid-cols-1 gap-4 mb-5">
+                <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
+                  <span>Telegram node</span>
+                  <span className={hasTelegramNode ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasTelegramNode ? 'Ready' : 'Missing'}</span>
+                </div>
+                <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-3 text-xs text-zinc-300 flex items-center justify-between">
+                  <span>LLM node</span>
+                  <span className={hasLlmNode ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{hasLlmNode ? 'Ready' : 'Missing'}</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Telegram Bot Token</label>
+                  <input
+                    value={telegramBotToken}
+                    onChange={(event) => setTelegramBotToken(event.target.value)}
+                    placeholder="123456789:ABC..."
+                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
+                    disabled={isDeploying}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Telegram Chat ID</label>
+                  <input
+                    value={telegramChatId}
+                    onChange={(event) => setTelegramChatId(event.target.value)}
+                    placeholder="e.g. 123456789, -100987654321 or one per line"
+                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container"
+                    disabled={isDeploying}
+                  />
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={fetchRecentTelegramChats}
+                      className="px-3 py-1.5 rounded-full text-xs font-bold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-50"
+                      disabled={isDeploying || isFetchingChats}
+                    >
+                      {isFetchingChats ? 'Fetching...' : 'Fetch Recent Chats'}
+                    </button>
+                    {recentChatIds.length > 0 && (
+                      <span className="text-[11px] text-zinc-400">Found: {recentChatIds.length}</span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Text Message</label>
+                  <textarea
+                    value={telegramMessage}
+                    onChange={(event) => setTelegramMessage(event.target.value)}
+                    rows={4}
+                    placeholder="Type the test message"
+                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm outline-none focus:border-secondary-container resize-none"
+                    disabled={isDeploying}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeployModal(false)}
+                  className="px-4 py-2 rounded-full text-sm font-bold bg-zinc-800 text-zinc-200"
+                  disabled={isDeploying}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeployTelegramFlow}
+                  className="px-5 py-2 rounded-full text-sm font-bold bg-secondary-container text-on-secondary-fixed disabled:opacity-50"
+                  disabled={isDeploying || !hasTelegramAndLlm}
+                >
+                  {isDeploying ? 'Sending...' : 'Deploy & Send'}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
